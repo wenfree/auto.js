@@ -182,9 +182,6 @@ function jsclick(way,txt,clickKey,n){
         var txtddd = id(txt).findOne(200);
     }
     if(txtddd){
-        // log(txtddd);
-        // log(txtddd.id());
-        // log(txtddd.text());
         log("找到->", txt)
         if (clickKey){
             log('准备点击->',txt)
@@ -203,6 +200,7 @@ function input_(txt){
     input(txt)
     sleep(1000*1)
 }
+
 
 function replay(){
     if (jsclick(id_,"amh",true,1)){
@@ -1228,7 +1226,7 @@ function All(){
 
 } //All 全部循环
 
-var localv = 26
+var localv = 100
 
 var Task_Day = new Date()
 var Task_hour = Task_Day.getHours()

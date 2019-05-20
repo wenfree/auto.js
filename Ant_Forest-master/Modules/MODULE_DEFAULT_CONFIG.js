@@ -1,4 +1,5 @@
 module.exports = {
+
 	"af": {
 		help_collect_switch: true,
 		self_collect_switch: true,
