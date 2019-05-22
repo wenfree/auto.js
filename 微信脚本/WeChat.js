@@ -1,9 +1,40 @@
+"ui";
+
+storage = storages.create("ABC");
+tags_ = storage.get("tags_");
+if (!tags_) {
+    tags_ = "";
+};
 
 
 
+ui.layout(
+    <vertical padding="16">
+        <text textSize="16sp" textColor="black" text="标签"/>
+        <input id="tags_" hint="请输入标签">{tags_}</input>
+        <button id="ok" text="确定"/>
+    </vertical>
+);
+//指定确定按钮点击时要执行的动作
+ui.ok.click(function(){
+    //通过getText()获取输入的内容
+    saveConf()
+    // Home();
+    threads.start(function(){
+        //在新线程执行的代码
 
-let a = require("auto-sp");
-let wechat_txt = require("Wechat_text");
+        toast("tags->"+ tags_)
+        go();
+
+    });
+});
+
+
+
+function go(){
+
+var a = require("auto-sp");
+var wechat_txt = require("Wechat_text");
 
 
 // 对Date的扩展，将 Date 转化为指定格式的String 
@@ -64,6 +95,17 @@ function wechat_send(){
 var message_lun = 0
 function news_message(){
     message_lun++
+    var news = id("nf").find()
+    // log("news----\n",news)
+    // log("news----\n",news.length)
+    if ( news ){
+        if (news.length > 1){
+            // Tap(news[1].bounds().centerX(),news[1].bounds().centerY())
+            log("centerX---->",news[1].bounds().centerX(),"centerX---->",news[1].bounds().centerY())
+            Tap(news[1].bounds().centerX(),news[1].bounds().centerY())
+        }
+    }
+    
     if (message_lun%2 == 0 ){
         return a.jsclick('id','nf',true,3) 
     }else{
@@ -130,6 +172,7 @@ function look_news_photo(){
         send_news_times++
     }
     log("发腾讯新闻超时")
+
     return false
 }
 
@@ -253,11 +296,8 @@ function addphoto(){
     }
 }
 
-
-
-
-
-toast("wen");
+toast("wechat");
+log("wechat");
 var wechat_record_file_path = "/sdcard/Download/LLGC/wechat_recode.txt";
 var wechat_config = Array();
 
@@ -303,91 +343,72 @@ function wechat_config_save(){
     }
 }
 
-wechat_config_init()
+// wechat_config_init()
 var Home_Time_Line = Math.round(new Date())
-function Fwechat(){
-    
-    var Task_Day = new Date()
-    var Task_hour = Task_Day.getHours()
-    var Task_minutes = Task_Day.getMinutes()
+function Fwechat(data,done){
+    log("data--->",data)
+    log("data--->",done)
     var weChat_times = 0
-    var send_one = false;
-    
-    // wechat_config_init();
-    // if (wechat_config.date != (new Date()).Format("yyyy-M-d") ){
-    //     wechat_config.date = (new Date()).Format("yyyy-M-d");
-    //     wechat_config.look_news = 0;
-    //     wechat_config_save();
-    // }
-
-    if ( Task_hour >= wechat_config.weektimes &&  Task_hour <= wechat_config.sleeptimes ){
-        //微信小时数成立
-        // while ( weChat_times < 50){
-            log("weChat_times-->",weChat_times);
-            var wechatBid = "com.tencent.mm"
-            if ( currentActivity().search(wechatBid) == 0 ){
-                // 微信在前端
-                if (a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,1) ){
-                    // 微信首页
-                    log("微信首页");
-                    if ( wechat_config.look_news <= 0 ){
-                       if( look_news_photo() ){ wechat_config.look_news = 1; wechat_config_save(); task_back() }
-                    // }else if ( wechatInfo['addKey'] ){
-                    //     addfriends();
-                    // }else if( wechatInfo['addphotoKey'] ) {
-                    //     addphoto();
-                    }else if(send_one){
-                        Tap(540,random(480,960))
-                        sleep(1000*3)
-                        if (wechat_send()){
-                            send_one = false;
-                        }
-                    }else if (news_message()){
-                        replay();
+    var send_one = true;
+    while ( weChat_times < 50){
+        log("weChat_times-->",weChat_times);
+        var wechatBid = "com.tencent.mm"
+        if ( currentActivity().search(wechatBid) == 0 ){
+            // 微信在前端
+            if (a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,1) ){
+                // 微信首页
+                log("微信首页");
+                if ( data['news'] ){
+                    if( look_news_photo() ){ 
+                        data['news'] = false
                     }
-                }else{
-                    if (back_bottom()){
-                        Tap(50,100);
+                }else if(send_one){
+                    Tap(540,random(480,960))
+                    sleep(1000*3)
+                    if (wechat_send()){
+                        send_one = false;
                     }
+                }else if (news_message()){
+                    replay();
                 }
             }else{
-                log("启动App");
-                app.launch(wechatBid);
-                sleep(1000*5)
+                if (back_bottom()){
+                    Tap(50,100);
+                }
             }
-            if ( Math.round(new Date()) - Home_Time_Line > 60*1000+random(1000,5000) ){
-                home();
-                Home_Time_Line = Math.round(new Date())
-                sleep(1000*random(5,15))
-            }
-            sleep(1000*1);
-            weChat_times++;
-        // }
-        log("超时");
-    }else{
-        log("时间不符合");
-        home();
-        sleep(1000*10)
+        }else{
+            log("启动App---");
+            app.launch(wechatBid);
+            log("启动App-end");
+            sleep(8000)
+        }
+        if ( Math.round(new Date()) - Home_Time_Line > 60*1000+random(1000,5000) ){
+            home();
+            Home_Time_Line = Math.round(new Date())
+            sleep(1000*random(5,15))
+        }
+        sleep(1000*1);
+        weChat_times++;
+        toast("微信活跃中")
     }
-    wechat_config_save();
+    log("时间到");
+    Home()
+    log("按下home");
 }
-
 
 // wechat_config_init();
 // wechat_config.sendphoto = 0
 // wechat_config_save();
 
-
-
-
-
 function task_info(){
+    var device_tag = ui.tags_.text()
+    log("同步数据","tag->" + device_tag)
     var device_info = Array()
     device_info.service = "Task.Task_get"
     device_info.device_imei = device.getIMEI()
     device_info.device_name = device.codename
     device_info.device_mode = device.model
-    device_info.device_tag = "未设置"
+    device_info.device_tag = device_tag
     device_info.whos = "流量工产"
     var liuliang_url = "http://awzcydia.com/wp-api/Public/idfa/"
     var res = http.post(liuliang_url, device_info);
@@ -395,56 +416,79 @@ function task_info(){
         // log(res.body.string())
         var res = JSON.parse(res.body.string())
         log(res)
-        var workdate = JSON.parse(res.data.data)
-        log(workdate)
-        return workdate;
+        if (res.data == "新增手机"){
+            return false;
+        }else{
+            var workdata = JSON.parse(res.data.data)
+            var donedata = JSON.parse(res.data.done)
+            // log("workdata",workdata)
+            // log("workdone",donedata)
+            return [ workdata,donedata ];
+        }
     }
 }
 
-function task_back(){
+function task_back(done){
+    log(done)
     var device_info = Array()
-    device_info.service = "Task.Task_back"
+    device_info.service = "Task.Task_callback"
     device_info.device_imei = device.getIMEI()
-    device_info.device_name = device.codename
-    device_info.device_mode = device.model
-    device_info.device_tag = "未设置"
-    device_info.whos = "流量工产"
+    device_info.state = "ok"
+    device_info.arr = JSON.stringify(done)
     var liuliang_url = "http://awzcydia.com/wp-api/Public/idfa/"
     var res = http.post(liuliang_url, device_info);
     if (res){
+        log(res.body.string())
         return true;
     }
 }
 
+function timeDo(n){
+    var timeLines = 0
+    while (timeLines < n){
+        sleep(1000)
+        var text_ = "倒计时->" + (n - timeLines)
+        toast( text_ )
+        timeLines++
+    }
+}
 
 
 function all(){
     while (true){
         var task_data = task_info()
         if (task_data){
-            wechat_config = task_data;
-            Fwechat()
+            if(task_data[0].active.todo){
+                log("//启动微信")
+                Fwechat(task_data[0],task_data[1])
+                task_data[1].active.times = task_data[1].active.times + 1
+                task_back(task_data[1])
+            }else{
+                toast("暂无任务")
+                sleep(2000)
+            }
         }
         log("end")
-        sleep(1000*5)
+        timeDo(30)
     }
 }
 
-
-while (true){
-    try{
-        all()
-    }catch(e){
-        sleep(1000*2)
-        toast("error")
+    while (true){
+        try{
+            all()
+        }catch(e){
+            sleep(1000*3)
+            toast("error")
+            sleep(1000*3)
+            toast(e)
+            log("error",e)
+        }
     }
 }
 
-
-
-
-
-
+function saveConf() {
+    storage.put("tags_", ui.tags_.text() + "");
+};
 
 
 
