@@ -499,18 +499,8 @@ function get_task(){
     log(liuliang_url);
     var res = http.get(liuliang_url);
     if (res){
-        // log(res.body.string())
         var res = JSON.parse(res.body.string())
         log(res)
-        // if (res.state == 0 ){
-        //     var time_today = new Date()
-        //     var time_hour = time_today.getHours()
-        //     var time_min = time_today.getMinutes()
-        //     //休息到今天结束
-        //     time_less(  ((24-time_hour)*60 + (60-time_min))* 60  )  
-        //     // toastLog( "休息到明天0点:"+((24-time_hour)*60 + (60-time_min)) * 60 )
-        //     return false
-        // } 
         if (res.mesg == "今天没有任务"){
             return false
         }else if (res.mesg == "暂时没有任务"){
