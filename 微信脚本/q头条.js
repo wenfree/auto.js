@@ -251,7 +251,7 @@ function sendBroadcast(appName,data){
     );
 }
 
-var apk_url = "img.wenfree.cn/apk/com.qtoutiao.newsapp.apk"
+var apk_url = "https://img.wenfree.cn/apk/com.qtoutiao.newsapp.apk"
 var app_name = "Q头条";
 var app_bid = "com.qtoutiao.newsapp"
 var info={};

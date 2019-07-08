@@ -50,10 +50,10 @@ click("我知道了")
 
 
 //请求截图
-if(!requestScreenCapture()){
-    toast("请求截图失败");
-    exit();
-}
+// if(!requestScreenCapture()){
+//     toast("请求截图失败");
+//     exit();
+// }
 
 
 function main(){
@@ -121,5 +121,16 @@ log(
     currentActivity()
 )
 
+// var qq = "55194126";
+// app.startActivity({ 
+//     action: "android.intent.action.VIEW", 
+//     data:"mqq://im/chat?chat_type=wpa&version=1&src_type=web&uin=" + qq, 
+//     packageName: "com.tencent.mobileqq", 
+// });
 
-main()
+// var qq = "55194126";
+// app.startActivity({ 
+//     action: "android.intent.action.VIEW", 
+//     data:"snssdk1128://aweme/detail/6707575090176888075?refer=web&gd_label=click_wap_detail_download_feature&appParam=%7B%22__type__%22%3A%22wap%22%2C%22position%22%3A%22900718067%22%2C%22parent_group_id%22%3A%226553813763982626051%22%2C%22webid%22%3A%226568996356873356814%22%2C%22gd_label%22%3A%22click_wap%22%7D&needlaunchlog=1", 
+//     packageName: "com.ss.android.ugc.aweme", 
+// });

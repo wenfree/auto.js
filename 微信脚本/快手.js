@@ -211,15 +211,24 @@ gifshow_Info['room']="CHJ15193636671"
 gifshow_Info['SetRoom']=""
 gifshow_Info['word']="666"
 
-var task_info = get_task();
-gifshow_Info['room']=task_info.extend1;
-gifshow_Info['word']=task_info.extend3;
+// var task_info = get_task();
+// gifshow_Info['room']=task_info.extend1;
+// gifshow_Info['word']=task_info.extend3;
 
-var info={}
-if (Fgifshow()){
-    info["state"]="ok";
-    sendBroadcast("快手",JSON.stringify(info))
-}else{
-    info["state"]="no";
-    sendBroadcast("快手",JSON.stringify(info))
+// var info={}
+// if (Fgifshow()){
+//     info["state"]="ok";
+//     sendBroadcast("快手",JSON.stringify(info))
+// }else{
+//     info["state"]="no";
+//     sendBroadcast("快手",JSON.stringify(info))
+// }
+
+
+function opendy(vodieid){
+    app.startActivity({ 
+        action: "android.intent.action.VIEW", 
+        data:"snssdk1128://aweme/detail/"+vodieid+"?refer=web&gd_label=click_wap_detail_download_feature&appParam=%7B%22__type__%22%3A%22wap%22%2C%22position%22%3A%22900718067%22%2C%22parent_group_id%22%3A%226553813763982626051%22%2C%22webid%22%3A%226568996356873356814%22%2C%22gd_label%22%3A%22click_wap%22%7D&needlaunchlog=1", 
+        packageName: "com.ss.android.ugc.aweme", 
+    });
 }
