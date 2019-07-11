@@ -14,8 +14,8 @@ function jsclick(way,txt,clickKey,n){
     if (clickKey){
         log('准备点击->',txt);
         log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
+        click(res.bounds().centerX(),res.bounds().centerY());
+        // Tap(res.bounds().centerX(),res.bounds().centerY());
         sleep(1000*n);
     }
         return true;
@@ -96,7 +96,7 @@ function gifshow_back_bottom(){
         // 允许
     }else{
         log('没有后退');
-        Tap(50,80)
+        back();
         return true
     }
 }
@@ -119,8 +119,10 @@ function Fgifshow(){
                         var d = className("EditText").findOne(1000)
                         if (d){
                             d.setText(gifshow_Info['word'])
+                            sleep(500)
                         }
                         if (jsclick("text","发送",true,random(1,5))){
+                            sleep(1000*3)
                             return true
                         }
                     }
@@ -159,10 +161,12 @@ function Fgifshow(){
                 }else{
                     gifshow_back_bottom()
                 }
-
+            break;
+            case "com.yxcorp.gifshow.detail.PhotoDetailActivity":
+                back();
             break;
             default:
-                Back();
+                back();
                 sleep(1000)
                 launchApp(app_name);
                 sleep(1000*5)
@@ -207,28 +211,22 @@ function sendBroadcast(appName,data){
 
 var app_name = "快手"
 var gifshow_Info = {}
-gifshow_Info['room']="CHJ15193636671"
+gifshow_Info['room']="40300060"
 gifshow_Info['SetRoom']=""
 gifshow_Info['word']="666"
 
-// var task_info = get_task();
-// gifshow_Info['room']=task_info.extend1;
-// gifshow_Info['word']=task_info.extend3;
+var task_info = get_task();
+gifshow_Info['room']=task_info.extend1;
+gifshow_Info['word']=task_info.extend3;
 
-// var info={}
-// if (Fgifshow()){
-//     info["state"]="ok";
-//     sendBroadcast("快手",JSON.stringify(info))
-// }else{
-//     info["state"]="no";
-//     sendBroadcast("快手",JSON.stringify(info))
-// }
-
-
-function opendy(vodieid){
-    app.startActivity({ 
-        action: "android.intent.action.VIEW", 
-        data:"snssdk1128://aweme/detail/"+vodieid+"?refer=web&gd_label=click_wap_detail_download_feature&appParam=%7B%22__type__%22%3A%22wap%22%2C%22position%22%3A%22900718067%22%2C%22parent_group_id%22%3A%226553813763982626051%22%2C%22webid%22%3A%226568996356873356814%22%2C%22gd_label%22%3A%22click_wap%22%7D&needlaunchlog=1", 
-        packageName: "com.ss.android.ugc.aweme", 
-    });
+var info={}
+if (Fgifshow()){
+    home();
+    info["state"]="ok";
+    sendBroadcast("快手",JSON.stringify(info))
+}else{
+    info["state"]="no";
+    sendBroadcast("快手",JSON.stringify(info))
 }
+
+
