@@ -14,8 +14,8 @@ function jsclick(way,txt,clickKey,n){
     if (clickKey){
         log('准备点击->',txt);
         log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
+        click(res.bounds().centerX(),res.bounds().centerY());
+        // Tap(res.bounds().centerX(),res.bounds().centerY());
         sleep(1000*n);
     }
         return true;
@@ -35,7 +35,7 @@ function download () {
         }else if(jsclick("text","立即下载",true,2)){ 
         }else if(jsclick("text","确定",true,2)){
         }else if(jsclick("text","仅允许一次",true,2)){    
-        }else if(jsclick("text","完成",false,2)){
+        }else if(jsclick("text","完成",true,2)){
             return true;
         }else{
             jsclick("text","允许",true,2);
@@ -93,8 +93,8 @@ function reg() {
                             for (var i = 0;i<all_Info.length;i++){
                                 log(i,all_Info[i].text())
                                 if (all_Info[i].text() == "元"){
-                                    var money = all_Info[i-1].text()
-                                    var gold = all_Info[i+2].text()
+                                    var money = Number(all_Info[i-1].text())
+                                    var gold = Number(all_Info[i+2].text())
                                     var gift = all_Info[i-3].text()
                                     log(money,gold,gift)
                                     info["money"]=money;

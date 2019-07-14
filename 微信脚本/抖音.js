@@ -200,9 +200,9 @@ function opendy(vodieid){
 }
 
 var info = {}
-var data = get_task()
-var url = data.worksPath;
-var commnet_txt = data.extend4;
+// var data = get_task()
+// var url = data.worksPath;
+// var commnet_txt = data.extend4;
 
 if (Fdy(url)){
     sleep(1000*2)
