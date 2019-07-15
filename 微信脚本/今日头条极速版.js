@@ -292,7 +292,7 @@ function read(){
         data_time_line++;
         sleep(1000); 
     }
-    log("阅读完成")
+    log("阅读完成,")
 }
 
 function money() {
@@ -420,15 +420,15 @@ function sms_get_unmber(sms){
 }
 
 
-var mainEngine;
-var index;
-var ii=setInterval(()=>{},1000)
-events.on("prepare",function(i,obj){
-    mainEngine = obj;
-    index = 1;
-    main();
-    clearInterval(ii);
-});
+// var mainEngine;
+// var index;
+// var ii=setInterval(()=>{},1000)
+// events.on("prepare",function(i,obj){
+//     mainEngine = obj;
+//     index = 1;
+//     main();
+//     clearInterval(ii);
+// });
 
 var appName = "今日头条极速版";
 var app_bid = "com.ss.android.article.lite";
@@ -448,30 +448,20 @@ function main(){
         }
     }else if ( download() ){
         if (reg()){
-            read()
             sendBroadcast("今日头条极速版",JSON.stringify(info))
         }else{
             sendBroadcast("今日头条极速版",JSON.stringify(info))
         }
     }    
 }
-
 log(currentActivity())
 var title = textMatches(/.*/).find();
 if (title){
     for (var i=0;i<title.length;i++){
         log(i,title[i].text())
-        // sleep(200)
     }
-    // var news_mun = 44
-    // click(title[news_mun].bounds().centerX(),title[news_mun].bounds().centerY())
-    // check_look = true
-    // look_timesKey = random(15,25)
-    // look_times = 0
-    // sleep(1000*random(3,5))
 }
-
-
+main()
 
 
 

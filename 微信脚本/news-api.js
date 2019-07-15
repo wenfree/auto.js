@@ -37,24 +37,6 @@ ui.ok.click(()=>{
         storage.put("imei_data", imei_data);
         // ui.finish();
 
-        const scripts = ["今日头条极速版","趣头条"]
-        var enginess = [];
-        var mainEnengine = engines.myEngine();
-        log(mainEnengine);
-
-        // var iii = setInterval(()=>{},1000);//保护主脚本不停掉
-        events.on("control",(i)=>{
-            i++;
-            if(i>scripts.length)exit();
-            var ae= engines.execScriptFile(scripts[i]+'.js')
-            sleep(500)
-            var aengine = ae.getEngine();
-            aengine.emit("prepare",i,mainEnengine)
-            enginess.push(aengine);
-        });
-        
-        mainEnengine.emit("control",-1);
-
         log('end')
 
     }
