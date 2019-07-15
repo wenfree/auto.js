@@ -454,16 +454,19 @@ function main(){
         }
     }    
 }
+
 log(currentActivity())
+
 var title = textMatches(/.*/).find();
 if (title){
     for (var i=0;i<title.length;i++){
         log(i,title[i].text())
     }
 }
+
+// money()
+
 main()
-
-
 
 
 
