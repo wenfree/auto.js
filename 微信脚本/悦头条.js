@@ -1,3 +1,12 @@
+
+function click_(x,y){
+    if(x>0 && x < device.width && y > 0 && y < device.height){
+        click(x,y)
+    }else{
+        log('坐标错误')
+    }
+}
+
 function jsclick(way,txt,clickKey,n){
     if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
@@ -12,7 +21,7 @@ function jsclick(way,txt,clickKey,n){
     if(res){
         if ( clickKey ){
             log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
-            click(res.bounds().centerX(),res.bounds().centerY());
+            click_(res.bounds().centerX(),res.bounds().centerY());
             sleep(1000*n);
         }else{
             log("找到->",txt);

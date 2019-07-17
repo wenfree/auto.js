@@ -1,7 +1,7 @@
 function jsclick(way,txt,clickKey,n){
-    if(!n){n=1};
+    if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
-    if(!clickKey){clickKey=false};
+    if(!clickKey){clickKey=false}; //如果没有设置点击项,设置为false
     if (way == "text"){
         res = text(txt).findOne(200);
     }else if(way == "id"){
@@ -10,19 +10,34 @@ function jsclick(way,txt,clickKey,n){
         res = desc(txt).findOne(200);
     }
     if(res){
-        log("找到->",txt)
-    if (clickKey){
-        log('准备点击->',txt);
-        log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
-        sleep(1000*n);
-    }
+        if ( clickKey ){
+            log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
+            click(res.bounds().centerX(),res.bounds().centerY());
+            sleep(1000*n);
+        }else{
+            log("找到->",txt);
+        }
         return true;
     }else{
-    log("没有找到->",txt)
+        // log("没有找到->",txt)
     }
-};
+}
+
+function nextPage(){
+    if (random(1,100)> 50){
+        log("滑动1次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }else{
+        log("滑动2次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }
+}
+
+function newPage(){
+    log("下拉刷新")
+    swipe(device.width/2,device.height*1/5,device.width/2,device.height*3/7,random(1000,3000));
+}
 
 function killApp(appbids){
     var text = "am force-stop " + appbids
@@ -82,16 +97,32 @@ function sms_get_unmber(sms){
     }
 }
 
+function Tips(){
+    log("查询弹窗");
+    var textTips = {}
+    textTips["允许"]="text";
+    textTips["好"]="text";
+    textTips["确定"]="text";
+    textTips["继续赚钱"]="text";
+    textTips["确定"]="desc";
+    textTips["忽略"]="text";
+    textTips["iv_close"]="id";
+    for(var k in textTips){
+        if (jsclick(textTips[k],k,true,2)){
+            return false
+        }
+    }
+    return true
+}
+
 
 function reg() {
 
-    // launchApp(app_name);
-    launch(app_bid);
+    launchApp(app_name);
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
     var tips_times = 0;
-    // var app_bid = "com.ss.android.article.lite"
 
     var data_time_line = 0;
     while(data_time_line < 180){
@@ -99,15 +130,18 @@ function reg() {
         log("UI->",UI)
         switch(UI){
             case "com.tencent.mm.plugin.webview.ui.tools.SDKOAuthUI":
+                log('微信登录')
                 jsclick("text","确认登录",true,2)
                 jsclick("text","同意",true,3)
-            break;
+                break;
             case "com.cashtoutiao.common.ui.SplashActivity":
+
                 jsclick("text","手机号一键登录",true,3)
-            break;
+                break;
             case "com.cashtoutiao.account.ui.LoginOneKeyActivity":
+                log('填入手机号界面')
                 if (jsclick("text","请输入11位手机号",false,2)){
-                    var truePhone = "17775127804";
+                    var truePhone = "18128823268";
                     // var truePhone = get_PhoneNumber();
                     if (truePhone){
                         setText(0,truePhone);
@@ -115,50 +149,44 @@ function reg() {
                 }else if(jsclick("text","获取短信验证码",true,4)){
                 }else if(jsclick("text","绑定",true,4)){
                 }
-            break;
+                break;
             case "com.cashtoutiao.account.ui.LoginActivity":
-                jsclick("text","手机号一键登录",true,3)
+                jsclick("text","微信一键登录",true,2);
+                // jsclick("text","手机号一键登录",true,3)
+                break;
             case "com.cashtoutiao.account.ui.main.MainTabActivity":
+                log('惠头条主界面')
                 if (jsclick("text","我的",true,2)){
                     if (jsclick("text","未绑定手机",true,2)){
                     }else if (jsclick("text","兑换提现",false,2)){
-                        var d = className("TextView").find();
-                        for (var i=0;i<d.length;i++){
-                            log(i,d[i].text())
-                            sleep(50)
-                            if (d[i].text() == "历史总金币"){
-                                info["gold"] = d[i+1].text();
-                                info["gift"] = d[i-2].text();
-                                log("注册成功");
-                                return true
-                            }
+                        if ( jsclick('text',"历史总金币",false,2) ){
+                            info['money'] = id("tv_today_cash_tips").findOne(1000).text();
+                            info['money'] = Number(info['money'].replace(/[\u4e00-\u9fa5]/g,""));
+                            info["gift"] =  id("tv_code").findOne(1000).text();
+                            log("注册成功 -ok");
+                            return true;
                         }
                     }
                 }else{
-                    Back();
+                    back();
                     tips_times++;
-                    if (tips_times > 10){
-                        killApp(app_bid)
-                        tips_times = 0;
-                    }else if(tips_times%3 ==0){
-                        Tap(device.width*1/2,device.height*5/10)
-                        sleep(2000)
-                    }    
                 }
-            break;
+                break;
             case "com.cashtoutiao.account.ui.setting.MyAccountActivity":
+                log('设置界面')
                 var d = id("my_account_current_telephone").findOne(200)
                 if (d){
                     if (d.text().length>5){
-                        Back();
+                        back();
                     }else{
                         jsclick("text","手机号",true,2)
                     }
                 }
-            break;
+                break;
             case "com.cashtoutiao.account.ui.BoundPhoneActivity":
+                log('填手机号界面')
                 if (jsclick("text","请输入11位手机号",false,2)){
-                    var truePhone = "17775127804";
+                    var truePhone = "18128823268";
                     // var truePhone = get_PhoneNumber();
                     if (truePhone){
                         setText(0,truePhone);
@@ -166,8 +194,9 @@ function reg() {
                 }else if(jsclick("text","获取短信验证码",true,4)){
                 }else if(jsclick("text","绑定",true,4)){
                 }
-            break;
+                break;
             case "com.cashtoutiao.account.ui.VerificationCodeActivity":
+                log('短信验证界面');
                 var sms = "【惠头条】验证码743534"
                 // var sms = get_Sms();
                 if (sms){
@@ -186,38 +215,30 @@ function reg() {
                 }
                 break;
             case "com.cashtoutiao.account.ui.PasswordActivity":
+                log('设置密码界面')
                 setText(0,"AaDd112211")
                 sleep(2000)
                 setText(1,"AaDd112211")
-                sleep(2000)
+                sleep(2000);
+                info['password']="AaDd112211";
                 jsclick("text","确定",true,5)
-            break;
+                break;
+            case "com.cashtoutiao.news.ui.NewsDetailActivity":
+                back();
+                break;
             default:
-                log("预计有弹窗");
-                Back();
-                sleep(2000)
-                launch(app_bid);
-                sleep(1000*6);
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                
-            break;
+                log("app未启动");
+                back();
+                sleep(1000*3);
+                home();
+                sleep(1000*3);
+                launchApp(app_name);
+                sleep(1000*5);
+                break;
         }
 
-        // jsclick("text","一键登录",true,2);
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-
-        jsclick("id","iv_close",true,2)
-        jsclick("text","忽略",true,2)
-
-        
+        Tips();
+    
         data_time_line++;
         sleep(1000); 
     }
@@ -234,6 +255,7 @@ function read(){
     var look_news = 0
     var zan = true
     var tips_times = 0
+    log('开始阅读')
 
     var data_time_line = 0;
     while(data_time_line < 40){
@@ -241,6 +263,7 @@ function read(){
         log("UI->",UI,"data_time_line->",data_time_line)
         switch(UI){
             case "com.cashtoutiao.account.ui.main.MainTabActivity":
+                log('惠头条主页')
                 if( jsclick("text","我的",false,2)&&jsclick("text","头条",false,2) && jsclick("text","刷新",true,5)){
                     var titlett = className("TextView").find();
                     var longtitle = 0
@@ -250,68 +273,69 @@ function read(){
                             if (titlett[i].text().length >= 15 ){
                                 longtitle++
                                 if (longtitle>2){
-                                    var news_mun = i
+                                    click(titlett[i].bounds().centerX(),titlett[i].bounds().centerY())
+                                    check_look = true
+                                    look_timesKey = random(15,18)
+                                    look_times = 0
+                                    sleep(1000*random(3,5))
+                                    look_news++
                                     break;
                                 }
                             }
                             sleep(50)
                         }
-                        Tap(titlett[news_mun].bounds().centerX(),titlett[news_mun].bounds().centerY())
-                        check_look = true
-                        look_timesKey = random(15,25)
-                        look_times = 0
-                        sleep(1000*random(3,5))
-                        look_news++
                     }
                     sleep(1000*3)
-                }else if(jsclick("text","头条",true,5)){
-                    Tap(device.width*1/10,device.height*9.8/10)
-                    sleep(2000)
+                }else if(jsclick("text","任务中心",false,5)){
+                    log('任务中心');
+                    if (device.model == 'Pixel XL'){
+                        click(device.width*5/100,device.height*90/100);
+                    }else{
+                        click(device.width*5/100,device.height*97/100);
+                    }
                 }else{
-                    Back();
+                    back();
                 }
-            break;
+                break;
             case "com.cashtoutiao.news.ui.NewsDetailActivity":
-                if( check_look && look_times < look_timesKey ){
+                log('文章页面')
+                if( check_look  ){
                     if(look_times < look_timesKey){
                         log("阅读文章","继续", look_timesKey-look_times );
-                        jsclick("text","展开全文",true,2);
-                        Swipe(device.width/2,device.height*2/3,device.width/2,device.height/3)
-                        sleep(1000 * random(2,5))
+                        var d = textMatches(/展开全文.*/).findOne(200)
+                        if (d){
+                            click(d.bounds().centerX(),d.bounds().centerY())
+                        }
+                        nextPage()
+                        sleep(random(800,3000))
                         look_times++
+                    }else{
+                        log('阅读文章超时');
+                        back();
                     }
                 }else{
                     log("非主动进入阅读,退出")
-                    Back();
+                    back();
                 }
-            break;
+                break;
             default:
+                log("app未启动");
+                back();
+                sleep(1000*3);
+                home();
+                sleep(1000*3);
                 launchApp(app_name);
-                sleep(1000*5)
-                /////////////////////////
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                ///////////////////////////
-                Back();
-            break;
+                sleep(1000*5);
+                break;
         }
 
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-        jsclick("id","iv_close",true,2)
-        jsclick("text","忽略",true,2)
+        Tips();
 
         data_time_line++;
         sleep(1000); 
     }
-    log("阅读完成");
-    killApp(app_bid);
+    log("阅读完成 - end");
+    home();
 }
 
 
@@ -336,51 +360,64 @@ var app_name = "惠头条";
 var app_bid = "com.cashtoutiao";
 var info={};
 
-if (launchApp(app_name) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
-}else if ( download(apk_url) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
+function main(){
+    if (launchApp(app_name) ){
+        if (reg()){
+            log(info)
+            read()
+            reg();
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }else if ( download(apk_url) ){
+        if (reg()){
+            log(info)
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
     }
 }
 
-
-// download(apk_url)
 
 log(
     currentActivity()
 )
 
+main()
 
 // reg()
-// read()
-
-// var d = textMatches("/用户.*/").findOne(1000);
-// log(d.text().length)
-
-// var sms = "123456";
-// for (var i=0;i<6;i++){
-//     log(i,sms.substring(i,i+1))
-//     sleep(100)
-//     setText(i,sms.substring(i,i+1))
-// }
 
 
-var titlett = className("TextView").find();
-var longtitle = 0
-if (titlett){
-    for (var i=0;i<titlett.length;i++){
-        log(i,titlett[i].text(),titlett[i].text().length)
-        sleep(50)
+var title = textMatches(/.*/).find();
+if (title){
+    for (var i=0;i<title.length;i++){
+        // log(i,title[i].text(),title[i].id())
     }
 }
+
+
+var d=text("头条").findOne(1000);
+if (d){
+    // log(d.bounds().centerX(),d.bounds().centerY())
+}
+
+
+// jsclick("text","头条",true,5)
+
+// log(device.model)
+
+
+
+
+
+
+
+
+
+
+
+
+

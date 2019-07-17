@@ -277,22 +277,30 @@ var app_name = "趣闻看看";
 var app_bid = "com.ironman.zzxw"
 var info={};
 
-if (launchApp(app_name) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
-}else if ( download(apk_url) ){
-    if (reg()){
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
+
+function main(){
+    if (launchApp(app_name) ){
+        if (reg()){
+            log(info)
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }else if ( download(apk_url) ){
+        if (reg()){
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }    
 }
+
+main();
+
+
+
 
 
 

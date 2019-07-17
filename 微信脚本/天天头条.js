@@ -1,7 +1,7 @@
 function jsclick(way,txt,clickKey,n){
-    if(!n){n=1};
+    if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
-    if(!clickKey){clickKey=false};
+    if(!clickKey){clickKey=false}; //如果没有设置点击项,设置为false
     if (way == "text"){
         res = text(txt).findOne(200);
     }else if(way == "id"){
@@ -10,19 +10,34 @@ function jsclick(way,txt,clickKey,n){
         res = desc(txt).findOne(200);
     }
     if(res){
-        log("找到->",txt)
-    if (clickKey){
-        log('准备点击->',txt);
-        log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
-        sleep(1000*n);
-    }
+        if ( clickKey ){
+            log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
+            click(res.bounds().centerX(),res.bounds().centerY());
+            sleep(1000*n);
+        }else{
+            log("找到->",txt);
+        }
         return true;
     }else{
-    log("没有找到->",txt)
+        // log("没有找到->",txt)
     }
-};
+}
+
+function nextPage(){
+    if (random(1,100)> 50){
+        log("滑动1次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }else{
+        log("滑动2次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }
+}
+
+function newPage(){
+    log("下拉刷新")
+    swipe(device.width/2,device.height*1/5,device.width/2,device.height*3/7,random(1000,3000));
+}
 
 function killApp(appbids){
     var text = "am force-stop " + appbids
@@ -72,10 +87,36 @@ function get_Sms(){
     }
 }
 
-
-
+function sms_get_unmber(sms){
+    var check_sms = sms.match(/\【天天头条\】/)
+    // log(check_sms)
+    if(check_sms[0]== "【天天头条验证码】"){
+        sms = sms.match(/\d{4,6}/)
+        log(sms[0])
+        return sms[0]
+    }
+}
 
 /////////////////////////////////////////////////////////
+
+
+function Tips(){
+    log("非正常页面");
+    var textTips = {}
+    textTips["允许"]="text";
+    textTips["好"]="text";
+    textTips["确定"]="text";
+    textTips["继续赚钱"]="text";
+    textTips["确定"]="desc";
+    textTips["忽略"]="text";
+    textTips["ll_quit"]="id";
+    for(var k in textTips){
+        if (jsclick(textTips[k],k,true,2)){
+            return false
+        }
+    }
+    return true
+}
 
 function reg() {
 
@@ -94,7 +135,7 @@ function reg() {
             case "com.tencent.mm.plugin.webview.ui.tools.SDKOAuthUI":
                 jsclick("text","确认登录",true,2)
                 jsclick("text","同意",true,3)
-            break;
+                break;
             case "com.color365.headlines.ui.activity.ReuseActivity":
                 if(jsclick("text","登录",false,4) && jsclick("id","btn_register",true,4)){
                 }else if (jsclick("text","手机号",false,2)){
@@ -121,8 +162,10 @@ function reg() {
                         sleep(1000*5)
                     }
                 }else if(jsclick("text","注册并领取红包",true,5)){
+                }else{
+                    back();
                 }
-            break;
+                break;
             case "com.color365.headlines.ui.activity.MainActivity":
                 if(jsclick("text","天天",true,2)){
                 }else if (jsclick("text","赚钱",true,2)){
@@ -272,37 +315,32 @@ function sendBroadcast(appName,data){
     );
 }
 
-function sms_get_unmber(sms){
-    var check_sms = sms.match(/\【.*\】/)
-    // log(check_sms)
-    if(check_sms[0]== "【"+app_name+"验证码】"){
-        sms = sms.match(/\d{4,6}/)
-        log(sms[0])
-        return sms[0]
-    }
-}
+
 
 var apk_url = "img.wenfree.cn/apk/com.color365.tttt.apk"
 var app_name = "天天头条";
 var app_bid = "com.color365.tttt"
 var info={};
 
-if (launchApp(app_name) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
-}else if ( download(apk_url) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
+
+function main(){
+    if (launchApp(app_name) ){
+        if (reg()){
+            log(info)
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }else if ( download(apk_url) ){
+        if (reg()){
+            log(info)
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }    
 }
 
 
@@ -314,26 +352,4 @@ log(
     currentActivity()
 )
 
-
-// reg()
-// read()
-
-// var d = textMatches("/写评论.*/").findOne(1000);
-// log(d.text())
-
-// var sms = "123456";
-// for (var i=0;i<6;i++){
-//     log(i,sms.substring(i,i+1))
-//     sleep(100)
-//     setText(i,sms.substring(i,i+1))
-// }
-
-
-// var titlett = className("TextView").find();
-// var longtitle = 0
-// if (titlett){
-//     for (var i=0;i<titlett.length;i++){
-//         log(i,titlett[i].text(),titlett[i].text().length)
-//         sleep(50)
-//     }
-// }
+main();
