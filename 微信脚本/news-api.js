@@ -1,7 +1,6 @@
 
 
 
-
 'ui';
 var storage = storages.create("news");
 var imei_tag = storage.get("imei_tag");

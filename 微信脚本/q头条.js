@@ -14,8 +14,7 @@ function jsclick(way,txt,clickKey,n){
     if (clickKey){
         log('准备点击->',txt);
         log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
+        click(res.bounds().centerX(),res.bounds().centerY());
         sleep(1000*n);
     }
         return true;
@@ -23,6 +22,24 @@ function jsclick(way,txt,clickKey,n){
     log("没有找到->",txt)
     }
 };
+
+function nextPage(){
+    if (random(1,100)> 50){
+        log("滑动1次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }else{
+        log("滑动2次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }
+}
+
+function newPage(){
+    log("下拉刷新")
+    swipe(device.width/2,device.height*1/5,device.width/2,device.height*3/7,random(1000,3000));
+}
+
+
 
 function killApp(appbids){
     var text = "am force-stop " + appbids
@@ -82,6 +99,20 @@ function sms_get_unmber(sms){
     }
 }
 
+function Tips(){
+    log("非正常页面");
+    var textTips = {}
+    textTips["允许"]="text";
+    textTips["好"]="text"
+    textTips["确定"]="text"
+    textTips["确定"]="desc"
+    for(var k in textTips){
+        if (jsclick(textTips[k],k,true,2)){
+            return false
+        }
+    }
+    return true
+}
 
 function reg() {
 
@@ -90,7 +121,6 @@ function reg() {
     var get_sms_button = true;
     var get_password = true;
     var tips_times = 0;
-    // var app_bid = "com.ss.android.article.lite"
 
     var data_time_line = 0;
     while(data_time_line < 180){
@@ -110,7 +140,7 @@ function reg() {
                         var d = className("ImageView").findOne()
                         if (d){
                             log(d)
-                            Tap(d.bounds().centerX(),d.bounds().centerY())
+                            click(d.bounds().centerX(),d.bounds().centerY())
                         }
                     }else if (jsclick("text","金币收入",false,2)){
                         var d = className("TextView").find();
@@ -118,8 +148,9 @@ function reg() {
                             log(i,d[i].text())
                             sleep(50)
                             if (d[i].text() == "金币收入"){
-                                info["gold"] = d[i-2].text();
-                                info["money"] = d[i+2].text();
+                                info["gold"] = Number(d[i-2].text());
+                                info["money"] = Number(d[i+2].text());
+                                info["gift"]= "q头条"
                                 log("注册成功");
                                 return true
                             }
@@ -129,41 +160,33 @@ function reg() {
                 }else if(jsclick("text","微信登录",true,2)){
                 }else if(jsclick("text","取消",true,2)){
                 }else{
-                    Back();
+                    back();
                     tips_times++;
                     if (tips_times > 10){
-                        killApp(app_bid)
+                        home();
                         tips_times = 0;
                     }else if(tips_times%3 ==0){
-                        Tap(device.width*1/2,device.height*5/10)
-                        sleep(2000)
+                        click(device.width*1/2,device.height*5/10)
+                        sleep(2000);
                     }    
                 }
             break;
             default:
-                log("预计有弹窗");
-                launchApp(app_name);
-                sleep(1000*3);
-                jsclick("text","一键登录",true,2);
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                Back();
+                if (Tips()){
+                    back();
+                    sleep(1000);
+                    home();
+                    sleep(2000);
+                    launchApp(app_name);
+                    sleep(1000*5);
+                    jsclick("text","一键登录",true,2);
+                    tips_times++;
+                }
             break;
         }
 
-        // jsclick("text","一键登录",true,2);
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-        jsclick("text","确定",true,2)
-        
         data_time_line++;
-        sleep(1000); 
+        sleep(2000); 
     }
 }
 
@@ -176,52 +199,64 @@ function read(){
     var look_timesKey = 0
     var look_times = 0
     var look_news = 0
-    var zan = true
 
     var data_time_line = 0;
     while(data_time_line < 40){
         var UI = currentActivity()
-        log("UI->",UI,"data_time_line->",data_time_line)
+        log("UI->",UI,"data_time_line->",data_time_line);
         switch(UI){
             case "com.news.hotheadlines.framwork.CoreActivity":
                 if( jsclick("text","我的",false,2)&&jsclick("text","推荐",false,2) && jsclick("text","刷新",true,5)){
-                    // Swipe(765,device.height*1/3,765,device.height*2/3)
-                    // sleep(1000*(3+random(1,3)));
-                    Tap(device.width/2,device.height/2)
-                    check_look = true
-                    look_timesKey = random(15,25)
-                    look_times = 0
-                    sleep(1000*random(3,5))
-                    look_news++
-                    sleep(1000*3)
+                    newPage();
+                    sleep(random(3000,5000));
+                    nextPage();
+
+                    log("准备 阅读文章");
+                    var title = idMatches("\\d+").find();
+                    for (var i=0;i<title.length;i++){
+                        if (title[i].bounds().centerY() > 500){
+                            log(i,title[i].desc())
+                            title[i].click();
+                            check_look = true;
+                            look_timesKey = random(15,25);
+                            look_times = 0;
+                            sleep(1000*random(3,5));
+                            look_news++;
+                            sleep(1000*3);
+                            break;
+                        }
+                    }
                 }else if( check_look && look_times < look_timesKey ){
                     if(look_times < look_timesKey){
                         log("阅读文章","继续", look_timesKey-look_times );
                         jsclick("text","点击阅读全文",true,2);
-                        Swipe(device.width/2,device.height*2/3,device.width/2,device.height/3)
-                        sleep(1000 * random(2,5))
-                        look_times++
+                        jsclick("desc","点击阅读全文",true,2);
+                        var readTooLong = textMatches(/您阅读该文章很久了.*/).findOne(200);
+                        if (!readTooLong){
+                            nextPage();
+                            sleep(random(200,2000));
+                            look_times++
+                        }else{
+                            back();
+                        }
                     }
                 }else if(jsclick("text","头条",true,5)){
                 }else{
-                    Back();
+                    back();
                 }
-            break;
+                break;
             default:
-                launchApp(app_name);
-                sleep(1000*5)
-                /////////////////////////
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                ///////////////////////////
-                Back();
-            break;
+                if (Tips()){
+                    back();
+                    sleep(1000);
+                    home();
+                    sleep(2000);
+                    launchApp(app_name);
+                    sleep(1000*5);
+                    jsclick("text","一键登录",true,2);
+                    tips_times++;
+                }
+                break;
         }
 
         jsclick("text","允许",true,2)
@@ -230,8 +265,8 @@ function read(){
         data_time_line++;
         sleep(1000); 
     }
-    log("阅读完成");
-    killApp(app_bid);
+    log("阅读完成 时间结束");
+    home();
 }
 
 
@@ -251,42 +286,55 @@ function sendBroadcast(appName,data){
     );
 }
 
-var apk_url = "https://img.wenfree.cn/apk/com.qtoutiao.newsapp.apk"
+var apk_url = "img.wenfree.cn/apk/com.qtoutiao.newsapp.apk"
 var app_name = "Q头条";
 var app_bid = "com.qtoutiao.newsapp"
 var info={};
 
-if (launchApp(app_name) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
-}else if ( download(apk_url) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
+function main(){
+    if (launchApp(app_name) ){
+        if (reg()){
+            log(info)
+            read()
+            reg()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }else if ( download(apk_url) ){
+        if (reg()){
+            log(info)
+            read()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
     }
 }
 
+main()
 
 
+log(currentActivity())
 
-// log(
-//     currentActivity()
-// )
+var title = textMatches(/.*/).find();
+if (title){
+    for (var i=0;i<title.length;i++){
+        log(i,title[i].text())
+    }
+}
+var title = descMatches(/.*/).find();
+if (title){
+    for (var i=0;i<title.length;i++){
+        // log(i,title[i].desc())
+    }
+}
+var title = idMatches("\\d+").findOne();
+if (title){
+    log(title.desc())
 
+}
 
-// reg()
-// read()
-
-// var d = textMatches("/用户.*/").findOne(1000);
-// log(d.text().length)
 
 
 

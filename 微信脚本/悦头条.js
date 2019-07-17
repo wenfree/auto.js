@@ -1,7 +1,7 @@
 function jsclick(way,txt,clickKey,n){
-    if(!n){n=1};
+    if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
-    if(!clickKey){clickKey=false};
+    if(!clickKey){clickKey=false}; //如果没有设置点击项,设置为false
     if (way == "text"){
         res = text(txt).findOne(200);
     }else if(way == "id"){
@@ -10,19 +10,34 @@ function jsclick(way,txt,clickKey,n){
         res = desc(txt).findOne(200);
     }
     if(res){
-        log("找到->",txt)
-    if (clickKey){
-        log('准备点击->',txt);
-        log("x:",res.bounds().centerX(),"y:",res.bounds().centerX());
-        // click(txtddd.bounds().centerX(),txtddd.bounds().centerY());
-        Tap(res.bounds().centerX(),res.bounds().centerY());
-        sleep(1000*n);
-    }
+        if ( clickKey ){
+            log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
+            click(res.bounds().centerX(),res.bounds().centerY());
+            sleep(1000*n);
+        }else{
+            log("找到->",txt);
+        }
         return true;
     }else{
-    log("没有找到->",txt)
+        // log("没有找到->",txt)
     }
-};
+}
+
+function nextPage(){
+    if (random(1,100)> 50){
+        log("滑动1次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }else{
+        log("滑动2次")
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+        swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
+    }
+}
+
+function newPage(){
+    log("下拉刷新")
+    swipe(device.width/2,device.height*1/5,device.width/2,device.height*3/7,random(1000,3000));
+}
 
 function killApp(appbids){
     var text = "am force-stop " + appbids
@@ -54,10 +69,12 @@ function remove_Sms(){
     var storage = storages.read();
     storage.remove("sms");
 }
+
 function get_PhoneNumber(){
     var storage = storages.read();
     return storage.get("phoneNumber");
 }
+
 function get_Sms(){
     try {
         var storage = storages.read();
@@ -82,6 +99,24 @@ function sms_get_unmber(sms){
     }
 }
 
+function Tips(){
+    log("非正常页面");
+    var textTips = {}
+    textTips["允许"]="text";
+    textTips["好"]="text";
+    textTips["确定"]="text";
+    textTips["继续赚钱"]="text";
+    textTips["确定"]="desc";
+    textTips["忽略"]="text";
+    textTips["ll_quit"]="id";
+    for(var k in textTips){
+        if (jsclick(textTips[k],k,true,2)){
+            return false
+        }
+    }
+    return true
+}
+
 
 function reg() {
 
@@ -91,18 +126,18 @@ function reg() {
     var get_password = true;
     var tips_times = 0;
     // var app_bid = "com.ss.android.article.lite"
-
+    
     var data_time_line = 0;
     while(data_time_line < 180){
         var UI = currentActivity()
         log("UI->",UI)
         switch(UI){
             case "com.tencent.mm.plugin.webview.ui.tools.SDKOAuthUI":
-                jsclick("text","确认登录",true,2)
-                jsclick("text","同意",true,3)
+                jsclick("text","确认登录",true,2);
+                jsclick("text","同意",true,3);
             case "com.expflow.reading.activity.AdsDetailActivity":
-                Back();
-                sleep(2000)
+                back();
+                sleep(2000);
             case "com.expflow.reading.activity.MainActivity":
                 if (jsclick("text","我的",true,2)){
                     if (jsclick("text","登录看资讯，随手赚零花",true,3)){
@@ -110,74 +145,57 @@ function reg() {
                     }else if (jsclick("text","今日金币",false,2)){
                         var d = className("TextView").id("txt_totoal_gold").findOne(2000);
                         if(d){
-                            info["gold"] = d.text();
+                            info["gold"] = Number(d.text());
                             log(d.text())
                             log("注册成功");
                             return true
                         }
                     }
                 }else{
-                    Back();
-                    tips_times++;
-                    if (tips_times > 10){
-                        killApp(app_bid)
-                        tips_times = 0;
-                    }else if(tips_times%3 ==0){
-                        Tap(device.width*1/2,device.height*5/10)
-                        sleep(2000)
-                    }    
+                    back();
+                    sleep(1000*2);
+                    home();
+                    sleep(1000*2);
                 }
-            break;
+                break;
             case "com.expflow.reading.activity.LoginSmsActivity":
-                    if (jsclick("text","请输入手机号",false,2)){
-                        // var truePhone = "17775127804";
-                        var truePhone = get_PhoneNumber();
-                        if (truePhone){
-                            setText(0,truePhone);
-                            sleep(2000)
-                        }
-                    }else if(jsclick("text","获取验证码",true,4)){
-                    }else if(jsclick("text","请输入验证码",true,4)){
-                        // var sms = "【悦头条】验证码743534"
-                        var sms = get_Sms();
-                        if (sms){
-                            var sms_ = sms_get_unmber(sms);
-                            if (sms_){
-                                setText(1,sms_)
-                                sleep(1000*2)
-                                sleep(1000*45)
-                            }
-                        }else{
-                            sleep(1000*5)
-                        }
-                    }else if(jsclick("text","登录领取红包",true,2)){
-
+                if (jsclick("text","请输入手机号",false,2)){
+                    // var truePhone = "17775127804";
+                    var truePhone = get_PhoneNumber();
+                    if (truePhone){
+                        setText(0,truePhone);
+                        sleep(2000)
                     }
+                }else if(jsclick("text","获取验证码",true,4)){
+                }else if(jsclick("text","请输入验证码",true,4)){
+                    // var sms = "【悦头条】验证码743534"
+                    var sms_ = get_Sms();
+                    if (sms_){
+                        var sms_ = sms_get_unmber(sms_);
+                        if (sms_){
+                            setText(1,sms_)
+                            sleep(1000*2)
+                            // sleep(1000*45)
+                        }
+                    }else{
+                        sleep(1000*5)
+                    }
+                }else if(jsclick("text","登录领取红包",true,2)){
+                }
                 break;
             default:
                 log("预计有弹窗");
+                back();
+                sleep(1000*3);
+                home();
+                sleep(1000*3);
                 launchApp(app_name);
                 sleep(1000*3);
-                jsclick("text","一键登录",true,2);
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                Back();
-            break;
+                jsclick("text","一键登录",true,2);              
+                break;
         }
 
-        // jsclick("text","一键登录",true,2);
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-
-        jsclick("id","ll_quit",true,2)
-        jsclick("text","忽略",true,2)
-
+        Tips();
         
         data_time_line++;
         sleep(1000); 
@@ -202,83 +220,71 @@ function read(){
         log("UI->",UI,"data_time_line->",data_time_line)
         switch(UI){
             case "com.expflow.reading.activity.MainActivity":
+                log("悦头条首页")
                 if( jsclick("text","我的",false,2) && jsclick("id","ll_tab",false,2) && jsclick("text","头条",true,5)){
-                    var titlett = className("TextView").find();
-                    var longtitle = 0
-                    if (titlett){
-                        for (var i=0;i<titlett.length;i++){
-                            log(i,titlett[i].text(),titlett[i].text().length)
-                            if (titlett[i].text().length >= 15 ){
-                                longtitle++
-                                if (longtitle>1){
-                                    var news_mun = i
-                                    break;
-                                }
+                    var title = textMatches(/.*/).find();
+                    if (title){
+                        for (var i=0;i<title.length;i++){
+                            if (title[i].text().length > 15 ){
+                                log(i,title[i].text())
+                                click(title[i].bounds().centerX(),title[i].bounds().centerY());
+                                check_look = true
+                                look_timesKey = random(15,25)
+                                look_times = 0
+                                sleep(1000*random(3,5))
+                                look_news++
+                                break;
                             }
-                            sleep(50)
                         }
-                        Tap(titlett[news_mun].bounds().centerX(),titlett[news_mun].bounds().centerY())
-                        check_look = true
-                        look_timesKey = random(15,25)
-                        look_times = 0
-                        sleep(1000*random(3,5))
-                        look_news++
                     }
                     sleep(1000*3)
                 }else if(jsclick("text","头条",true,5)){
-                    Tap(device.width*1/10,device.height*9.8/10)
+                    click(device.width*1/10,device.height*9.8/10)
                     sleep(2000)
                 }else{
-                    Back();
+                    back();
                 }
             break;
             case "com.expflow.reading.activity.AdsDetailActivity":
-                Back();
+                back();
                 sleep(2000)
             case "com.expflow.reading.activity.DetailNewsActivity":
-                if( check_look && look_times < look_timesKey ){
+                log("悦头条 文章页面")
+                if( check_look ){
                     if(look_times < look_timesKey){
                         log("阅读文章","继续", look_timesKey-look_times );
                         jsclick("desc","点击阅读全文",true,2);
-                        Swipe(device.width/2,device.height*2/3,device.width/2,device.height/3)
-                        sleep(1000 * random(2,5))
+                        jsclick("text","点击阅读全文",true,2);
+                        jsclick("text","取消分享",true,2);
+                        nextPage();
+                        sleep(random(200,2000))
                         look_times++
+                    }else{
+                        log("阅读超时");
+                        back();
                     }
                 }else{
-                    log("非主动进入阅读,退出")
-                    Back();
+                    log("非主动进入阅读,退出");
+                    back();
                 }
-            break;
+                break;
             default:
+                back();
+                sleep(1000*2);
+                home();
+                sleep(1000*2);
                 launchApp(app_name);
-                sleep(1000*5)
-                /////////////////////////
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                ///////////////////////////
-                Back();
-            break;
+                sleep(1000*6)
+                break;
         }
 
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-
-        jsclick("id","ll_quit",true,2)
-        jsclick("text","忽略",true,2)
-        jsclick("text","继续阅读",true,2)
-
+        Tips();
 
         data_time_line++;
         sleep(1000); 
     }
-    log("阅读完成");
-    killApp(app_bid);
+    log("阅读完成-end");
+    home();
 }
 
 
@@ -303,51 +309,37 @@ var app_name = "悦头条";
 var app_bid = "com.expflow.reading"
 var info={};
 
-if (launchApp(app_name) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
-    }
-}else if ( download(apk_url) ){
-    if (reg()){
-        log(info)
-        read()
-        sendBroadcast(app_name,JSON.stringify(info))
-    }else{
-        sendBroadcast(app_name,JSON.stringify(info))
+function main(){
+    if (launchApp(app_name) ){
+        if (reg()){
+            log(info)
+            read()
+            reg()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
+    }else if ( download(apk_url) ){
+        if (reg()){
+            log(info)
+            read()
+            reg()
+            sendBroadcast(app_name,JSON.stringify(info))
+        }else{
+            sendBroadcast(app_name,JSON.stringify(info))
+        }
     }
 }
-
-
-// download(apk_url)
 
 log(
     currentActivity()
 )
 
+main()
 
-// reg()
-// read()
-
-// var d = textMatches("/用户.*/").findOne(1000);
-// log(d.text().length)
-
-// var sms = "123456";
-// for (var i=0;i<6;i++){
-//     log(i,sms.substring(i,i+1))
-//     sleep(100)
-//     setText(i,sms.substring(i,i+1))
-// }
-
-
-// var titlett = className("TextView").find();
-// var longtitle = 0
-// if (titlett){
-//     for (var i=0;i<titlett.length;i++){
-//         log(i,titlett[i].text(),titlett[i].text().length)
-//         sleep(50)
-//     }
-// }
+var title = textMatches(/.*/).find();
+if (title){
+    for (var i=0;i<title.length;i++){
+        log(i,title[i].text())
+    }
+}

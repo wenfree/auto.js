@@ -219,6 +219,7 @@ function read(){
                                 if (title_times>2){
                                     click(title[i].bounds().centerX(),title[i].bounds().centerY());
                                     check_look = true;
+                                    look_times = 0;
                                     look_timesKey = random(15,25);
                                     sleep(1000*random(3,5));
                                     look_news++
@@ -310,15 +311,17 @@ function money() {
                     setText(1,"honghongdesign@gmail.com");
                     sleep(1000);
                     jsclick("text","确认提现",true,2)
+                }else if(jsclick("desc","立即提现",true,2)){
+                }else if(jsclick("text","立即提现",true,2)){
                 }else if(jsclick("text","提现成功",false,2)){
                     info["cash"] = 0.1
                     return true;
-                }else if(jsclick("text","明天可再次提现",false,2)){
+                }else if( jsclick("text","明天可再次提现",false,2) || jsclick("desc","明天可再次提现",false,2) ){
                     back();
                     sleep(1000);
                     return false;
                 }else{
-                    if (jsclick("text",'提现',false,2)){
+                    if (jsclick("text",'提现',false,2) || jsclick("desc","马上邀请好友赚钱",false,2) ){
                         log("提现0.1");
                         click((507+934)/2,(934+1200)/2);
                         sleep(1000*3);
@@ -378,20 +381,14 @@ function money() {
                 sleep(1000);
                 launch(app_bid);
                 sleep(1000*5);
-                jsclick("text","一键登录",true,2);
                 break;
         }
-
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-        
+        jsclick("text","允许",true,2);
+        jsclick("text","好",true,2);
         money_times++;
         sleep(1000); 
     }
 }
-
-
-
 
 function sendBroadcast(appName,data){
     app.launchPackage( "com.flow.factory");
@@ -411,7 +408,7 @@ function sendBroadcast(appName,data){
 
 function sms_get_unmber(sms){
     var check_sms = sms.match(/\【今日头条极速版\】/)
-    // log(check_sms)
+    log(check_sms)
     if(check_sms[0]== "【今日头条极速版】"){
         sms = sms.match(/\d{4,6}/)
         log(sms[0])
@@ -419,16 +416,6 @@ function sms_get_unmber(sms){
     }
 }
 
-
-// var mainEngine;
-// var index;
-// var ii=setInterval(()=>{},1000)
-// events.on("prepare",function(i,obj){
-//     mainEngine = obj;
-//     index = 1;
-//     main();
-//     clearInterval(ii);
-// });
 
 var appName = "今日头条极速版";
 var app_bid = "com.ss.android.article.lite";
@@ -465,7 +452,6 @@ if (title){
 }
 
 // money()
-
 main()
 
 
