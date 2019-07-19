@@ -146,29 +146,17 @@ function sendBroadcast(appName,data){
     );
 }
 
-
-if (download()){
-    sleep(2000);
-    log("安装成功");
-    if ( reg() ){
-        sendBroadcast("LeHaiTv",JSON.stringify({"reg":true}))
-    }else{
-        sendBroadcast("LeHaiTv",JSON.stringify({"reg":false}))
+function main(){
+    if (download()){
+        sleep(2000);
+        log("安装成功");
+        if ( reg() ){
+            sendBroadcast("LeHaiTv",JSON.stringify({"reg":true}))
+        }else{
+            sendBroadcast("LeHaiTv",JSON.stringify({"reg":false}))
+        }
     }
 }
 
 
-// // var sms = "1234"
-// var sms = "【乐嗨】您好,您刚刚申请乐嗨手机帐号，验证码：368408，验证成功后，手机号将成为您的帐号。感谢您的使用"
-// function sms_get_unmber(sms){
-//     // var sms = "【乐嗨】您好,您刚刚申请乐嗨手机帐号，验证码：368408，验证成功后，手机号将成为您的帐号。感谢您的使用"
-//     var check_sms = sms.match(/\【乐嗨\】/)
-//     log(check_sms)
-//     if(check_sms[0]== "【乐嗨】"){
-//         sms = sms.match(/\d{4,6}/)
-//         // log(sms[0])
-//         return sms[0]
-//     }
-// }
-// sms = sms_get_unmber(sms);
-// log(sms)
+

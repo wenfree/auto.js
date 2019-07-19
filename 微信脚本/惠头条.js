@@ -118,7 +118,7 @@ function Tips(){
 
 function reg() {
 
-    launchApp(app_name);
+    launchApp(appName);
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
@@ -154,17 +154,27 @@ function reg() {
                 jsclick("text","微信一键登录",true,2);
                 // jsclick("text","手机号一键登录",true,3)
                 break;
+            case "com.cashtoutiao.mall.ui.activity.MarketActivity":
+                log("兑换提现页面");
+                var gold = id("tv_tips_gold_coin").findOne(500);
+                if(gold){
+                    info['gold']=Number(gold.text().replace(/\D/g,""));
+                    log("注册成功 -ok");
+                    newsappinfoback();
+                    return true
+                }
+                break;
             case "com.cashtoutiao.account.ui.main.MainTabActivity":
                 log('惠头条主界面')
                 if (jsclick("text","我的",true,2)){
                     if (jsclick("text","未绑定手机",true,2)){
                     }else if (jsclick("text","兑换提现",false,2)){
                         if ( jsclick('text',"历史总金币",false,2) ){
-                            info['money'] = id("tv_today_cash_tips").findOne(1000).text();
-                            info['money'] = Number(info['money'].replace(/[\u4e00-\u9fa5]/g,""));
-                            info["gift"] =  id("tv_code").findOne(1000).text();
-                            log("注册成功 -ok");
-                            return true;
+                            var gift = id("tv_code").findOne(1000);
+                            if (gift){
+                                info["gift"]=gift.text().replace(/\D/g,"");
+                            }
+                            jsclick("text","兑换提现",true,3)
                         }
                     }
                 }else{
@@ -232,7 +242,7 @@ function reg() {
                 sleep(1000*3);
                 home();
                 sleep(1000*3);
-                launchApp(app_name);
+                launchApp(appName);
                 sleep(1000*5);
                 break;
         }
@@ -318,13 +328,16 @@ function read(){
                     back();
                 }
                 break;
+            case "com.cashtoutiao.mall.ui.activity.MarketActivity":
+                back();
+                break;
             default:
                 log("app未启动");
                 back();
                 sleep(1000*3);
                 home();
                 sleep(1000*3);
-                launchApp(app_name);
+                launchApp(appName);
                 sleep(1000*5);
                 break;
         }
@@ -335,7 +348,7 @@ function read(){
         sleep(1000); 
     }
     log("阅读完成 - end");
-    home();
+    // home();
 }
 
 
@@ -355,30 +368,47 @@ function sendBroadcast(appName,data){
     );
 }
 
-var apk_url = "img.wenfree.cn/apk/com.cashtoutiao.apk"
-var app_name = "惠头条";
-var app_bid = "com.cashtoutiao";
+var apkUrl = "img.wenfree.cn/apk/com.cashtoutiao.apk"
+var appName = "惠头条";
+var appBid = "com.cashtoutiao";
 var info={};
 
 function main(){
-    if (launchApp(app_name) ){
+    if (launchApp(appName) ){
         if (reg()){
             log(info)
             read()
             reg();
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
-    }else if ( download(apk_url) ){
+    }else if ( download(apkUrl) ){
         if (reg()){
             log(info)
             read()
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
     }
+}
+
+function newsappinfoback(){
+    try{
+        var url = "http://news.wenfree.cn/phalapi/public/";
+        r = http.post(url, {
+            "s": "App.Newsimeiapp.Imei",
+            "imei": device.getIMEI(),
+            "imei_tag": 'pixel xl',
+            "app_name": appName,
+            "app_data": JSON.stringify(info),
+            "whos": 'ouwen000',
+        });
+        return r.body.string();
+    }catch(err){
+        toastLog(err);
+    } 
 }
 
 

@@ -104,6 +104,7 @@ function reg() {
                             }
                         }
                         log("注册成功");
+                        newsappinfoback();
                         return true
                     }
                 }else {
@@ -124,9 +125,9 @@ function reg() {
                 }else if(jsclick("text","获取验证码",true,2)){
                 }else if(jsclick("text","请输入验证码",false,5)){
                     // var sms = "【今日头条极速版】验证码7435,用于手机登录,5分钟内有效.验证码提供给他人可能导致帐号被盗,请勿泄露,谨防被骗"
-                    var sms = get_Sms();
-                    if (sms){
-                        var sms_ = sms_get_unmber(sms);
+                    var sms_ = get_Sms();
+                    if (sms_){
+                        var sms_ = sms_get_unmber(sms_);
                         if (sms_){
                             setText(1,sms_)
                             sleep(1000*2)
@@ -418,7 +419,7 @@ function sms_get_unmber(sms){
 
 
 var appName = "今日头条极速版";
-var app_bid = "com.ss.android.article.lite";
+var appBid = "com.ss.android.article.lite";
 var info={};
 
 function main(){
@@ -444,15 +445,55 @@ function main(){
 
 log(currentActivity())
 
-var title = textMatches(/.*/).find();
-if (title){
-    for (var i=0;i<title.length;i++){
-        log(i,title[i].text())
+// var title = textMatches(/.*/).find();
+// if (title){
+//     for (var i=0;i<title.length;i++){
+//         log(i,title[i].text())
+//     }
+// }
+
+function newsappinfoback(){
+    try{
+        var url = "http://news.wenfree.cn/phalapi/public/";
+        r = http.post(url, {
+            "s": "App.Newsimeiapp.Imei",
+            "imei": device.getIMEI(),
+            "imei_tag": 'pixel xl',
+            "app_name": appName,
+            "app_data": JSON.stringify(info),
+            "whos": 'ouwen000',
+        });
+        return r.body.string();
+    }catch(err){
+        toastLog(err);
+    } 
+}
+
+
+
+
+// money()
+main();
+// reg();
+
+var all_Info = textMatches(/.*/).find();
+for (var i = 0;i<all_Info.length;i++){
+    // log(i,all_Info[i].text(),all_Info[i].depth())
+}
+
+
+var d = text('搜索').findOne()
+if(d){
+    log(d.text(),d.bounds().centerY())
+    var y = d.bounds().centerY();
+    if (y > 0 && y < device.height){
+        log('文章拉到底了')
+    }else if(y < 0){
+        log('进入推荐区或者评论区')
     }
 }
 
-// money()
-main()
+sleep(1000*2)
 
 
 

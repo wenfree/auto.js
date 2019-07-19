@@ -118,7 +118,7 @@ function Tips(){
 
 function reg() {
 
-    launchApp(app_name);
+    launchApp(appName);
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
@@ -153,6 +153,8 @@ function reg() {
                                     info["gold"] = Number(ids[i].text());
                                 }else if(ids[i].id() == 'com.yingliang.clicknews:id/tv_balance'){
                                     info["money"] = Number(ids[i].text());
+                                    info["gift"] = info["gift"].replace(/[\u4e00-\u9fa5]/g,"");
+                                    newsappinfoback();
                                     return true
                                 }
                             }
@@ -210,7 +212,7 @@ function reg() {
                 sleep(1000);
                 home();
                 sleep(2000);
-                launchApp(app_name);
+                launchApp(appName);
                 sleep(1000*3);
                 break;
         }
@@ -295,7 +297,7 @@ function read(){
                 sleep(1000);
                 home();
                 sleep(2000);
-                launchApp(app_name);
+                launchApp(appName);
                 sleep(1000*5);
                 break;
         }
@@ -325,31 +327,49 @@ function sendBroadcast(appName,data){
     );
 }
 
-var apk_url = "img.wenfree.cn/apk/com.yingliang.clicknews.apk"
-var app_name = "点点新闻";
-var app_bid = "com.qtoutiao.newsapp"
+var apkUrl = "img.wenfree.cn/apk/com.yingliang.clicknews.apk"
+var appName = "点点新闻";
+var appBid = "com.qtoutiao.newsapp"
 var info={};
 
 
 function main(){
-    if ( launchApp(app_name) ){
+    if ( launchApp(appName) ){
         if (reg()){
             log(info)
             read()
             reg()
-            sendBroadcast(app_name,JSON.stringify(info))
+            home();
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
-    }else if ( download(apk_url) ){
+    }else if ( download(apkUrl) ){
         if (reg()){
             log(info)
             read()
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
     }
+}
+
+function newsappinfoback(){
+    try{
+        var url = "http://news.wenfree.cn/phalapi/public/";
+        r = http.post(url, {
+            "s": "App.Newsimeiapp.Imei",
+            "imei": device.getIMEI(),
+            "imei_tag": 'pixel xl',
+            "app_name": appName,
+            "app_data": JSON.stringify(info),
+            "whos": 'ouwen000',
+        });
+        return r.body.string();
+    }catch(err){
+        toastLog(err);
+    } 
 }
 
 

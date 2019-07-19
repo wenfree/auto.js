@@ -1,3 +1,16 @@
+
+function click_(x,y){
+    if(x>0 && x < device.width && y > 0 && y < device.height){
+        click(x,y)
+    }else{
+        log('坐标错误')
+    }
+}
+
+function click__(obj){
+    click(obj.bounds().centerX(),obj.bounds().centerY())
+}
+
 function jsclick(way,txt,clickKey,n){
     if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
@@ -12,7 +25,7 @@ function jsclick(way,txt,clickKey,n){
     if(res){
         if ( clickKey ){
             log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
-            click(res.bounds().centerX(),res.bounds().centerY());
+            click_(res.bounds().centerX(),res.bounds().centerY());
             sleep(1000*n);
         }else{
             log("找到->",txt);
@@ -32,11 +45,13 @@ function nextPage(){
         swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
         swipe(device.width/2,device.height*4/5,device.width/2,device.height*2/7,random(1000,3000));
     }
+    sleep(random(1000,2500));
 }
 
 function newPage(){
     log("下拉刷新")
     swipe(device.width/2,device.height*1/5,device.width/2,device.height*3/7,random(1000,3000));
+    sleep(random(1000,2500));
 }
 
 function killApp(appbids){
@@ -101,7 +116,7 @@ function sms_get_unmber(sms){
 
 
 function Tips(){
-    log("非正常页面");
+    log("查询弹窗");
     var textTips = {}
     textTips["允许"]="text";
     textTips["好"]="text";
@@ -118,13 +133,25 @@ function Tips(){
     return true
 }
 
+function other(){
+    log('app可能未启动')
+    back();
+    sleep(1000);
+    home();
+    sleep(1000);
+    launchApp(appName);
+    sleep(1000*6)
+}
+
 function reg() {
 
-    launchApp(app_name);
+    launchApp(appName);
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
     var tips_times = 0;
+    var login = true
+    var loginTimes = 0
     // var app_bid = "com.ss.android.article.lite"
 
     var data_time_line = 0;
@@ -137,25 +164,44 @@ function reg() {
                 jsclick("text","同意",true,3)
                 break;
             case "com.color365.headlines.ui.activity.ReuseActivity":
-                if(jsclick("text","登录",false,4) && jsclick("id","btn_register",true,4)){
+                log('登录注册界面')
+                if(jsclick("text","登录",false,4) && jsclick("id","btn_register",false,4)){
+                    if (login){
+                        log("已经注册过帐号");
+                        // var truePhone = get_PhoneNumber();
+                        var truePhone = '17775127804';
+                        setText(0,truePhone);
+                        sleep(1000);
+                        setText(1,"AaDd112211");
+                        sleep(1000);
+                        if (jsclick("id","btn_login",true,5)){
+                            loginTimes++
+                            if (loginTimes > 3){
+                                login = false;
+                            }
+                        };
+                        info["password"] = "AaDd112211";
+                    }else{
+                        jsclick("id","btn_register",true,4)
+                    }
                 }else if (jsclick("text","手机号",false,2)){
                     // var truePhone = "17775127804";
                     var truePhone = get_PhoneNumber();
                     if (truePhone){
                         setText(0,truePhone);
-                        sleep(1000)
+                        sleep(1000);
                         setText(2,"AaDd112211");
                         info["password"] = "AaDd112211";
                     }
                 }else if(jsclick("text","获取验证码",true,4)){
                 }else if(jsclick("text","请输入验证码",false,4)){
                     // var sms = "【"+app_name+"验证码】验证码743534"
-                    var sms = get_Sms();
-                    if (sms){
+                    var sms_ = get_Sms();
+                    if (sms_){
                         var sms_ = sms_get_unmber(sms);
                         if (sms_){
-                            setText(1,sms_)
-                            sleep(1000*2)
+                            setText(1,sms_);
+                            sleep(1000*2);
                             // sleep(1000*30)
                         }
                     }else{
@@ -172,44 +218,29 @@ function reg() {
                     if (jsclick("id","user_id",false,2)){
                         var d = className("TextView").id("today_icon").findOne(2000);
                         if(d){
-                            info["gold"] = d.text();
-                            log(d.text())
+                            info["gold"] = Number(d.text().replace(/\D/g,""));
+                            log(info["gold"]);
                         }
                         var d = className("TextView").id("user_money").findOne(2000);
                         if(d){
-                            info["money"] = d.text();
-                            log(d.text())
+                            info["money"] = d.text().replace(/[\u4e00-\u9fa5]/g,"");
+                            log(info["money"])
                             log("注册成功");
+                            newsappinfoback();
                             return true
                         }
                     }
                 }else if (jsclick("text","未登录",true,2)){
                 }else{
-                    Back();
+                    back();
                 }
-            break;
+                break;
             default:
-                log("预计有弹窗");
-                launchApp(app_name);
-                sleep(1000*8);
-                jsclick("text","一键登录",true,2);
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                Back();
-            break;
+                other()
+                break;
         }
 
-        // jsclick("text","一键登录",true,2);
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-
-        jsclick("id","action_close",true,2)
+        Tips()
 
         data_time_line++;
         sleep(1000); 
@@ -237,65 +268,66 @@ function read(){
                 if(look_times < look_timesKey ){
                     log("阅读文章","继续", look_timesKey-look_times );
                     jsclick("text","展开全文",true,2);
-                    Swipe(device.width/2,device.height*2/3,device.width/2,device.height*1/3)
-                    sleep(1000 * random(2,5))
+                    nextPage();
+                    if (jsclick("text","发送",false,0)){
+                        back();
+                        sleep(1000);
+                        back();
+                        nextPage();
+                    }
                     look_times++
                 }else{
-                    log("非主动进入阅读,退出")
-                    Back();
+                    log("非主动进入阅读,退出");
+                    back();
                 }
-            break;
+                break;
             case "com.color365.headlines.ui.activity.MainActivity":
-                if( jsclick("text","赚钱",false,2) && jsclick("text","推荐",false,2) && jsclick("text","头条",false,5)){
-                    Swipe(device.width/2,device.height*1/3,device.width/2,device.height*2/3)
-                    sleep(1000*8)
+                if( jsclick("text","赚钱",false,2) && jsclick("text","推荐",true,1) && jsclick("text","头条",false,5)){
+                    nextPage();
+                    sleep(1000*8);
+                    var title = id('news_title').find();
+                    if (title){
 
-                    Tap(device.width*1/2,device.height*1/2)
-                    check_look = true
-                    look_timesKey = random(15,25)
-                    look_times = 0
-                    sleep(1000*random(3,5))
-                    look_news++
-    
-    
-                }else if(jsclick("text","头条",true,5)){
-                    Tap(device.width*1/10,device.height*9.8/10)
+                        for (var i=0;i<title.length;i++){
+                            log(i,title[i].text(),title[i].id())
+                        }
+
+                        var rd = random(0,title.length);
+                        click__(title[rd]);
+                        check_look = true
+                        look_timesKey = random(10,14)
+                        look_times = 0
+                        sleep(random(3000,5000))
+                        look_news++
+                    }
+                }else if( text("头条").depth(9).findOne(500) ){
+                    log('准备点击头条');
+                    var d = text("头条").depth(9).findOne(500);
+                    if (d){
+                        click__(d);
+                    }
                     sleep(2000);
                 }else{
-                    Back()
+                    back();
                 }
-            break;
+                break;
+            case "com.color365.headlines.ui.activity.MainActivity":
+                back();
+                break;
+            case "com.color365.headlines.ui.activity.ReuseActivity":
+                back();
+                break;
             default:
-                launchApp(app_name);
-                sleep(1000*8)
-                /////////////////////////
-                tips_times++;
-                if (tips_times > 10){
-                    killApp(app_bid)
-                    tips_times = 0;
-                }else if(tips_times%3 ==0){
-                    Tap(device.width*1/2,device.height*5/10)
-                    sleep(2000)
-                }   
-                ///////////////////////////
-                Back();
-                sleep(2000)
-                jsclick("text","继续赚钱",true,2)
-            break;
+                other();
+                break;
         }
 
-        jsclick("text","允许",true,2)
-        jsclick("text","好",true,2)
-        jsclick("id","action_close",true,2)
-
-        jsclick("text","继续阅读",true,2)
-
+        Tips()
 
         data_time_line++;
         sleep(1000); 
     }
     log("阅读完成");
-    killApp(app_bid);
 }
 
 
@@ -315,30 +347,46 @@ function sendBroadcast(appName,data){
     );
 }
 
+function newsappinfoback(){
+    try{
+        var url = "http://news.wenfree.cn/phalapi/public/";
+        r = http.post(url, {
+            "s": "App.Newsimeiapp.Imei",
+            "imei": device.getIMEI(),
+            "imei_tag": 'pixel xl',
+            "app_name": appName,
+            "app_data": JSON.stringify(info),
+            "whos": 'ouwen000',
+        });
+        return r.body.string();
+    }catch(err){
+        toastLog(err);
+    } 
+}
 
-
-var apk_url = "img.wenfree.cn/apk/com.color365.tttt.apk"
-var app_name = "天天头条";
-var app_bid = "com.color365.tttt"
+var apkUrl = "img.wenfree.cn/apk/com.color365.tttt.apk"
+var appName = "天天头条";
+var appBid = "com.color365.tttt"
 var info={};
 
 
 function main(){
-    if (launchApp(app_name) ){
+    if (launchApp(appName) ){
         if (reg()){
-            log(info)
-            read()
-            sendBroadcast(app_name,JSON.stringify(info))
+            log(info);
+            read();
+            reg();
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
-    }else if ( download(apk_url) ){
+    }else if ( download(apkUrl) ){
         if (reg()){
             log(info)
             read()
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }else{
-            sendBroadcast(app_name,JSON.stringify(info))
+            sendBroadcast(appName,JSON.stringify(info))
         }
     }    
 }
@@ -353,3 +401,11 @@ log(
 )
 
 main();
+
+
+var title = id('news_title').find();
+if (title){
+    for (var i=0;i<title.length;i++){
+        log(i,title[i].text(),title[i].id())
+    }
+}
