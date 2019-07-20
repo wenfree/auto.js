@@ -316,6 +316,10 @@ function read(){
                         if (d){
                             click(d.bounds().centerX(),d.bounds().centerY())
                         }
+                        if (jsclick('text','发送',false,2)){
+                            back();
+                            sleep(1000);
+                        }
                         nextPage()
                         sleep(random(800,3000))
                         look_times++

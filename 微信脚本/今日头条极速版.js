@@ -74,7 +74,6 @@ function reg() {
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
-    var app_bid = "com.ss.android.article.lite"
 
     var data_time_line = 0;
     while(data_time_line < 180){
@@ -139,20 +138,22 @@ function reg() {
                 }else{
                     jsclick("text","进入头条",true,5)
                 }
-            break;
+                break;
             case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
                 log("判断错误")
                 back();
                 sleep(1000);
                 home();
-            break;
+                break;
             default:
                 back();
                 sleep(1000);
-                launch(app_bid);
+                home();
+                sleep(1000);
+                launch(appBid);
                 sleep(1000*5);
                 jsclick("text","一键登录",true,2);
-            break;
+                break;
         }
 
         jsclick("text","允许",true,2)
@@ -166,7 +167,6 @@ function reg() {
 
 function read(){
 
-    var app_bid = "com.ss.android.article.lite"
     var loginKey = true
     var call_back_key = false
     var check_look = false
@@ -283,7 +283,7 @@ function read(){
             default:
                 back();
                 sleep(1000);
-                launch(app_bid);
+                launch(appBid);
                 sleep(1000*5);
             break;
         }
@@ -380,7 +380,7 @@ function money() {
             default:
                 back();
                 sleep(1000);
-                launch(app_bid);
+                launch(appBid);
                 sleep(1000*5);
                 break;
         }
