@@ -1,4 +1,40 @@
 
+function click_(x,y){
+    if(x>0 && x < device.width && y > 0 && y < device.height){
+        click(x,y)
+    }else{
+        log('坐标错误')
+    }
+}
+
+function click__(obj){
+    click_(obj.bounds().centerX(),obj.bounds().centerY())
+}
+
+function jsclick(way,txt,clickKey,n){
+    if(!n){n=1};//当n没有传值时,设置n=1
+    var res = false;
+    if(!clickKey){clickKey=false}; //如果没有设置点击项,设置为false
+    if (way == "text"){
+        res = text(txt).findOne(200);
+    }else if(way == "id"){
+        res = id(txt).findOne(200);
+    }else if(way == "desc"){
+        res = desc(txt).findOne(200);
+    }
+    if(res){
+        if ( clickKey ){
+            log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
+            click_(res.bounds().centerX(),res.bounds().centerY());
+            sleep(1000*n);
+        }else{
+            log("找到->",txt);
+        }
+        return true;
+    }else{
+        // log("没有找到->",txt)
+    }
+}
 
 
 // 引入其它文件支持
@@ -23,70 +59,52 @@ Date.prototype.Format = function(fmt)
     if(new RegExp("("+ k +")").test(fmt)) 
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length))); 
     return fmt; 
-};
-
-//向上滑动
-function upscreen(){
-    var ra = new RootAutomator();
-    var move_x = (device.width)/2
-    var move_y = (device.height)
-    for (var i=1;i<5;i++){
-        ra.swipe( move_x,move_y*0.7,move_x,move_y*0.4, 50)
-    }
-    
 }
 
 //微信返回的按钮
 function wechat_back_botton(){
     // toastLog('微信返回的按钮');
-    if (a.jsclick('id',"kx",true,2)){
-        // 小米6 腾讯新闻后退
-    }else if(a.jsclick('id','km',true,2)){
-        //小米6后退
-    }else if(a.jsclick('id','k1',true,2)){
-        // google 后退
-    }else if(a.jsclick('id','kb',true,2)){
-        // google 新闻后退
-    }else if(a.jsclick('text','我知道了',true,2)){
-        // 弹出来我知道的了提示
-    }else if(a.jsclick('text','允许',true,2)){
-        // 允许
-    }else if(a.jsclick('text','退出',true,2)){
-        // 允许
-    }else{
-        log('没有后退');
-        back()
-        return true
+    log("非正常页面");
+    var textTips = {}
+    textTips["l2"]="id";
+    textTips["好"]="text";
+    textTips["我知道了"]="text";
+    textTips["允许"]="text";
+    textTips["退出"]="text";
+    for(var k in textTips){
+        if (jsclick(textTips[k],k,true,2)){
+            return false
+        }
     }
+    return true
 }
 
 // 回复消息的函数
 var message_lun = 0
 function wecaht_message_news(){
     message_lun++
-    var news = id("nf").find()
+    var news = id("nz").find()
     if ( news ){
         if (news.length > 1){
-            // Tap(news[1].bounds().centerX(),news[1].bounds().centerY())
             log("centerX---->",news[1].bounds().centerX(),"centerX---->",news[1].bounds().centerY())
-            Tap(news[1].bounds().centerX(),news[1].bounds().centerY())
+            click_(news[1].bounds().centerX(),news[1].bounds().centerY())
         }
     }
     if (message_lun%2 == 0 ){
-        return a.jsclick('id','nf',true,3) 
+        return jsclick('id','nz',true,3) 
     }else{
-        return a.jsclick('id','mv',true,3)
+        return jsclick('id','dcs',true,3)
     }
 }
 
 function wecaht_message_replay(){
-    if (a.jsclick("id","amh",true,1)){
+    if (jsclick("id","ao8",true,1)){
         // toastLog("准备输入")
-        a.input_( b.rdreplay(random(2,5)) );
+        // a.input_( b.rdreplay(random(2,5)) );
         className("EditText").findOne(1000).setText( b.rdreplay(random(2,5)) )
         sleep(1000*2)
         // toastLog("准备发送")
-        if (a.jsclick('text','发送',true,1)){
+        if (jsclick('text','发送',true,1)){
             sleep(1000 * random(3,5))
             sleep(1000);
             wechat_back_botton();
@@ -96,7 +114,7 @@ function wecaht_message_replay(){
 }
 
 
-// 微信函数1 回复点红点 编号1
+// 回复聊天
 function Fwechat_1(){
     var replay_times = 0 
     var weChat_times = 0
@@ -108,15 +126,10 @@ function Fwechat_1(){
         //开始判断
         if ( UI == 'com.tencent.mm.ui.LauncherUI'){
             // toastLog("微信")
-            if (  a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,1) ) {
+            if (  jsclick('text','我',false,1) && jsclick('text','微信',true,1) ) {
                 // 强制激活微信消息界面
                 if(wecaht_message_news()){
-                    // toastLog("发现新消息")
-                    if (replay_times >= 3){
-                        // toastLog("回复超3次,跟据策略不再回复,需下次活跃回复")
-                    }else if (wecaht_message_replay()){
-                        replay_times++
-                    }
+                    wecaht_message_replay();
                 }
             }else{
                 wechat_back_botton()
@@ -127,13 +140,12 @@ function Fwechat_1(){
             app.launch(wechat_bid);
             sleep(8000)
         }
- 
         sleep(1000*3);
         weChat_times++;
         // toast("微信活跃中->"+ (50 - weChat_times))
     }
     // toastLog("时间到->按下home");
-    Home() 
+    home() 
 }
 
 // 微信函数1 阅读好友请求 编号2
@@ -148,7 +160,7 @@ function Fwechat_2(){
         //开始判断
         if ( UI == 'com.tencent.mm.ui.LauncherUI'){
             // toastLog("微信")
-            if (  a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,1) ) {
+            if (  jsclick('text','我',false,1) && jsclick('text','微信',true,1) ) {
                 // 强制激活微信消息界面
             
             }else{
@@ -166,7 +178,7 @@ function Fwechat_2(){
         // toast("微信活跃中")
     }
     // toastLog("时间到->按下home");
-    Home() 
+    home() 
 }
 
 
@@ -178,9 +190,9 @@ function wechat_send_news(){
         log(currentActivity());
 
         if (wechat_res == "com.tencent.mm.ui.LauncherUI"){
-            if (a.jsclick("text","腾讯新闻",true,3)){}
+            if (jsclick("text","腾讯新闻",true,3)){}
         }else if(wechat_res == "com.tencent.mm.plugin.readerapp.ui.ReaderAppUI"){
-            Tap(random(200,800),random(400,800))
+            click_(random(200,800),random(400,800))
         }else if(wechat_res == "com.tencent.mm.plugin.webview.ui.tools.WebViewUI"){
             // upscreen()
             look_news_times = look_news_times + 1
@@ -188,15 +200,15 @@ function wechat_send_news(){
                 log("准备分享")
                 var share = className("android.support.v7.widget.LinearLayoutCompat").findOne(200)
                 if (share){
-                    Tap(share.bounds().centerX(),share.bounds().centerY())
+                    click_(share.bounds().centerX(),share.bounds().centerY())
                 }else{
-                    a.jsclick("text","分享到朋友圈",true,5)
+                    jsclick("text","分享到朋友圈",true,5)
                 }
             }
         }else if(wechat_res == "com.tencent.mm.plugin.sns.ui.SnsUploadUI"){
             //准备发表到朋友圈
             className("EditText").findOne(1000).setText( b.rdreplay(random(2,5)) )
-            if (a.jsclick("text","发表",true,5)){
+            if (jsclick("text","发表",true,5)){
                 return true
             }
         }
@@ -220,9 +232,9 @@ function Fwechat_3(){
         //开始判断
         if ( UI == 'com.tencent.mm.ui.LauncherUI'){
             // toastLog("微信")
-            if (  a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,2) ) {
+            if (  jsclick('text','我',false,1) && jsclick('text','微信',true,2) ) {
                 // 强制激活微信消息界面
-                if (a.jsclick("text","腾讯新闻",true,3)){
+                if (jsclick("text","腾讯新闻",true,3)){
                     if (wechat_send_news()){
                         return true
                     }
@@ -242,7 +254,7 @@ function Fwechat_3(){
         // toast("微信活跃中")
     }
     // toastLog("时间到->按下home");
-    Home() 
+    home() 
 }
 
 // 加好友流程
@@ -254,10 +266,10 @@ function wecaht_add_friends(){
         log(currentActivity());
 
         if (wechat_res == "com.tencent.mm.ui.LauncherUI"){
-            if (a.jsclick("text","流量为王",true,3)){
+            if (jsclick("text","流量为王",true,3)){
 
-            }else if (a.jsclick("id","amh",false,1)){
-               Tap( (device.width)*0.95, device.height*0.05)
+            }else if (jsclick("id","amh",false,1)){
+               click_( (device.width)*0.95, device.height*0.05);
                log( (device.width)*0.95 , (device.height)*0.05)
                sleep(2000)
             }
@@ -266,12 +278,12 @@ function wecaht_add_friends(){
             var imgs = id("e3x").find()
             if (imgs){
                 var click_key = random(1,imgs.length-1)
-                Tap( imgs[click_key].bounds().centerX(),imgs[click_key].bounds().centerY() )
+                click_( imgs[click_key].bounds().centerX(),imgs[click_key].bounds().centerY() )
                 sleep(2000)
             }
         }else if(wechat_res == "com.tencent.mm.plugin.profile.ui.ContactInfoUI"){
             // toastLog("个人消息界面")
-            if ( a.jsclick("text","添加到通讯录",true,3) ){
+            if ( jsclick("text","添加到通讯录",true,3) ){
                 
             }
         }
@@ -295,9 +307,9 @@ function Fwechat_4(){
         //开始判断
         if ( UI == 'com.tencent.mm.ui.LauncherUI'){
             // toastLog("微信")
-            if (  a.jsclick('text','我',false,1) && a.jsclick('text','微信',true,2) ) {
+            if (  jsclick('text','我',false,1) && jsclick('text','微信',true,2) ) {
                 // 强制激活微信消息界面
-               if( a.jsclick("text","流量为王",true,2) ){
+               if( jsclick("text","流量为王",true,2) ){
                 
                }
             }else{
@@ -315,7 +327,7 @@ function Fwechat_4(){
         // toast("微信活跃中")
     }
     // toastLog("时间到->按下home");
-    Home() 
+    home() 
 }
 
 // 朋友圈点赞
@@ -331,16 +343,16 @@ function wechat_zan(){
         }
 
         if (wechat_res == "com.tencent.mm.ui.LauncherUI"){
-            if( a.jsclick('text',"朋友圈",true,2)){
+            if( jsclick('text',"朋友圈",true,2)){
 
             }
         }else if(wechat_res == "com.tencent.mm.plugin.sns.ui.SnsTimeLineUI"){
             // toastLog("朋友圈页面")
             var zan = desc("评论").findOne(500)
             if (zan){
-                Tap(zan.bounds().centerX(),zan.bounds().centerY())
+                click_(zan.bounds().centerX(),zan.bounds().centerY())
                 sleep(1000*4)
-                if ( a.jsclick("text","赞",true,2) ) {
+                if ( jsclick("text","赞",true,2) ) {
                     zan_times++
                 }else{
                     upscreen()
@@ -371,9 +383,9 @@ function Fwechat_5(){
         //开始判断
         if ( UI == 'com.tencent.mm.ui.LauncherUI'){
             // toastLog("微信")
-            if (  a.jsclick('text','我',false,1) && a.jsclick('text','发现',true,2) ) {
+            if (  jsclick('text','我',false,1) && jsclick('text','发现',true,2) ) {
                 // 强制激活微信消息界面
-                if ( a.jsclick('text',"朋友圈",true,2)){
+                if ( jsclick('text',"朋友圈",true,2)){
                     wechat_zan()
                     return true
                 }
@@ -391,7 +403,7 @@ function Fwechat_5(){
         // toast("微信活跃中")
     }
     // toastLog("时间到->按下home");
-    Home() 
+    home() 
 }
 
 
@@ -469,7 +481,7 @@ function all(){
             }
         }else{
             // toastLog("微信脚本,休息中")
-            Home();
+            home();
             sleep(1000*5)
         }
     }    
@@ -554,21 +566,24 @@ function main_wecaht(){
         sleep(3*1000)
         // toastLog( "休息30秒" )
         time_less(35)
-        Home()
+        home()
     }
 }
 
 
-while(true){
-    // main_wecaht()
-    try{
-        main_wecaht()
-    }catch(e){
-        log(e)
-        sleep(10*1000)
-    }
-}
+// while(true){
+//     // main_wecaht()
+//     try{
+//         main_wecaht()
+//     }catch(e){
+//         log(e)
+//         sleep(10*1000)
+//     }
+// }
 
+Fwechat_1()
+// Fwechat_3()
+// Fwechat_5()
 
 
 

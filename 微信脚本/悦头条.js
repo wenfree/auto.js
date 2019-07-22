@@ -7,6 +7,10 @@ function click_(x,y){
     }
 }
 
+function click__(obj){
+    click_(obj.bounds().centerX(),obj.bounds().centerY())
+}
+
 function jsclick(way,txt,clickKey,n){
     if(!n){n=1};//当n没有传值时,设置n=1
     var res = false;
@@ -130,7 +134,7 @@ function Tips(){
 
 function reg() {
 
-    launchApp(appName);
+    launchApp(app_name);
     sleep(1000*6)
     var get_sms_button = true;
     var get_password = true;
@@ -194,16 +198,20 @@ function reg() {
                 }else if(jsclick("text","登录领取红包",true,2)){
                 }
                 break;
+            case "com.expflow.reading.activity.SplashActivity":
+                log('正在加载ing');
+                sleep(1000*3);
+                break;
             default:
                 log("预计有弹窗");
                 back();
                 sleep(1000*3);
                 home();
                 sleep(1000*3);
-                launchApp(appName);
-                sleep(1000*3);
+                launchApp(app_name);
+                sleep(1000*8);
                 jsclick("text","一键登录",true,2);              
-                break;
+            break;
         }
 
         Tips();
@@ -279,12 +287,16 @@ function read(){
                     back();
                 }
                 break;
+            case "com.expflow.reading.activity.SplashActivity":
+                log('正在加载ing');
+                sleep(1000*3);
+                break;
             default:
                 back();
                 sleep(1000*2);
                 home();
                 sleep(1000*2);
-                launchApp(appName);
+                launchApp(app_name);
                 sleep(1000*6)
                 break;
         }
@@ -295,15 +307,14 @@ function read(){
         sleep(1000); 
     }
     log("阅读完成-end");
-    home();
 }
 
 
-function sendBroadcast(appName,data){
+function sendBroadcast(app_name,data){
     app.launchPackage( "com.flow.factory");
     sleep(2000)
     var mapObject = {
-            appName:appName,
+            appName:app_name,
             data:data
         }
     app.sendBroadcast(
@@ -315,29 +326,29 @@ function sendBroadcast(appName,data){
     );
 }
 
-var apkUrl = "img.wenfree.cn/apk/com.expflow.reading.apk"
-var appName = "悦头条";
+var apk_url = "img.wenfree.cn/apk/com.expflow.reading.apk"
+var app_name = "悦头条";
 var appBid = "com.expflow.reading"
 var info={};
 
 function main(){
-    if (launchApp(appName) ){
+    if (launchApp(app_name) ){
         if (reg()){
             log(info)
             read()
             reg()
-            sendBroadcast(appName,JSON.stringify(info))
+            sendBroadcast(app_name,JSON.stringify(info))
         }else{
-            sendBroadcast(appName,JSON.stringify(info))
+            sendBroadcast(app_name,JSON.stringify(info))
         }
-    }else if ( download(apkUrl) ){
+    }else if ( download(apk_url) ){
         if (reg()){
             log(info)
             read()
             reg()
-            sendBroadcast(appName,JSON.stringify(info))
+            sendBroadcast(app_name,JSON.stringify(info))
         }else{
-            sendBroadcast(appName,JSON.stringify(info))
+            sendBroadcast(app_name,JSON.stringify(info))
         }
     }
 }
@@ -349,7 +360,7 @@ function newsappinfoback(){
             "s": "App.Newsimeiapp.Imei",
             "imei": device.getIMEI(),
             "imei_tag": 'pixel xl',
-            "app_name": appName,
+            "app_name": app_name,
             "app_data": JSON.stringify(info),
             "whos": 'ouwen000',
         });

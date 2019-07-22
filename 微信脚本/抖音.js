@@ -1,3 +1,4 @@
+
 function click_(x,y){
     if(x>0 && x < device.width && y > 0 && y < device.height){
         click(x,y)
@@ -7,7 +8,7 @@ function click_(x,y){
 }
 
 function click__(obj){
-    click(obj.bounds().centerX(),obj.bounds().centerY())
+    click_(obj.bounds().centerX(),obj.bounds().centerY())
 }
 
 function jsclick(way,txt,clickKey,n){
@@ -24,7 +25,7 @@ function jsclick(way,txt,clickKey,n){
     if(res){
         if ( clickKey ){
             log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
-            click_(res.bounds().centerX(),res.bounds().centerY());
+            click__(res);
             sleep(1000*n);
         }else{
             log("找到->",txt);
@@ -34,7 +35,6 @@ function jsclick(way,txt,clickKey,n){
         // log("没有找到->",txt)
     }
 }
-
 
 function Tips(){
     var textTips = {}
@@ -231,17 +231,15 @@ function main(){
         info["state"]="no";
         sendBroadcast("抖音",JSON.stringify(info))
     }
-    
 }
-
 
 // app.launch(app_bid)
 // app.launchApp("QQ")
+main();
 
 log(currentActivity())
 
 var title = textMatches("/.*/").find();
-
 if (title){
     for (var i=0;i<title.length;i++){
         log(i,title[i].text())

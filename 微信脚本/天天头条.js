@@ -8,7 +8,7 @@ function click_(x,y){
 }
 
 function click__(obj){
-    click(obj.bounds().centerX(),obj.bounds().centerY())
+    click_(obj.bounds().centerX(),obj.bounds().centerY())
 }
 
 function jsclick(way,txt,clickKey,n){
@@ -25,7 +25,7 @@ function jsclick(way,txt,clickKey,n){
     if(res){
         if ( clickKey ){
             log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
-            click_(res.bounds().centerX(),res.bounds().centerY());
+            click__(res);
             sleep(1000*n);
         }else{
             log("找到->",txt);
