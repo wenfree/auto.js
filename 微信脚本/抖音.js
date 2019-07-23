@@ -246,3 +246,6 @@ if (title){
         log(i,d.text(),d.bounds(),d.bounds().centerX(),d.bounds().centerY())
     }
 }
+
+
+
