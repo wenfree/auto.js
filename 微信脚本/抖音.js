@@ -54,10 +54,9 @@ function Tips(){
 }
 
 function zan(){
-    if (className("EditText").findOne(500)){
-        log("找到输入框");
-        var open = className("EditText").findOne(500)
-        if (open){
+    var title = className("android.widget.LinearLayout").find()
+    if (title){
+        if (title.length == 3){
             click(988,784);
             sleep(1000*2);
             click(device.width/2,device.height*0.3)
@@ -124,14 +123,13 @@ function commnet_do(commnet_txt){
          sleep(1000*2)
          return true
         }
-     }else if (className("EditText").findOne(500)){
-         log("点击评论框")
-         var open = className("EditText").findOne(500)
-         if (open){
-             open.click()
-         }
      }else{
-         back();
+        var title = className("android.widget.LinearLayout").find()
+        if (title){
+            if (title.length == 3){
+                click_(device.width*2/5,device.height*88/100)
+            }
+        }
      }
 }
 
@@ -239,9 +237,12 @@ main();
 
 log(currentActivity())
 
-var title = textMatches("/.*/").find();
+// var title = textMatches("/.*/").find();
+// var title = idMatches("/.*/").find();
+var title = className("android.widget.LinearLayout").find()
 if (title){
     for (var i=0;i<title.length;i++){
-        log(i,title[i].text())
+        var d = title[i]
+        log(i,d.text(),d.bounds(),d.bounds().centerX(),d.bounds().centerY())
     }
 }
