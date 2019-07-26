@@ -273,7 +273,8 @@ function read(){
                         back();
                         sleep(1000);
                         back();
-                        sleep(1000);
+                        sleep(2000);
+                        nextPage();
                         nextPage();
                     }
                     look_times++

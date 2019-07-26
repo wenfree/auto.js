@@ -185,7 +185,7 @@ function sendBroadcast(appName,data){
 
 var app_name = "抖音短视频";
 var app_bid = "com.ss.android.ugc.aweme";
-var url = "6714097841763110157";
+var url = "6716797484347264270";
 var commnet_txt = "画的真好";
 
 
@@ -235,14 +235,13 @@ function main(){
 // app.launchApp("QQ")
 main();
 
-log(currentActivity())
-
+log(currentActivity());
 // var title = textMatches("/.*/").find();
 // var title = idMatches("/.*/").find();
 var title = className("android.widget.LinearLayout").find()
 if (title){
     for (var i=0;i<title.length;i++){
-        var d = title[i]
+        var d = title[i];
         log(i,d.text(),d.bounds(),d.bounds().centerX(),d.bounds().centerY())
     }
 }
