@@ -27,18 +27,22 @@ ui.ok.click(()=>{
     var allInfo = Imei_sevice(imei_tag,whos);
     if (allInfo){
         var allInfo = JSON.parse(allInfo);
-        // toastLog(allInfo);
-        var webui = JSON.parse(allInfo.data.webui);
-        var imei_data = JSON.parse(allInfo.data.imei_data);
-        log("webui",webui);
-        log("imei_data",imei_data);
-        storage.put("webui", webui);
-        storage.put("imei_data", imei_data);
-        // ui.finish();
-
+        toastLog(allInfo);
         log('end')
-
     }
+
+    threads.start(function(){
+        //在新线程执行的代码
+        console.show();
+        var i=0;
+        while(true){
+            log("子线程");
+            (Imei_sevice(imei_tag,whos));
+            sleep(1000*30);
+            log("imei",i)
+            i++;
+        }
+    });
 })
 //把2个相关信息存一下
 function saveConf(imei_tag,whos){
@@ -50,7 +54,7 @@ function Imei_sevice(imei_tag,whos){
     try{
         var url = "http://news.wenfree.cn/phalapi/public/";
         r = http.post(url, {
-            "s": "App.Newsimei.Imei",
+            "s": "App.Zllgcimei.Imei",
             "imei": device.getIMEI(),
             "imei_tag": imei_tag,
             "imei_info": device,
