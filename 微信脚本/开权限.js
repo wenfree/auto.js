@@ -81,17 +81,13 @@ function management_(){
 
 
 
-var my_app = {};
-my_app.name = "流量工厂";
-my_app.Package = "com.miui.securitycenter";
 
-mian()
 
 function mian(){
-    var autoactive = true;
-    var battery = true;
+    var autoactive = false;
+    var battery = false;
     var install = true;
-    var management = true;
+    var management = false;
     var other = 0
     var time_line = 0
 
@@ -108,7 +104,7 @@ function mian(){
 
                 if (autoactive_()){
                 }else if(battery_()){
-                }else if(install_()){
+                }else if( install && install_()){
                 }else if(management_()){
                     return true
                 }
@@ -147,15 +143,12 @@ function mian(){
                 }
                 break;
             case "com.android.settings.Settings$ManageAppExternalSourcesActivity":
-                log("安装未知应用")
-                var d = id('widget_frame').findOne(200);
-                if(d){
-                    click__(d)
-                    sleep(1000);
-                    back();
-                }else{
-                    back();
+                log("安装未知应用");
+                sleep(2000);
+                if(jsclick('text','允许来自此来源的应用',true,2)){
+                    install = false
                 }
+                back();
                 break;
             case "com.miui.powerkeeper.ui.HiddenAppsConfigActivity":
                 log('省电限制');
@@ -275,12 +268,11 @@ function input_pay_password(password){
 }
 
 
-function sendBroadcast(appName,data){
+function sendBroadcast(appName){
     app.launchPackage( "com.flow.factory");
     sleep(2000)
     var mapObject = {
             appName:appName,
-            data:data
         }
     app.sendBroadcast(
         {
@@ -291,8 +283,12 @@ function sendBroadcast(appName,data){
     );
 }
 
+var my_app = {};
+my_app.name = "流量工厂";
+my_app.Package = "com.miui.securitycenter";
 
-
+mian();
+sendBroadcast("权限");
 
 
 
