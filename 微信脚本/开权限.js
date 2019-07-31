@@ -4,6 +4,80 @@ log(currentActivity());
 
 // openAppSetting("com.flow.factory")
 
+function autoactive_(){
+    var d = id('am_switch').findOne(200);
+    log(d.checked())
+    if (d.checked()){
+        return false
+    }else{
+        d.click();
+        return true
+    }
+}
+
+function battery_(){
+    var d = text("省电策略").findOne(100);
+    if(d){
+        var dd = d.parent()
+        if (dd){
+            var ddd = dd.children()
+            if(ddd){
+                log(ddd[1].text())
+                var txt = ddd[1].text()
+                if( txt != "无限制"){
+                    click__(ddd[1])
+                    return true
+                }else if(txt == "无限制"){
+                    log('省电策略->无限制')
+                    return false
+                }
+            }
+        }
+    }  
+}
+
+function install_(){
+    var d = text("安装应用未知来源").findOne(100);
+    if(d){
+        var dd = d.parent()
+        if (dd){
+            var ddd = dd.children()
+            if(ddd){
+                log(ddd[1].text())
+                var txt = ddd[1].text()
+                if( txt == "不允许"){
+                    click__(ddd[1])
+                    return true
+                }else if(txt == "允许"){
+                    log('安装应用未知来源->允许')
+                    return false
+                }
+            }
+        }
+    }
+}
+
+function management_(){
+    var d = text("权限管理").findOne(100);
+    if(d){
+        var dd = d.parent()
+        if (dd){
+            var ddd = dd.children()
+            if(ddd){
+                log(ddd[1].text())
+                var txt = ddd[1].text()
+                if( txt != "15项允许"){
+                    click__(ddd[1])
+                }else if(txt == "15项允许"){
+                    log('权限管理->15项允许')
+                    management = false;
+                    home();
+                    return true;
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -19,9 +93,10 @@ function mian(){
     var install = true;
     var management = true;
     var other = 0
+    var time_line = 0
 
 
-    while (true) {
+    while (time_line < 200 ) {
 
         var UI = currentActivity();
         log('UI',UI)
@@ -29,73 +104,15 @@ function mian(){
             case "com.miui.appmanager.ApplicationsDetailsActivity":
                 log("流量工厂设置主界面");
                 swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
-                sleep(1000);
+                sleep(500);
 
-                if (autoactive){
-                    var d = id('am_switch').findOne(200);
-                    log(d.checked())
-                    if (d.checked()){
-                        autoactive = false
-                    }else{
-                        d.click();
-                    }
-                }else if(battery){
-                    var d = text("省电策略").findOne(100);
-                    if(d){
-                        var dd = d.parent()
-                        if (dd){
-                            var ddd = dd.children()
-                            if(ddd){
-                                log(ddd[1].text())
-                                var txt = ddd[1].text()
-                                if( txt != "无限制"){
-                                    click__(ddd[1])
-                                }else if(txt == "无限制"){
-                                    log('省电策略->无限制')
-                                    battery = false
-                                }
-                            }
-                        }
-                    }  
-                }else if(install){
-                    var d = text("安装应用未知来源").findOne(100);
-                    if(d){
-                        var dd = d.parent()
-                        if (dd){
-                            var ddd = dd.children()
-                            if(ddd){
-                                log(ddd[1].text())
-                                var txt = ddd[1].text()
-                                if( txt == "不允许"){
-                                    click__(ddd[1])
-                                }else if(txt == "允许"){
-                                    log('安装应用未知来源->允许')
-                                    install = false
-                                }
-                            }
-                        }
-                    }
-                }else if(management){
-                    var d = text("权限管理").findOne(100);
-                    if(d){
-                        var dd = d.parent()
-                        if (dd){
-                            var ddd = dd.children()
-                            if(ddd){
-                                log(ddd[1].text())
-                                var txt = ddd[1].text()
-                                if( txt != "15项允许"){
-                                    click__(ddd[1])
-                                }else if(txt == "15项允许"){
-                                    log('权限管理->15项允许')
-                                    management = false;
-                                    home();
-                                    return true;
-                                }
-                            }
-                        }
-                    }
+                if (autoactive_()){
+                }else if(battery_()){
+                }else if(install_()){
+                }else if(management_()){
+                    return true
                 }
+
                 break;
             case "com.miui.permcenter.permissions.PermissionsEditorActivity":
                 log("权限设置界面");
@@ -158,8 +175,9 @@ function mian(){
                 break;
         }
 
-        sleep(1000*1);
+        sleep(1000*0.5);
         tips();
+        time_line++
     }
 }
 
@@ -256,6 +274,22 @@ function input_pay_password(password){
     }
 }
 
+
+function sendBroadcast(appName,data){
+    app.launchPackage( "com.flow.factory");
+    sleep(2000)
+    var mapObject = {
+            appName:appName,
+            data:data
+        }
+    app.sendBroadcast(
+        {
+            packageName: "com.flow.factory",
+            className: "com.flow.factory.trafficfactory.broadcast.TaskBroadCast",
+            extras:mapObject
+        }   
+    );
+}
 
 
 
