@@ -5,13 +5,16 @@ log(currentActivity());
 // openAppSetting("com.flow.factory")
 
 function autoactive_(){
+    sleep(1000);
     var d = id('am_switch').findOne(200);
-    log(d.checked())
-    if (d.checked()){
-        return false
-    }else{
-        d.click();
-        return true
+    // log(d.checked())
+    if(d){
+        if (d.checked()){
+            return false
+        }else{
+            d.click();
+            return true
+        }
     }
 }
 
@@ -64,23 +67,24 @@ function management_(){
         if (dd){
             var ddd = dd.children()
             if(ddd){
-                log(ddd[1].text())
-                var txt = ddd[1].text()
-                if( txt != "15项允许"){
-                    click__(ddd[1])
-                }else if(txt == "15项允许"){
-                    log('权限管理->15项允许')
-                    management = false;
+                log(ddd[1].text());
+                var txt = ddd[1].text();
+                // if( device.model == "Mi-4c" && txt == "18项允许"){
+                //     log('权限管理->14项允许')
+                //     home();
+                //     return true;
+                // }else 
+                if( txt == "19项允许" ){
+                    log('权限管理->19项允许')
                     home();
                     return true;
+                }else{
+                    click__(ddd[1])
                 }
             }
         }
     }
 }
-
-
-
 
 
 function mian(){
@@ -90,6 +94,7 @@ function mian(){
     var management = false;
     var other = 0
     var time_line = 0
+    var last = true
 
 
     while (time_line < 200 ) {
@@ -107,8 +112,9 @@ function mian(){
                 }else if( install && install_()){
                 }else if(management_()){
                     return true
+                }else{
+                    last = true
                 }
-
                 break;
             case "com.miui.permcenter.permissions.PermissionsEditorActivity":
                 log("权限设置界面");
@@ -125,8 +131,6 @@ function mian(){
                 }
                 swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
                 sleep(2000);
-                swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
-                sleep(2000);
                 var d = id('action').find();
                 if(d){
                     for (var i=0;i<d.length;i++){
@@ -139,7 +143,13 @@ function mian(){
                     }
                 }
                 if(jsclick("text","显示悬浮窗",false,2)){
-                    back();
+                    if(last){
+                        swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
+                        sleep(2000);
+                        last = false
+                    }else{
+                        back();
+                    }
                 }
                 break;
             case "com.android.settings.Settings$ManageAppExternalSourcesActivity":
