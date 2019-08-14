@@ -1,11 +1,11 @@
 var my_app = {}
 var info = {}
 
-// var data = get_data()
-// var url = data.worksPath;
-// var commnet_txt = data.extend4;
-// var data_time = new Date().getTime();
-// my_app.phone = db.phoneNumber();
+var data = get_data()
+var url = data.worksPath;
+var commnet_txt = data.extend4;
+var data_time = new Date().getTime();
+my_app.phone = db.phoneNumber();
 
 function get_data() {
     try {
@@ -39,26 +39,36 @@ log(device.width,device.height)
 
 
 my_app.packageName = "com.sina.weibo";
+my_app.wechat_packageName = "com.tencent.mm"
 my_app.name = "微博";
 var thread = "";
 
 
-mian();
+
+
+// mian();
 info["state"] = "ok";
 // sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){
     var commnet_ = false
+    var share_ = false
+    var leftButton = false
+    homes();
 
     var time_line = 0
     while (time_line < 200 ) {
-        homes();
-        if(active(my_app.packageName,5)){
+        
+        var currenapp = currentPackage()
+        if( currenapp == my_app.packageName ){
             var UI = currentActivity();
             log('UI',UI)
             switch(UI){
                 case "com.sina.weibo.MainTabActivity":
                     log("微博主界面")
+                    if(share_){
+                        jsclick("id","contentTextView",true,3)
+                    }else 
                     if(jsclick("id","redpacket_container",true,2)){
                     }else if(jsclick("desc","首页",true,2)){
                     }
@@ -69,7 +79,7 @@ function mian(){
                     var d = textMatches(/领取.*积分/).findOne(200)
                     if(d){
                         click__(d);
-                        sleep(2000);
+                        sleep(5000);
                         back();
                     }else
                     if(jsclick("text","关注",true,2)){
@@ -84,16 +94,37 @@ function mian(){
                             log(d)
                             d.click()
                         }
-                    }else if(jsclick("text","评论",true,2)){
+                    }else if(jsclick("text","评论",false,2)){
                         var d = text("评论").depth(10).findOne(1000)
                         if(d){
                             log(d)
                             d.click();
                             commnet_  = true
                         }
+                    }else if(jsclick("text","分享",false,2)){
+                        var d = text("分享").depth(10).findOne(1000)
+                        if(d){
+                            log(d)
+                            d.click();
+                            share_ = true
+                        }
+                    }else if(jsclick("text","转发",false,2)){
+                        var d = text("转发").depth(10).findOne(1000)
+                        if(d){
+                            log(d)
+                            d.click();
+                            leftButton = true
+                        }
                     }else{
                         if(jsclick("text","日常任务",false,2)){
-                            return true
+                            var d=textMatches("已领取").find();
+                            if(d){
+                                if (d.length >= 5 ){
+                                    return true
+                                }else{
+                                    back();
+                                }
+                            }
                         }
                     }
                     break;
@@ -113,6 +144,12 @@ function mian(){
                     break;
                 case "com.sina.weibo.page.NewCardListActivity":
                     log("准备点赞的界面");
+                    if(leftButton ){
+                        jsclick("id","leftButton",true,2);
+                        if(jsclick("id","pop_icon_fastretweet",true,2)){
+                            leftButton = false;
+                        }
+                    }else 
                     if(commnet_){
                         jsclick("id","midButton",true,2);
                     }else{
@@ -148,8 +185,21 @@ function mian(){
                     break;
                 default:
                     log("可能没有启动设置");
+                    back();
+                    sleep(2000);
+                    home();
+                    sleep(2000);
                     break;
             }
+        }else if( currenapp == my_app.wechat_packageName ){
+            sleep(2000);
+            if(jsclick("text","发表",true,5)){
+                share_ = false
+            }else{
+                back();
+            }
+        }else{
+            active(my_app.packageName,5)
         }
 
         sleep(1000*2);
@@ -198,15 +248,14 @@ function homes(){
     thread = threads.start(function(){
         var times__ = 0
         //在新线程执行的代码
-        while(times__ < 3){
-            log("子线程");
+        while(times__ < 999){
             sleep(2000);
             var UII = currentActivity();
-            log("UII",UII)
+            log("子线程","UII",UII)
             switch(UII){
                 case "com.sina.weibo.MainTabActivity":
                     click(72,1300)
-                    sleep(2000)
+                    sleep(8000)
                     break;
                 default:
                     break;
@@ -220,16 +269,15 @@ function homes(){
 
 
 
-
 // Tips()
 // clearApp()
 
 /*
-清除app数据，无需root权限
-备注:仅适用小米手机
-@author：飞云
-@packageName：包名
-返回值：Boolean，是否执行成功
+    清除app数据，无需root权限
+    备注:仅适用小米手机
+    @author：飞云
+    @packageName：包名
+    返回值：Boolean，是否执行成功
 */
 function clearApp() {
     var appName = "星巴克"
@@ -277,7 +325,7 @@ function active(pkg,n){
 }
 //准备点击
 function click_(x,y){
-    if(x>0 && x < device.width && y > 0 && y < device.height){
+    if(x>0 && x < 720 && y > 0 && y < 1440){
         click(x,y)
     }else{
         log('坐标错误')
