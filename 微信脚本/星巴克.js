@@ -66,7 +66,6 @@ function mian(){
                             sleep(3000);
                         }
                     }else if(jsclick("id","sign_in_button",true,5)){
-                        
                     }
                     break;
                 default:
@@ -80,11 +79,6 @@ function mian(){
         time_line++
     }
 }
-
-
-
-
-
 
 function Tips(){
     log("查询弹窗");
