@@ -11,8 +11,7 @@ function get_data() {
     try {
         return JSON.parse(db.taskParam());
     } catch (error) {
-        printLog("异常" + error);
-        return null;
+        log("异常" + error);
     }
 }
 
@@ -44,11 +43,18 @@ my_app.name = "微博";
 var thread = "";
 
 
+// var d = id("contentTextView").findOne(1000)
+// if(d){
+//     log(d.bounds().centerX(),d.bounds().centerY())
+// }
 
 
-// mian();
+
+mian();
+threads.shutDownAll()
+log(info)
 info["state"] = "ok";
-// sendBroadcast(my_app.name, JSON.stringify(info))
+sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){
     var commnet_ = false
@@ -66,50 +72,65 @@ function mian(){
             switch(UI){
                 case "com.sina.weibo.MainTabActivity":
                     log("微博主界面")
-                    if(share_){
-                        jsclick("id","contentTextView",true,3)
-                    }else 
                     if(jsclick("id","redpacket_container",true,2)){
                     }else if(jsclick("desc","首页",true,2)){
                     }
                     break;  
                 case "com.sina.weibo.browser.WeiboBrowser":
                     log("有可能是任务中心");
+                    sleep(6000);
                     moneyread();
+
+                    var d = textMatches(/.*恭喜获得.*/).findOne(200);
+                    if(d){
+                        back();
+                        break;
+                    }
                     var d = textMatches(/领取.*积分/).findOne(200)
                     if(d){
                         click__(d);
                         sleep(5000);
                         back();
                     }else
-                    if(jsclick("text","关注",true,2)){
-                        var d = text("关注").depth(10).findOne(1000)
+                    if(jsclick("text","关注",false,2)){
+                        var d = text("关注").clickable(true).findOne(1000)
                         if(d){
                             log(d)
                             d.click()
                         }
-                    }else if(jsclick("text","点赞",true,2)){
-                        var d = text("点赞").depth(10).findOne(1000)
+                    }else if(jsclick("text","点赞",false,2)){
+                        var d = text("点赞").clickable(true).findOne(1000)
                         if(d){
                             log(d)
                             d.click()
                         }
                     }else if(jsclick("text","评论",false,2)){
-                        var d = text("评论").depth(10).findOne(1000)
+                        var d = text("评论").clickable(true).findOne(1000)
                         if(d){
                             log(d)
                             d.click();
                             commnet_  = true
                         }
                     }else if(jsclick("text","分享",false,2)){
-                        var d = text("分享").depth(10).findOne(1000)
+                        var d = text("分享").clickable(true).findOne(1000)
                         if(d){
-                            log(d)
+                            log("分享")
                             d.click();
+                            sleep(5000);
+                            var d = id("contentTextView").findOne(1000)
+                            if(d){
+                                log(d.bounds().centerX(),d.bounds().centerY())
+                                click_(720/2,d.bounds().centerY());
+                                sleep(1000);
+                                click_(720/2,d.bounds().centerY());
+                                sleep(1000);
+                                click_(720/2,d.bounds().centerY());
+                                sleep(1000);
+                            }
                             share_ = true
                         }
                     }else if(jsclick("text","转发",false,2)){
-                        var d = text("转发").depth(10).findOne(1000)
+                        var d = text("转发").clickable(true).findOne(1000)
                         if(d){
                             log(d)
                             d.click();
@@ -125,6 +146,8 @@ function mian(){
                                     back();
                                 }
                             }
+                        }else{
+                            back();
                         }
                     }
                     break;
@@ -161,15 +184,24 @@ function mian(){
                     break;
                 case "com.sina.weibo.feed.DetailWeiboActivity":
                     log("评论的界面");
-                    if(jsclick("text","评论",true,2)){
-                    }else if(jsclick("text","同时转发",true,2)){
-                        setText(0,"今天是个好天气");
-                        sleep(2000);
-                        jsclick("text","发送",true,2)
-                        back();
-                        sleep(2000)
+                    if(share_){
+                        jsclick("id","rl_2",true,5)
+                    }else
+                    if(commnet_){
+                        if(jsclick("text","评论",true,2)){
+                        }else if(jsclick("text","同时转发",true,2)){
+                            setText(0,"今天是个好天气");
+                            sleep(2000);
+                            jsclick("text","发送",true,2)
+                            back();
+                            sleep(2000);
+                            back();
+                            commnet_ = false
+                        }
+                    }else{
                         back();
                     }
+
                     break;
                 case "com.sina.weibo.feed.detail.composer.ComposerActivity":
                     log("准备评论");
@@ -247,15 +279,21 @@ function moneyread(){
 function homes(){
     thread = threads.start(function(){
         var times__ = 0
+        var where_ = 0
         //在新线程执行的代码
         while(times__ < 999){
-            sleep(2000);
             var UII = currentActivity();
             log("子线程","UII",UII)
             switch(UII){
                 case "com.sina.weibo.MainTabActivity":
-                    click(72,1300)
-                    sleep(8000)
+                    sleep(5000);
+                    if(where_ %2==0){
+                        click(72,1300)
+                    }else{
+                        click(587,93)
+                    }
+                    sleep(5000);
+                    where_++
                     break;
                 default:
                     break;
@@ -302,7 +340,7 @@ function clearApp() {
                 log("页面:other")
                 back()  //返回
                 if (!openAppSetting(packageName)) {
-                    log("找不到应用，请检查packageName")
+                    log("找不到应用，请检查packageName");
                 }
                 break;
         };
