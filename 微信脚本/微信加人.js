@@ -1,7 +1,6 @@
 var my_app = {}
 var info = {}
 
-
 function sendBroadcast(appName, data) {
     app.launchPackage("com.flow.factory");
     sleep(2000)
@@ -17,7 +16,6 @@ function sendBroadcast(appName, data) {
         }
     );
 }
-
 
 log(currentPackage());
 log(currentActivity());

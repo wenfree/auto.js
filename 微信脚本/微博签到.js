@@ -1,11 +1,11 @@
 var my_app = {}
 var info = {}
 
-var data = get_data()
-var url = data.worksPath;
-var commnet_txt = data.extend4;
-var data_time = new Date().getTime();
-my_app.phone = db.phoneNumber();
+// var data = get_data()
+// var url = data.worksPath;
+// var commnet_txt = data.extend4;
+// var data_time = new Date().getTime();
+// my_app.phone = db.phoneNumber();
 
 function get_data() {
     try {
@@ -92,6 +92,13 @@ function mian(){
                         sleep(5000);
                         back();
                     }else
+                    // if(jsclick("text","领取",false,2)){
+                    //     var d = text("领取").clickable(true).findOne(1000)
+                    //     if(d){
+                    //         log(d)
+                    //         d.click()
+                    //     }
+                    // }else
                     if(jsclick("text","关注",false,2)){
                         var d = text("关注").clickable(true).findOne(1000)
                         if(d){
@@ -245,6 +252,8 @@ function Tips(){
     var textTips = {}
     textTips["允许"]="text";
     textTips["保存"]="text";
+    textTips["加关注"]="text";
+    textTips["不了，谢谢"]="text";
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
             return false
@@ -280,10 +289,26 @@ function homes(){
     thread = threads.start(function(){
         var times__ = 0
         var where_ = 0
+        var stay_ui = ""
+        var stay_setp = 0
         //在新线程执行的代码
         while(times__ < 999){
             var UII = currentActivity();
             log("子线程","UII",UII)
+
+            if ( stay_ui != UII){
+                stay_ui = UII
+                stay_setp = 0;
+            }else{
+                stay_setp++;
+                if (stay_setp > 8 ){
+                    back();
+                    sleep(200);
+                    back();
+                    stay_setp = 0;
+                }
+            }
+
             switch(UII){
                 case "com.sina.weibo.MainTabActivity":
                     sleep(5000);
