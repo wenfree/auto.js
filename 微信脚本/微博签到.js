@@ -16,8 +16,8 @@ function get_data() {
 }
 
 function sendBroadcast(appName, data) {
-    app.launchPackage("com.flow.factory");
-    sleep(2000)
+    // app.launchPackage("com.flow.factory");
+    // sleep(2000)
     var mapObject = {
         appName: appName,
         data: data
@@ -92,13 +92,14 @@ function mian(){
                         sleep(5000);
                         back();
                     }else
-                    // if(jsclick("text","领取",false,2)){
-                    //     var d = text("领取").clickable(true).findOne(1000)
-                    //     if(d){
-                    //         log(d)
-                    //         d.click()
-                    //     }
-                    // }else
+                    if(jsclick("text","刷微博",false,2)){
+                        var d = text("刷微博").clickable(true).findOne(1000)
+                        if(d){
+                            log(d)
+                            d.click();
+                            sleep(2000);
+                        }
+                    }else
                     if(jsclick("text","关注",false,2)){
                         var d = text("关注").clickable(true).findOne(1000)
                         if(d){
