@@ -222,6 +222,10 @@ function mian(){
                         back();
                     }
                     break;
+                case "com.sina.weibo.composerinde.ForwardComposerActivity":
+                    log("发送界面");
+                    jsclick("text","发表",true,5)
+                    break;
                 default:
                     log("可能没有启动设置");
                     back();
@@ -301,7 +305,7 @@ function homes(){
                 stay_setp = 0;
             }else{
                 stay_setp++;
-                if (stay_setp > 8 ){
+                if (stay_setp > 10 ){
                     back();
                     sleep(200);
                     back();
