@@ -18,29 +18,44 @@ function sendBroadcast(appName, data) {
     );
 }
 
+function jspost(url,data){
+    var res = http.post(url, data);
+    var data = res.body.string();
+    if(data){
+        return data;
+    }
+}
+
+function app_info(name,data){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var postdata = {};
+    postdata["s"]="App.ZllgcAppInfo.App_info";
+    postdata["imei"]= device.getIMEI();
+    postdata["app_name"]= name;
+    postdata["whos"]= "ouwen000";
+    postdata["app_info"]= JSON.stringify(data);
+    log(jspost(url,postdata));
+}
 
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
 
 // my_app.packageName = "com.sina.weibo";
 my_app.packageName = "com.tencent.mm";
 my_app.name = "微信";
 var thread = "";
 
-
 // var d = id("contentTextView").findOne(1000)
 // if(d){
 //     log(d.bounds().centerX(),d.bounds().centerY())
 // }
 
-
-
 mian();
 // threads.shutDownAll()
 log(info)
 info["state"] = "ok";
+app_info(my_app.name,info)
 // sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){

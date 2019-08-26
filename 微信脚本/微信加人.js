@@ -17,6 +17,8 @@ function sendBroadcast(appName, data) {
     );
 }
 
+
+
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
@@ -27,11 +29,20 @@ my_app.packageName = "com.tencent.mm";
 my_app.name = "微信";
 var thread = "";
 
+function get_data() {
+    try {
+        log("----canshu"+db.taskParam());
+        return JSON.parse(db.taskParam());
+    } catch (error) {
+        log("异常" + error);
+    }
+}
 
-// var d = id("contentTextView").findOne(1000)
-// if(d){
-//     log(d.bounds().centerX(),d.bounds().centerY())
-// }
+var data = get_data()
+if(data){
+    var talk_content = data.chat_content;
+}
+
 
 
 
@@ -39,10 +50,11 @@ mian();
 // threads.shutDownAll()
 log(info)
 info["state"] = "ok";
-sendBroadcast(my_app.name, JSON.stringify(info))
+// sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){
     var info_read_key = true
+    var say_hello = false
 
     var time_line = 0
     while (time_line < 60 ) {
@@ -68,11 +80,28 @@ function mian(){
                     jsclick("text","手机联系人",true,2);
                     break;
                 case "com.tencent.mm.plugin.account.bind.ui.MobileFriendUI":
-                    jsclick("text","添加",true,5);
+                    log("查看手机通讯灵")
+                    var d = text("添加").findOne(1000)
+                    if(d){
+                        var dd = d.parent().parent().children();
+                        //读出相应的通讯录名称
+                        log((dd[1].children())[0].text());
+                        say_hello = (dd[1].children())[0].text();
+                        jsclick("text","添加",true,5);
+                    }else{
+                        back();
+                        sleep(2000);
+                    }
                     break;
                 case "com.tencent.mm.plugin.profile.ui.SayHiWithSnsPermissionUI":
-                    if(jsclick("text","发送",true,8)){
-                        return true
+                    log("验证申请界面");
+                    if(say_hello){
+                        setText(0,say_hello+"," + talk_content)
+                        if(jsclick("text","发送",true,8)){
+                            return true
+                        }
+                    }else{
+                        back();
                     }
                     break;
                 default:

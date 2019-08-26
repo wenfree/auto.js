@@ -31,6 +31,25 @@ function sendBroadcast(appName, data) {
     );
 }
 
+function jspost(url,data){
+    var res = http.post(url, data);
+    var data = res.body.string();
+    if(data){
+        return data;
+    }
+}
+
+function app_info(name,data){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var postdata = {};
+    postdata["s"]="App.ZllgcAppInfo.App_info";
+    postdata["imei"]= device.getIMEI();
+    postdata["app_name"]= name;
+    postdata["whos"]= "ouwen000";
+    postdata["app_info"]= JSON.stringify(data);
+    log(jspost(url,postdata));
+}
+
 
 log(currentPackage());
 log(currentActivity());
@@ -54,6 +73,7 @@ mian();
 threads.shutDownAll()
 log(info)
 info["state"] = "ok";
+app_info(my_app.name,info)
 sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){
