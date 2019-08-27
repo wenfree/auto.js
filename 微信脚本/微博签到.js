@@ -2,7 +2,7 @@
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (index, mainEngine) {
-   main();
+    main();
    threads.shutDownAll()
    log(info)
    info["state"] = "ok";
@@ -13,9 +13,6 @@ events.on("prepare", function (index, mainEngine) {
 });
 
 //-------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
 var my_app = {}
@@ -91,7 +88,7 @@ var thread = "";
 
 
 
-function mian(){
+function main(){
     var commnet_ = false
     var share_ = false
     var leftButton = false

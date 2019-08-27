@@ -19,22 +19,22 @@ function main() {
     mainEnengine.emit("control", -1);  //向当前脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
     events.on("control", (i) => {
         i++;
-
+        log(i)
         var json = getJsonData(myAPP.site);   //获取脚本任务配置
         
         if(json.data.type == "download"){
             var data = JSON.parse(json.data.data);
-            for (var i=0;i<data.length;i++){
-                downScriptFile(data[i]["js_code"],data[i]["js_path"]);
+            for (let ii=0;ii<data.length;ii++){
+                downScriptFile(data[ii]["js_code"],data[ii]["js_path"]);
             }
         }else
         if(json.data.type == "task"){
             var data = json.data.data
-            log(data)
-            if (i < data.length) {
-                let path = engines.myEngine().cwd() + "/modules/" + data[i] + "/" + data[i] + ".js"  //脚本路径
-                // log(path)
+            if (data.length) {
+                let path = engines.myEngine().cwd() + "/modules/" + data[0] + "/" + data[0] + ".js"  //脚本路径
+                log(path)
                 if (files.exists(path)) {
+                    log("脚本存在")
                     var execution = engines.execScriptFile(path)  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                     sleep(1000)//等待子脚本运行
     
@@ -47,15 +47,16 @@ function main() {
                     log("脚本文件不存在,请下载后再执行")
                 }
             }
+        }else{
+            mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
+            let i = 0;
+            while (i < 30) {
+                toastLog("休息倒计时" + (30 - i) + "秒")
+                sleep(2000)
+                i++;
+            }
         }
-
-        mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
-        let i = 0;
-        while (i < 30) {
-            toastLog("休息倒计时" + (30 - i) + "秒")
-            sleep(2000)
-            i++;
-        }
+        
     });
 };
 
