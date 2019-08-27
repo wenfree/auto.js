@@ -53,7 +53,7 @@ function saveConf(imei_tag,whos){
 function Imei_sevice(imei_tag,whos){
     try{
         var url = "http://news.wenfree.cn/phalapi/public/";
-        r = http.post(url, {
+        var r = http.post(url, {
             "s": "App.Zllgcimei.Imei",
             "imei": device.getIMEI(),
             "imei_tag": imei_tag,

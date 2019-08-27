@@ -15,9 +15,7 @@ myAPP.taskTimeOut = 60000;  //单任务超时时长
 //引用公共函数模块
 var public = require('public.js');
 
-// importClass('java.net.Inet4Address');
-// importClass('java.net.InetAddress');
-// importClass('java.util.Enumeration');
+
 importClass('java.net.NetworkInterface');
 importClass('java.net.Inet6Address');
 
@@ -51,18 +49,7 @@ var InetIP = getIp_api.body.string();
 eval(InetIP);
 // var returnCitySN = {"cip": "114.253.48.32", "cid": "110000", "cname": "北京市"};
 // 通过 eval(把 var 后的变成一个真正的变量)
-
-
 var showdate = new Date();
-
-threads.start(function(){
-    //在新线程执行的代码
-    while(true){
-        sleep(2000);
-        showdate = new Date();
-    }
-});
-
 
 //---------------------------------------------------------------------------------------------------------
 
@@ -87,8 +74,6 @@ ui.layout(
                                 <View bg="#E51400" h="*" w="5" />
                             </card>
 
-
-
                             <card w="*" h="auto" margin="10 5" cardCornerRadius="2dp" cardElevation="1dp" gravity="center_vertical">
                                 <vertical padding="18 8" h="auto">
                                     <linear>
@@ -104,12 +89,12 @@ ui.layout(
                                         <input id="phone" color="#666666" paddingLeft="5" inputType="number" phoneNumber="true" marginLeft="10" w="*" hint="" />
                                     </linear>
                                     <linear>
-                                        <text text="设备编号:" textColor="black" w="auto" textStyle="bold" />
-                                        <input id="number" color="#666666" paddingLeft="5" inputType="number" marginLeft="10" w="*" hint="" />
+                                        <text text="设备标签:" textColor="black" w="auto" textStyle="bold" />
+                                        <input id="tag" color="#666666" paddingLeft="5" inputType="text" marginLeft="10" w="*" hint="" />
                                     </linear>
                                     <linear>
-                                        <text text="设备标签:" textColor="black" w="auto" textStyle="bold" />
-                                        <input id="tag" color="#666666" paddingLeft="5" inputType="text" marginLeft="10" w="*" hint="" textSize="14" />
+                                        <text text="归属人员:" textColor="black" w="auto" textStyle="bold" />
+                                        <input id="whos" color="#666666" paddingLeft="5" inputType="text" marginLeft="10" w="*" hint="" textSize="14" />
                                     </linear>
                                     <button marginTop="10" id="sure" text="保存" h="50" w="*" style="Widget.AppCompat.Button.Colored" ></button>
                                 </vertical>
@@ -150,7 +135,6 @@ ui.layout(
                                     <text margin="0 5" text="外网IP：{{returnCitySN.cip}}" textColor="black" w="auto" />
                                     <text margin="0 5" text="Mac：{{device.getMacAddress()}}" textColor="black" w="auto" />
                                     <text margin="0 5" text="剩余电量：{{device.getBattery() + '%'}}" textColor="black" w="auto" />
-                                    <text margin="0 5" text="当前时间：{{ showdate }}" textColor="black" w="auto" />
                                 </vertical>
                                 {/* <View bg="#DEDFDE" h="*" w="5" /> */}
                             </card>
@@ -178,14 +162,10 @@ ui.emitter.on("options_item_selected", (e, item) => {
         case "日志":
             app.startActivity('console');
             break;
-        // case "控制台":
-        //     console.show();    //只能打开一次.关闭后无法再次打开
-        //     break;
     }
     e.consumed = true;
 });
 activity.setSupportActionBar(ui.toolbar);
-
 //设置任务栏背景色
 ui.statusBarColor(myAPP.color);
 //设置滑动页面的标题
@@ -225,7 +205,8 @@ ui.editDevice.on("check", function (checked) {
 var execution;
 ui.taskMonitor.on("check", function (checked) {
     if (checked) {
-        toastLog("开启任务监控")
+        toastLog("开启任务监控");
+        Imei_sevice();
         execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
     } else {
         //停止任务监控
@@ -234,24 +215,24 @@ ui.taskMonitor.on("check", function (checked) {
     };
 });
 
-// // 启动任务监控
+// 启动任务监控
 // ui.start.on("click", function () {
-//     var execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+// var execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
 // });
 
 // 确定
 ui.sure.on("click", function () {
     var phone = ui.phone.text();
     var tag = ui.tag.text();
-    var number = ui.number.text();
+    var whos = ui.whos.text();
     if (phone.length == 0) {
         ui.phone.setError("输入不能为空");
         return;
     } else if (tag.length == 0) {
         ui.tag.setError("输入不能为空");
         return;
-    } else if (number.length == 0) {
-        ui.number.setError("输入不能为空");
+    } else if (whos.length == 0) {
+        ui.whos.setError("输入不能为空");
         return;
     } else if (phone.length != 11) {
         ui.phone.setError("手机号码格式错误");
@@ -260,7 +241,7 @@ ui.sure.on("click", function () {
 
     saveData();
     getData(false);
-    uploadData();
+    Imei_sevice();
 
     //程序开始运行之前判断无障碍服务
     if (auto.service == null) {
@@ -268,56 +249,54 @@ ui.sure.on("click", function () {
         return;
     };
 
-
     setObject(false);  // 设置组件是否可用
     ui.editDevice.setChecked(false);
-
     toastLog("已保存")
 });
 
 
-function uploadData() {
-    //接口采用PhalApi开发
-    let url = "http://api.feiyunjs.com/public/";
-    let res = http.post(url, {
-        "s": "App.Device.setData",
-        "imei": myAPP.imei,
-        "tag": myAPP.tag,
-        "number": myAPP.number,
-        "group": "",
-        "phone": myAPP.phone,
-        "address": "",
-        "model": device.model,
-        "is_online": true,
-        // "network": "",
-        // "offline_time":"",
-        // "one": "",
-        // "two": "",
-        // "owner": "",
-        // "administrators": "",
-        // "update_time":"",
-        // "addtime": "",
-        "release": device.release,
-        "battery": device.getBattery() + '%',
-        "is_charging": device.isCharging(),
-        "avail_mem": myAPP.avail_mem,
-        "total_mem": device.getTotalMem(),
-        "is_screen_on": device.isScreenOn(),
-        "screen_size": myAPP.screen_size,
-        "mac": device.getMacAddress(),
-        "screen_brightness": device.getBrightness(),
-        "screen_brightness_model": device.getBrightnessMode() == 0 ? "手动" : "自动",
-        "music_volume": device.getMusicVolume(),
-        "remark": "",
-    });
-
-};
+//同步imei的接口
+function Imei_sevice(){
+    try{
+        var url = "http://news.wenfree.cn/phalapi/public/";
+        var r = http.post(url, {
+            "s": "App.Zllgcimei.Imei",
+            "imei": device.getIMEI(),
+            "imei_phone": myAPP.phone,
+            "imei_tag": myAPP.tag,
+            "imei_info": JSON.stringify(
+                {        
+                    "release": device.release,
+                    "battery": device.getBattery() + '%',
+                    "is_charging": device.isCharging(),
+                    "avail_mem": myAPP.avail_mem,
+                    "total_mem": device.getTotalMem(),
+                    "is_screen_on": device.isScreenOn(),
+                    "screen_size": myAPP.screen_size,
+                    "mac": device.getMacAddress(),
+                    "screen_brightness": device.getBrightness(),
+                    "screen_brightness_model": device.getBrightnessMode(),
+                    "music_volume": device.getMusicVolume()
+                }),
+            "whos": myAPP.whos,
+        });
+        log(device.getIMEI(),myAPP.phone,myAPP.tag,myAPP.whos)
+        log('同步接口');
+        r = r.body.string()
+        if(r){
+            log(r);
+            return true;
+        }
+    }catch(err){
+        toastLog(err);
+    }
+}
 
 // 设置组件是否可用
 function setObject(isAllow) {
     ui.phone.setEnabled(isAllow)
     ui.tag.setEnabled(isAllow)
-    ui.number.setEnabled(isAllow)
+    ui.whos.setEnabled(isAllow)
 
     importClass(android.view.View);
     if (isAllow) {
@@ -331,8 +310,8 @@ function setObject(isAllow) {
 function getData(isSetValue) {
     let phone = public.getStorageData(myAPP.imei, "phone");
     let tag = public.getStorageData(myAPP.imei, "tag");
-    let number = public.getStorageData(myAPP.imei, "number");
-    if (phone != undefined) {
+    let whos = public.getStorageData(myAPP.imei, "whos");
+    if (phone) {
         myAPP.phone = phone;
         isSetValue && ui.phone.setText(myAPP.phone);
     };
@@ -340,29 +319,19 @@ function getData(isSetValue) {
         myAPP.tag = tag
         isSetValue && ui.tag.setText(myAPP.tag);
     };
-    if (number != undefined) {
-        myAPP.number = number
-        isSetValue && ui.number.setText(myAPP.number);
+    if (whos != undefined) {
+        myAPP.whos = whos
+        isSetValue && ui.whos.setText(myAPP.whos);
     };
 
     let isAllow = myAPP.phone != undefined ? false : true
     ui.editDevice.setChecked(isAllow);
-    setObject(isAllow);  // 设置组件是否可用
-
-    // 根据imei取数据(手机号/设备编号/标签)
-    // if (isAllow) {
-    //     //接口采用PhalApi开发
-    //     let url = "http://api.feiyunjs.com/public/";
-    //     let res = http.post(url, {
-    //         "service": "App.Device.getAllData",
-    //         "imei": myAPP.imei,
-    //     });
-    // };
+    setObject(isAllow);
 };
 
 // 保存配置
 function saveData() {
     public.setStorageData(myAPP.imei, "phone", ui.phone.text());
     public.setStorageData(myAPP.imei, "tag", ui.tag.text());
-    public.setStorageData(myAPP.imei, "number", ui.number.text());
+    public.setStorageData(myAPP.imei, "whos", ui.whos.text());
 };

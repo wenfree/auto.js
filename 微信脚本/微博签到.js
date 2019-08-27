@@ -1,3 +1,23 @@
+// 保持脚本运行
+var ID = setInterval(() => { }, 1000)
+// 监听主脚本消息
+events.on("prepare", function (index, mainEngine) {
+   main();
+   threads.shutDownAll()
+   log(info)
+   info["state"] = "ok";
+   app_info(my_app.name,info)
+
+   mainEngine.emit("control", index);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+   clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
+});
+
+//-------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 var my_app = {}
 var info = {}
 
@@ -69,12 +89,7 @@ var thread = "";
 
 
 
-mian();
-threads.shutDownAll()
-log(info)
-info["state"] = "ok";
-app_info(my_app.name,info)
-sendBroadcast(my_app.name, JSON.stringify(info))
+
 
 function mian(){
     var commnet_ = false
