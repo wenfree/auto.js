@@ -7,7 +7,7 @@ events.on("prepare", function (index, mainEngine) {
    log(info)
    info["state"] = "ok";
    app_info(my_app.name,info);
-   
+
    mainEngine.emit("control", index);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -338,6 +338,7 @@ function homes(){
                 stay_setp = 0;
             }else{
                 stay_setp++;
+                log(stay_setp);
                 if (stay_setp > 10 ){
                     back();
                     sleep(200);
