@@ -11,7 +11,13 @@ var whos = public.getStorageData(imei, "whos");
 
 //-------------------------------------------------------------------------------------------------------------------------
 var date1, date2, index;
-main();
+try{
+    main();
+}catch(e){
+    log(e);
+    mainEnengine.emit("control", -1);
+}
+
 
 function main() {
     var ID = setInterval(() => { }, 1000);  //保持主脚本不停，实际使用有ui也可以没有这个
@@ -19,7 +25,7 @@ function main() {
     mainEnengine.emit("control", -1);  //向当前脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
     events.on("control", (i) => {
         i++;
-        log(i)
+        log("i",i)
         var json = getJsonData(myAPP.site);   //获取脚本任务配置
         
         if(json.data.type == "download"){
@@ -30,8 +36,8 @@ function main() {
         }else
         if(json.data.type == "task"){
             var data = json.data.data
-            if (data.length) {
-                let path = engines.myEngine().cwd() + "/modules/" + data[0] + "/" + data[0] + ".js"  //脚本路径
+            if (i < data.length) {
+                let path = engines.myEngine().cwd() + "/modules/" + data[i] + "/" + data[i] + ".js"  //脚本路径
                 log(path)
                 if (files.exists(path)) {
                     log("脚本存在")
@@ -46,17 +52,24 @@ function main() {
                 } else {
                     log("脚本文件不存在,请下载后再执行")
                 }
+            }else{
+                mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
+                let i = 0;
+                while (i < 30) {
+                    toastLog("休息倒计时" + (30 - i) + "秒")
+                    sleep(500)
+                    i++;
+                }
             }
         }else{
             mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
             let i = 0;
             while (i < 30) {
                 toastLog("休息倒计时" + (30 - i) + "秒")
-                sleep(2000)
+                sleep(500)
                 i++;
             }
         }
-        
     });
 };
 
