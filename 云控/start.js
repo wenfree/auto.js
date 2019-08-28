@@ -32,6 +32,7 @@ function main() {
             for (let ii=0;ii<data.length;ii++){
                 downScriptFile(data[ii]["js_code"],data[ii]["js_path"]);
             }
+            sleep(8000)//等待子脚本运行
             mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
         }else
         if(json.data.type == "task"){

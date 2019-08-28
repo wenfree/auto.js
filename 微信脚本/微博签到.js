@@ -85,9 +85,6 @@ var thread = "";
 // }
 
 
-
-
-
 function main(){
     var commnet_ = false
     var share_ = false
@@ -176,6 +173,14 @@ function main(){
                             d.click();
                             sleep(2000);
                         }
+                    }else
+                    if(jsclick("text","发微博",false,2)){
+                        var d = text("发微博").clickable(true).findOne(1000)
+                        if(d){
+                            log(d)
+                            d.click();
+                            sleep(2000);
+                        }
                     }else{
                         if(jsclick("text","日常任务",false,2)){
                             var d=textMatches("已领取").find();
@@ -241,7 +246,6 @@ function main(){
                     }else{
                         back();
                     }
-
                     break;
                 case "com.sina.weibo.feed.detail.composer.ComposerActivity":
                     log("准备评论");
@@ -258,6 +262,12 @@ function main(){
                 case "com.sina.weibo.composerinde.ForwardComposerActivity":
                     log("发送界面");
                     jsclick("text","发表",true,5)
+                    break;
+                case "com.sina.weibo.composerinde.OriginalComposerActivity":
+                    log("发微博");
+                    setText(0,"今天又是元气满满的一天！")
+                    sleep(2000);
+                    jsclick("text","发送",true,8);
                     break;
                 default:
                     log("可能没有启动设置");
