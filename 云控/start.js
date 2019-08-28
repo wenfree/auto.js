@@ -14,10 +14,9 @@ var date1, date2, index;
 try{
     main();
 }catch(e){
+    log("报错");
     log(e);
-    mainEnengine.emit("control", -1);
 }
-
 
 function main() {
     var ID = setInterval(() => { }, 1000);  //保持主脚本不停，实际使用有ui也可以没有这个
