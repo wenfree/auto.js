@@ -78,12 +78,12 @@ function mian(){
     var info_read_key = true
 
     var time_line = 0
-    while (time_line < 60 ) {
+    while (time_line < 30 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
             var UI = currentActivity();
-            log('UI',UI)
+            log('UI',UI,time_line)
             switch(UI){
                 case "com.tencent.mm.ui.LauncherUI":
                     log("微信首页面");
