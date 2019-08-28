@@ -32,7 +32,8 @@ function main() {
             for (let ii=0;ii<data.length;ii++){
                 downScriptFile(data[ii]["js_code"],data[ii]["js_path"]);
             }
-            sleep(8000)//等待子脚本运行
+            donwload_OK();
+            sleep(5000)//下载后休息5秒
             mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
         }else
         if(json.data.type == "task"){
@@ -56,9 +57,9 @@ function main() {
             }else{
                 mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
                 let i = 0;
-                while (i < 30) {
-                    toastLog("休息倒计时" + (30 - i) + "秒")
-                    sleep(500)
+                while (i < 5) {
+                    toastLog("休息倒计时" + (5 - i) + "秒")
+                    sleep(1000);
                     i++;
                 }
             }
@@ -93,7 +94,26 @@ function getJsonData(url) {
         //在此处理错误
     }
 };
+// 返回脚本下载完成接口
+function donwload_OK() {
+    let res = http.post(myAPP.site, {
+        "service": "App.Zllgcimei.Imei",
+        "imei": imei,
+        "imei_tag": tag,
+        "imei_js_todo": "done",
+        "whos": whos,
+    });
 
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = html ? JSON.parse(html) : json;
+        return json;
+    } catch (err) {
+        //在此处理错误
+    }
+};
 
 // 下载脚本
 function downScriptFile(name,url) {
