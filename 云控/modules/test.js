@@ -53,6 +53,7 @@ function app_info(name,data){
 }
 
 function callback_task(id,state){
+    var url = "http://news.wenfree.cn/phalapi/public/";
     var postdata = {};
     var arr = {};
     arr["id"] = id;
