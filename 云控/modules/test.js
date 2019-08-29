@@ -58,6 +58,7 @@ function callback_task(id,state){
     var arr = {};
     arr["id"] = id;
     arr["task_state"] = state;
+    postdata["s"]="App.Zllgcimeicallback.Callback_task"
     postdata["arr"] = JSON.stringify(arr)
     log(jspost(url,postdata));
 }
