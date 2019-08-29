@@ -4,7 +4,7 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (task_info, mainEngine) {
    main();
    log("task_info",task_info);
-   callback_task("done");
+   callback_task(task_info,"done");
    mainEngine.emit("control", task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -51,8 +51,7 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-function callback_task(state){
-    var url = "http://news.wenfree.cn/phalapi/public/";
+function callback_task(task_info,state){
     var postdata = {};
     var arr = {};
     arr["id"] = task_info.id;
