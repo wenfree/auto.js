@@ -62,6 +62,5 @@ function callback_task(id,state){
     postdata["arr"] = JSON.stringify(arr)
 
     log(arr,postdata)
-
     log(jspost(url,postdata));
 }

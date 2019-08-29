@@ -1,14 +1,18 @@
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
-events.on("prepare", function (index, mainEngine) {
+events.on("prepare", function (i,task_info, mainEngine) {
     main();
    threads.shutDownAll()
    log(info)
    info["state"] = "ok";
    app_info(my_app.name,info);
 
-   mainEngine.emit("control", index);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+   log("task_info",task_info);
+   log("id=>",task_info.id)
+   callback_task(task_info.id,"done");
+
+   mainEngine.emit("control", i,task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
@@ -47,7 +51,6 @@ function sendBroadcast(appName, data) {
         }
     );
 }
-
 function jspost(url,data){
     var res = http.post(url, data);
     var data = res.body.string();
@@ -55,7 +58,6 @@ function jspost(url,data){
         return data;
     }
 }
-
 function app_info(name,data){
     var url = "http://news.wenfree.cn/phalapi/public/";
     var postdata = {};
@@ -66,12 +68,22 @@ function app_info(name,data){
     postdata["app_info"]= JSON.stringify(data);
     log(jspost(url,postdata));
 }
+function callback_task(id,state){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["task_state"] = state;
+    var postdata = {};
+    postdata["s"]="App.Zllgcimeicallback.Callback_task"
+    postdata["arr"] = JSON.stringify(arr)
 
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
 
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
 
 my_app.packageName = "com.sina.weibo";
 my_app.wechat_packageName = "com.tencent.mm"
@@ -83,7 +95,6 @@ var thread = "";
 // if(d){
 //     log(d.bounds().centerX(),d.bounds().centerY())
 // }
-
 
 function main(){
     var commnet_ = false
