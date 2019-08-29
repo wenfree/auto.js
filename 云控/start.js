@@ -45,12 +45,19 @@ function main() {
                     log("脚本存在")
                     var execution = engines.execScriptFile(path)  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                     sleep(1000)//等待子脚本运行
-    
+                    log("execution");
+                    log(execution);
                     var aengine = execution.getEngine();  //获取子脚本引擎对象(ScriptEngine)
+                    log("aengine");
+                    log(aengine);
+
                     aengine.emit("prepare", i, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
     
                     var enginess = []
-                    enginess.push(aengine); //便于后续管理  
+                    enginess.push(aengine); //便于后续管理 
+
+                    log("enginess",enginess)
+
                 } else {
                     log("脚本文件不存在,请下载后再执行")
                 }
