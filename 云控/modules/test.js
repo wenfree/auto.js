@@ -4,7 +4,8 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (task_info, mainEngine) {
    main();
    log("task_info",task_info);
-   callback_task(task_info,"done");
+   log("id=>",task_info.id)
+   callback_task(task_info.id,"done");
    mainEngine.emit("control", task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -51,10 +52,10 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-function callback_task(task_info,state){
+function callback_task(id,state){
     var postdata = {};
     var arr = {};
-    arr["id"] = task_info.id;
+    arr["id"] = id;
     arr["task_state"] = state;
     postdata["arr"] = JSON.stringify(arr)
     log(jspost(url,postdata));
