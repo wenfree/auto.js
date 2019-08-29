@@ -52,7 +52,7 @@ function main() {
                     log(aengine);
 
                     var task_info =  json.data.task;
-                    aengine.emit("prepare", task_info, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
+                    aengine.emit("prepare", i,task_info, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
     
                     var enginess = []
                     enginess.push(aengine); //便于后续管理 
