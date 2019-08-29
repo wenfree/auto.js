@@ -279,6 +279,9 @@ function main(){
                     setText(0,"今天又是元气满满的一天！")
                     sleep(2000);
                     jsclick("text","发送",true,8);
+                    back();
+                    sleep(1000);
+                    back();
                     break;
                 default:
                     log("可能没有启动设置");
