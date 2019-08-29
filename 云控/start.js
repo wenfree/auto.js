@@ -33,7 +33,7 @@ function main() {
                 downScriptFile(data[ii]["js_code"],data[ii]["js_path"]);
             }
             donwload_OK();
-            sleep(5000)//下载后休息5秒
+            sleep(500)//下载后休息5秒
             mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
         }else
         if(json.data.type == "task"){
