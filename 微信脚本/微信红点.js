@@ -3,14 +3,13 @@
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i,task_info, mainEngine) {
+    log("task_info",task_info);
+    log("id=>",task_info.id)
     mian();
     log(info);
     info["state"] = "ok";
     app_info(my_app.name,info);
     home();
-
-    log("task_info",task_info);
-    log("id=>",task_info.id)
     callback_task(task_info.id,"done");
 
     mainEngine.emit("control", i,task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
