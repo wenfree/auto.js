@@ -2,19 +2,27 @@
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
-events.on("prepare", function (index, mainEngine) {
+events.on("prepare", function (task_info, mainEngine) {
     mian();
     log(info);
     info["state"] = "ok";
     app_info(my_app.name,info);
     home();
-    mainEngine.emit("control", index);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+
+    log("task_info",task_info);
+    log("id=>",task_info.id)
+    callback_task(task_info.id,"done");
+
+    mainEngine.emit("control", task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
 
-
 var my_app = {}
+my_app.packageName = "com.tencent.mm";
+my_app.name = "微信";
+
+var thread = "";
 var info = {}
 
 function sendBroadcast(appName, data) {
@@ -52,32 +60,27 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
+function callback_task(id,state){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["task_state"] = state;
+    var postdata = {};
+    postdata["s"]="App.Zllgcimeicallback.Callback_task"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
-// my_app.packageName = "com.sina.weibo";
-my_app.packageName = "com.tencent.mm";
-my_app.name = "微信";
-var thread = "";
-
-// var d = id("contentTextView").findOne(1000)
-// if(d){
-//     log(d.bounds().centerX(),d.bounds().centerY())
-// }
-
-// mian();
-// threads.shutDownAll()
-// log(info);
-// info["state"] = "ok";
-// app_info(my_app.name,info);
-// sendBroadcast(my_app.name, JSON.stringify(info))
 
 function mian(){
     var info_read_key = true
 
     var time_line = 0
-    while (time_line < 30 ) {
+    while (time_line < 20 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
