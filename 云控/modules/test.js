@@ -1,11 +1,11 @@
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
-events.on("prepare", function (task_id, mainEngine) {
+events.on("prepare", function (task_info, mainEngine) {
    main();
-   log("task_id",task_id)
+   log("task_info",task_info)
 
-   mainEngine.emit("control", task_id);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+   mainEngine.emit("control", task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
