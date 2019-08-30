@@ -18,17 +18,17 @@ events.on("prepare", function (i,task_info, mainEngine) {
 function main() {
    console.show();
 
-//    function getStorageData(name, key) {
-//         const storage = storages.create(name);  //创建storage对象
-//         if (storage.contains(key)) {
-//             return storage.get(key);
-//         };
-//             //默认返回undefined
-//     }
-//     task_info = getStorageData(device.getIMEI(),"task_info")
-//     toastLog("tst");
-//     toastLog(task_info);
-//     toastLog("------------");
+   function getStorageData(name, key) {
+        const storage = storages.create(name);  //创建storage对象
+        if (storage.contains(key)) {
+            return storage.get(key);
+        };
+            //默认返回undefined
+    }
+    task_info = getStorageData(device.getIMEI(),"task_info")
+    toastLog("tst");
+    toastLog(task_info);
+    toastLog("------------");
 
    var times = 0;
    while (times < 10) {
