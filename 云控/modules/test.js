@@ -26,7 +26,7 @@ function main() {
             //默认返回undefined
     }
     task_info = getStorageData(device.getIMEI(),"task_info")
-    toastLog("tst");
+    toastLog("est");
     toastLog(task_info);
     toastLog("------------");
 
