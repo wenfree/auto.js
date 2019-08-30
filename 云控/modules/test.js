@@ -1,12 +1,4 @@
-function getStorageData(name, key) {
-    const storage = storages.create(name);  //创建storage对象
-    if (storage.contains(key)) {
-        return storage.get(key);
-    };
-    //默认返回undefined
-}
 
-task_info = getStorageData(device.getIMEI(),"task_info")
 
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000);
@@ -33,7 +25,17 @@ main();
 
 //执行主程序
 function main() {
-//    console.show();
+   console.show();
+
+   function getStorageData(name, key) {
+        const storage = storages.create(name);  //创建storage对象
+        if (storage.contains(key)) {
+            return storage.get(key);
+        };
+            //默认返回undefined
+    }
+    task_info = getStorageData(device.getIMEI(),"task_info")
+
 
    var times = 0;
    while (times < 10) {
@@ -42,7 +44,7 @@ function main() {
       times++;
    };
 
-//    console.hide();
+   console.hide();
 };
 
 
