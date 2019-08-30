@@ -1,7 +1,7 @@
 
 
 // 保持脚本运行
-// var ID = setInterval(() => { }, 1000);
+var ID = setInterval(() => { }, 1000);
 // 监听主脚本消息
 events.on("prepare", function (i,task_info, mainEngine) {
     log("task_info",task_info);
