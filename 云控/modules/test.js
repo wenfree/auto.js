@@ -18,8 +18,7 @@ events.on("prepare", function (i,task_info, mainEngine) {
 //    exit();
 // });
 
-log("tst",task_info);
-log("------------");
+
 main();
 //-------------------------------------------------------------------------------------------------------------------------
 
@@ -35,7 +34,8 @@ function main() {
             //默认返回undefined
     }
     task_info = getStorageData(device.getIMEI(),"task_info")
-
+    log("tst",task_info);
+    log("------------");
 
    var times = 0;
    while (times < 10) {
