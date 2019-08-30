@@ -38,7 +38,7 @@ function main() {
                 if (files.exists(path)) {
                     log("脚本存在");
                     //把数据存入adb
-                    public.setStorageData(myAPP.imei, "task_info", task_info);
+                    public.setStorageData(imei, "task_info", json.data.task);
 
                     var execution = engines.execScriptFile(path)  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                     sleep(1000)//等待子脚本运行
