@@ -33,7 +33,7 @@ main();
 
 //执行主程序
 function main() {
-   console.show();
+//    console.show();
 
    var times = 0;
    while (times < 10) {
@@ -42,7 +42,7 @@ function main() {
       times++;
    };
 
-   console.hide();
+//    console.hide();
 };
 
 
