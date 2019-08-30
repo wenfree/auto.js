@@ -231,19 +231,18 @@ ui.taskMonitor.on("check", function (checked) {
         Imei_sevice();
         execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
 
-        // thread = threads.start(function(){
-        //     while(true){
-        //         if (imei_online()){
-        //             log("掉线了")
-        //             Imei_sevice();
-        //             execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
-        //         }else{
-        //             log("在线")
-        //         }
-        //         sleep(1000*60)
-        //     }
-        // });
-
+        setInterval(
+            function(){
+                if (imei_online()){
+                    log("掉线了")
+                    Imei_sevice();
+                    execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+                }else{
+                    log("在线");
+                }
+            }, 
+            1000*60
+        );
     } else {
         //停止任务监控
         toastLog("停止任务监控")
