@@ -18,11 +18,6 @@ events.on("prepare", function (i,task_info, mainEngine) {
 //    exit();
 // });
 
-
-
-main();
-callback_task(task_info.id,"done");
-mainEngine.emit("control", 1);
 //-------------------------------------------------------------------------------------------------------------------------
 
 //执行主程序
