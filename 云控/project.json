@@ -1,0 +1,10 @@
+{
+    "name": "云控",
+    "main": "main.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.wenfree.cn",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}
