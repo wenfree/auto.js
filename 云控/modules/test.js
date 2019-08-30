@@ -25,6 +25,9 @@ events.on("prepare", function (i,task_info, mainEngine) {
 //    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 //    exit();
 // });
+
+log(task_info);
+
 main();
 //-------------------------------------------------------------------------------------------------------------------------
 
