@@ -34,8 +34,9 @@ function main() {
             //默认返回undefined
     }
     task_info = getStorageData(device.getIMEI(),"task_info")
-    log("tst",task_info);
-    log("------------");
+    toastLog("tst");
+    toastLog(task_info);
+    toastLog("------------");
 
    var times = 0;
    while (times < 10) {
