@@ -201,6 +201,28 @@ ui.editDevice.on("check", function (checked) {
     setObject(checked);  // 设置组件是否可用
 });
 
+
+function jspost(url,data){
+    var res = http.post(url, data);
+    var data = res.body.string();
+    if(data){
+        return data;
+    }
+}
+function imei_online(){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var postdata = {};
+    postdata["s"]="App.Zllgcimeionline.Imei";
+    postdata["imei"]= device.getIMEI();
+    var r = (jspost(url,postdata));
+    if (r){
+        var r = JSON.parse(r)
+        if (r.data == "fail"){
+            return true
+        }
+    }
+}
+
 // 启动任务监控
 var execution;
 ui.taskMonitor.on("check", function (checked) {
@@ -208,10 +230,25 @@ ui.taskMonitor.on("check", function (checked) {
         toastLog("开启任务监控");
         Imei_sevice();
         execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+
+        // thread = threads.start(function(){
+        //     while(true){
+        //         if (imei_online()){
+        //             log("掉线了")
+        //             Imei_sevice();
+        //             execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+        //         }else{
+        //             log("在线")
+        //         }
+        //         sleep(1000*60)
+        //     }
+        // });
+
     } else {
         //停止任务监控
         toastLog("停止任务监控")
-        execution.getEngine().forceStop();   
+        execution.getEngine().forceStop();
+        // threads.shutDownAll();
     };
 });
 

@@ -10,13 +10,7 @@ var tag = public.getStorageData(imei, "tag");
 var whos = public.getStorageData(imei, "whos");
 
 //-------------------------------------------------------------------------------------------------------------------------
-var date1, date2, index;
-try{
-    main();
-}catch(e){
-    log("报错");
-    log(e);
-}
+main();
 
 function main() {
     var ID = setInterval(() => { }, 1000);  //保持主脚本不停，实际使用有ui也可以没有这个
@@ -42,22 +36,28 @@ function main() {
                 let path = engines.myEngine().cwd() + "/modules/" + data[i] + "/" + data[i] + ".js"  //脚本路径
                 log(path)
                 if (files.exists(path)) {
-                    log("脚本存在")
+                    log("脚本存在");
+                    //把数据存入adb
+                    public.setStorageData(myAPP.imei, "task_info", task_info);
+
                     var execution = engines.execScriptFile(path)  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                     sleep(1000)//等待子脚本运行
-                    log("execution");
+                    log("execution-------------");
                     log(execution);
                     var aengine = execution.getEngine();  //获取子脚本引擎对象(ScriptEngine)
-                    log("aengine");
+                    log("aengine---------------");
                     log(aengine);
+                    sleep(1000)//等待子脚本运行
 
                     var task_info =  json.data.task;
-                    aengine.emit("prepare", i,task_info, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
-    
-                    var enginess = []
-                    enginess.push(aengine); //便于后续管理 
+                    log("task_info-------------");
+                    log(task_info);
+                    sleep(1000)//等待子脚本运行
 
-                    log("enginess",enginess)
+                    // aengine.emit("prepare", i,task_info, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
+                    // var enginess = []
+                    // enginess.push(aengine); //便于后续管理 
+                    // log("enginess--",enginess)
 
                 } else {
                     log("脚本文件不存在,请下载后再执行")

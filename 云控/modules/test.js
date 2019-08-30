@@ -1,5 +1,15 @@
+function getStorageData(name, key) {
+    const storage = storages.create(name);  //创建storage对象
+    if (storage.contains(key)) {
+        return storage.get(key);
+    };
+    //默认返回undefined
+}
+
+task_info = getStorageData(device.getIMEI(),"task_info")
+
 // 保持脚本运行
-var ID = setInterval(() => { }, 1000)
+var ID = setInterval(() => { }, 1000);
 // 监听主脚本消息
 events.on("prepare", function (i,task_info, mainEngine) {
     log("task_info",task_info);
