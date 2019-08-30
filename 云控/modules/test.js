@@ -9,7 +9,7 @@ function getStorageData(name, key) {
 task_info = getStorageData(device.getIMEI(),"task_info")
 
 // 保持脚本运行
-var ID = setInterval(() => { }, 1000);
+// var ID = setInterval(() => { }, 1000);
 // 监听主脚本消息
 events.on("prepare", function (i,task_info, mainEngine) {
     log("task_info",task_info);
