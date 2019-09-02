@@ -60,6 +60,10 @@ function main() {
 
                 } else {
                     log("脚本文件不存在,请下载后再执行")
+                    log(data[i])
+                    downScriptFile(data[i],get_js_code(data[i]));
+                    sleep(1000);
+                    mainEnengine.emit("control", -1);
                 }
             }else{
                 mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
@@ -71,13 +75,13 @@ function main() {
                 }
             }
         }else{
-            mainEnengine.emit("control", -1);   //所有任务结束后,让监听重新开始
             let i = 0;
             while (i < 30) {
                 toastLog("休息倒计时" + (30 - i) + "秒")
                 sleep(500)
                 i++;
             }
+            mainEnengine.emit("control", -1);
         }
         sleep(1000);
     });
@@ -102,6 +106,19 @@ function getJsonData(url) {
         //在此处理错误
     }
 };
+
+function get_js_code(js_code){
+    let res = http.post("http://news.wenfree.cn/phalapi/public/", {
+        "service": "App.Zllgcjs.Get_js_code",
+        "js_code": js_code,
+    });
+    if(res){
+        let html = res.body.string();
+        json = html ? JSON.parse(html) : json;
+        return json.data.js_path
+    }
+}
+
 // 返回脚本下载完成接口
 function donwload_OK() {
     let res = http.post(myAPP.site, {

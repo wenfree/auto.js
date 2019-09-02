@@ -234,7 +234,9 @@ ui.taskMonitor.on("check", function (checked) {
         setInterval(
             function(){
                 if (imei_online()){
-                    log("掉线了")
+                    log("掉线了");
+                    execution.getEngine().forceStop();
+                    sleep(1000);
                     Imei_sevice();
                     execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                 }else{
