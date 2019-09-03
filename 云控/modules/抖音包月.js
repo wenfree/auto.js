@@ -16,10 +16,12 @@ events.on("prepare", function (i,task_info, mainEngine) {
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
-
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
 my_app.name = "抖音";
+
+var task_dyid = "1011723321";
+var task_nickname = "希望之光网红店";
 
 var thread = "";
 var info = {}
@@ -76,25 +78,75 @@ log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
-// main();
+main();
 
 function main(){
     var info_read_key = true
+    var into_page_info = false
+    var see_times = 0
 
     var time_line = 0
-    while (time_line < 8 ) {
+    while (time_line < 20 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
+                case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
+                    if(into_page_info){
+                        click(720/2,1440/2);
+                        sleep(100);
+                        click(720/2,1440/2);
+                        sleep(100);
+                        click(720/2,1440/2);
+                        sleep(100);
+                        see_times++
+                        if (see_times > 5){
+                            back();
+                            sleep(1000);
+                            back();
+                            sleep(1000);
+                            back();
+                            sleep(1000);
+                            back();
+                            sleep(1000);
+                            back();
+                            sleep(1000);
+                            return true
+                        } 
+                    }else{
+                        back();
+                    }
+                    break;
+                case "com.ss.android.ugc.aweme.profile.ui.UserProfileActivity":
+                    log("被关注主页详情")
+                    var d = descMatches("/点赞数.*/").find();
+                    if(d){
+                        for (var i=0;i<d.length;i++){
+                            var dd = d[i]
+                            log(dd.text())
+                        }
+                        click__(d[0]);
+                        into_page_info = true
+                    }
+                    break;
+                case "com.ss.android.ugc.aweme.following.ui.FollowRelationTabActivity":
+                    jsclick("text","搜索用户备注或昵称",true,3)
+                    setText(0,task_dyid);
+                    sleep(2000);
+                    if( jsclick("text",task_nickname,true,2) ){
+
+                    }
+                    break;
                 case "com.ss.android.ugc.aweme.main.MainActivity":
                     log("抖音首页");
-                    if( info_read_key && jsclick("text","我",true,2)){
+                    if( jsclick("text","我",true,2)){
                         if(jsclick("text","编辑资料",false,1)){
-                            if(info_read()){
+                            if(info_read_key && info_read()){
                                 info_read_key = false;
+                            }else{
+                                jsclick("text","关注",true,2);
                             }
                         }else{
                             jsclick("text","我",true,2);
@@ -159,10 +211,11 @@ function Tips(){
     return true
 }
 
+
 function info_read(){
     var d = textMatches(/抖音号.*/).findOne(1000);
     if(d){
-        info["username"]=d.text().replace("抖音号: ",'');
+        info["username"]=d.text().replace('抖音号: ','');
         var d = d.parent().parent().parent();
         if (d) {
             var d = d.children()
@@ -180,6 +233,7 @@ function info_read(){
             d.forEach(function (child, index) {
                 log(index, child.text(),child.id());
             });
+            var dykeylist = []
             for (var i=0;i<d.length;i++){
                 var dd = d[i].children()
                 log(dd[1].text())
@@ -192,12 +246,22 @@ function info_read(){
                     info["fen"] = dd[0].text()
                 }
             }
+
+            var d = id("text1").find()
+            if(d){
+                var dykeylist = ["作品","动态","喜欢"]
+                for( var i=0;i<d.length;i++){
+                    var dd = d[i];
+                    info[dykeylist[i]]=dd.text().replace(/\D/g,"");
+                    log(dd.text());
+                }
+            }
+
             log(info);
             return true
         }
     }
 }
-
 
 
 // Tips()
