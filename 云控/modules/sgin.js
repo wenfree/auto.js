@@ -191,3 +191,7 @@ log("r",r)
 
          log("" + tradeId + r + optUserid + plateId + hydm + goodsId + e)
 log( hex_md5("" + tradeId + r + optUserid + plateId + hydm + goodsId + e) )
+
+
+
+
