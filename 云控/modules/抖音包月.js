@@ -145,6 +145,7 @@ function Tips(){
     log("查询弹窗");
     var textTips = {}
     textTips["允许"]="text";
+    textTips["我知道了"]="text";
     textTips["保存"]="text";
     textTips["立即升级"]="text";
     // textTips["设置"]="text";
@@ -161,7 +162,7 @@ function Tips(){
 function info_read(){
     var d = textMatches(/抖音号.*/).findOne(1000);
     if(d){
-        info["username"]=d.text().replace('抖音号: ','');
+        info["username"]=d.text().replace("抖音号: ",'');
         var d = d.parent().parent().parent();
         if (d) {
             var d = d.children()
@@ -191,30 +192,16 @@ function info_read(){
                     info["fen"] = dd[0].text()
                 }
             }
-
-            var d = id("text1").find()
-            if(d){
-                var dykeylist = ["作品","动态","喜欢"]
-                for( var i=0;i<d.length;i++){
-                    var dd = d[i];
-                    info[dykeylist[i]]=dd.text().replace(/\D/g,"");
-                    log(dd.text());
-                }
-            }
-
             log(info);
             return true
         }
     }
 }
 
-// info_read()
-
 
 
 // Tips()
 // clearApp()
-
 /*
     清除app数据，无需root权限
     备注:仅适用小米手机
