@@ -6,6 +6,7 @@ events.on("prepare", function (i,task_info, mainEngine) {
     log("id=>",task_info.id)
     main();
     log(info);
+    info["model"]= my_app.name;
     info["state"] = "ok";
     app_info(my_app.name,info);
     home();
@@ -160,7 +161,7 @@ function Tips(){
 function info_read(){
     var d = textMatches(/抖音号.*/).findOne(1000);
     if(d){
-        info["dyid"]=d.text();
+        info["username"]=d.text();
         var d = d.parent().parent().parent();
         if (d) {
             var d = d.children()
