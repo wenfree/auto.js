@@ -78,12 +78,16 @@ log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
-main();
+// var d = id("ah1").findOne(1000);
+// log(d.bounds().centerX(),d.bounds().centerY());
+
+// main();
 
 function main(){
     var info_read_key = true
     var into_page_info = false
     var see_times = 0
+    var nofollow = true
 
     var time_line = 0
     while (time_line < 20 ) {
@@ -132,11 +136,15 @@ function main(){
                     }
                     break;
                 case "com.ss.android.ugc.aweme.following.ui.FollowRelationTabActivity":
+                    log('粉丝关注界面');
                     jsclick("text","搜索用户备注或昵称",true,3)
                     setText(0,task_dyid);
                     sleep(2000);
                     if( jsclick("text",task_nickname,true,2) ){
-
+                        
+                    }else if(jsclick("text","搜索结果为空",false,2)){
+                        log("没有关注博主");
+                        follow();
                     }
                     break;
                 case "com.ss.android.ugc.aweme.main.MainActivity":
@@ -261,6 +269,75 @@ function info_read(){
             return true
         }
     }
+}
+
+
+function follow(){
+    
+    var f_time_line = 0
+    while (f_time_line < 60 ) {
+        
+        var currenapp = currentPackage()
+        if( currenapp == my_app.packageName ){
+            var UI = currentActivity();
+            log('UI',UI,f_time_line)
+            switch(UI){
+                case "com.ss.android.ugc.aweme.discover.activity.SearchResultActivity":
+                    if(jsclick("text",task_dyid,false,0)){
+                        if(jsclick("text","关注",true,2)){
+                            back();
+                            sleep(2000);
+                            back();
+                            sleep(2000);
+                            return true;
+                        }else{
+                            back();
+                            sleep(2000);
+                        }
+                    }
+                    break;
+                case "com.ss.android.ugc.aweme.discover.ui.DiscoverActivity":
+                    var d = className("EditText").findOne(1000);
+                    if (d){
+                        click__(d);
+                        setText(0,task_dyid)
+                        sleep(1000);
+                        jsclick("text","搜索",true,2)
+                    }
+                    break;
+                case "com.ss.android.ugc.aweme.main.MainActivity":
+                    if(jsclick("text","推荐",false,0)){
+                        click(56,102)
+                    }else if(jsclick("text","首页",true,2)){
+                    }else{
+                        back();
+                    }
+                    break;
+                default:
+                    log("可能没有启动设置");
+                    back();
+                    sleep(2000);
+                    break;
+            }
+        }else if(currenapp == "com.android.settings"){
+            jsclick("text","允许来自此来源的应用",true,2);
+            back();
+        }else if(currenapp == "com.miui.packageinstaller"){
+            log("安装app");
+            if(jsclick("text","应用商店安装",true,2)){
+            }else if(jsclick("text","设置",true,2)){
+            }else{
+                jsclick("text","安装",true,2);
+            }
+        }else{
+            active(my_app.packageName,5)
+        }
+
+        sleep(1000*2);
+        Tips();
+        f_time_line++
+    }
+
 }
 
 
