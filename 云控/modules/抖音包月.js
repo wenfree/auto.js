@@ -86,8 +86,9 @@ log(device.width,device.height)
 function main(){
     var info_read_key = true
     var into_page_info = false
+    var see_vidoe = 0
     var see_times = 0
-    var nofollow = true
+    var install = true
 
     var time_line = 0
     while (time_line < 20 ) {
@@ -99,26 +100,34 @@ function main(){
             switch(UI){
                 case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
                     if(into_page_info){
-                        click(720/2,1440/2);
-                        sleep(100);
-                        click(720/2,1440/2);
-                        sleep(100);
-                        click(720/2,1440/2);
-                        sleep(100);
+                        if (see_vidoe < random(2,3)){
+                            click(720/2,1440/2);
+                            sleep(100);
+                            click(720/2,1440/2);
+                            sleep(100);
+                            click(720/2,1440/2);
+                            sleep(100);
+                            if(random(1,100)> 50){
+                                see_vidoe++
+                                swipe(device.width/2, device.height*0.8, device.width/2, device.height*0.2, random(200,2000) );
+                                sleep(random(1000,3000));
+                            }
+                        }else{
+                            if (see_times > 10){
+                                back();
+                                sleep(1000);
+                                back();
+                                sleep(1000);
+                                back();
+                                sleep(1000);
+                                back();
+                                sleep(1000);
+                                back();
+                                sleep(1000);
+                                return true
+                            } 
+                        }
                         see_times++
-                        if (see_times > 5){
-                            back();
-                            sleep(1000);
-                            back();
-                            sleep(1000);
-                            back();
-                            sleep(1000);
-                            back();
-                            sleep(1000);
-                            back();
-                            sleep(1000);
-                            return true
-                        } 
                     }else{
                         back();
                     }
@@ -142,7 +151,7 @@ function main(){
                     sleep(2000);
                     if( jsclick("text",task_nickname,true,2) ){
                         
-                    }else if(jsclick("text","搜索结果为空",false,2)){
+                    }else{
                         log("没有关注博主");
                         follow();
                     }
@@ -189,7 +198,11 @@ function main(){
             if(jsclick("text","应用商店安装",true,2)){
             }else if(jsclick("text","设置",true,2)){
             }else{
-                jsclick("text","安装",true,2);
+                if(install && jsclick("text","安装",true,2) ){
+                    install = false;
+                }else{
+                    jsclick("text","打开",true,2)
+                }
             }
         }else{
             active(my_app.packageName,5)
