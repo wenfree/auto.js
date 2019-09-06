@@ -91,7 +91,7 @@ function main(){
     var install = true
 
     var time_line = 0
-    while (time_line < 20 ) {
+    while (time_line < 60 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
@@ -106,7 +106,7 @@ function main(){
                             click(720/2,1440/2);
                             sleep(100);
                             click(720/2,1440/2);
-                            sleep(100);
+                            sleep(1000);
                             if(random(1,100)> 50){
                                 see_vidoe++
                                 swipe(device.width/2, device.height*0.8, device.width/2, device.height*0.2, random(200,2000) );
@@ -288,7 +288,7 @@ function info_read(){
 function follow(){
     
     var f_time_line = 0
-    while (f_time_line < 60 ) {
+    while (f_time_line < 30 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
@@ -302,6 +302,7 @@ function follow(){
                             sleep(2000);
                             back();
                             sleep(2000);
+                        }else if(jsclick("text","已关注",false,2)){
                             return true;
                         }else{
                             back();

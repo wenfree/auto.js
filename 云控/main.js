@@ -177,6 +177,8 @@ ui.tabs.setupWithViewPager(ui.viewpager);
 
 getData(true);  // 初始化界面组件数据
 
+
+
 //---------------------------------------------------------------------------------------------------------
 ui.autoService.on("check", function (checked) {
     // 用户勾选无障碍服务的选项时，跳转到页面让用户去开启
@@ -242,7 +244,7 @@ ui.taskMonitor.on("check", function (checked) {
                     log("在线");
                 }
             }, 
-            1000*60
+            1000*60*10
         );
     } else {
         //停止任务监控
