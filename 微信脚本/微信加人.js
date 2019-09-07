@@ -2,7 +2,7 @@ var my_app = {}
 var info = {}
 
 function sendBroadcast(appName, data) {
-    app.launchPackage("com.flow.factory");
+    // app.launchPackage("com.flow.factory");
     sleep(2000)
     var mapObject = {
         appName: appName,
