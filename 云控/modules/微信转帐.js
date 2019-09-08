@@ -8,7 +8,7 @@ events.on("prepare", function (i,task_info, mainEngine) {
     var task_data = JSON.parse(task_info.task_data);
     my_app.pay_id = task_data.userid
     var deviceinfo = JSON.parse(task_info.task_info);
-    my_app.pay_pwd = deviceinfo.wehcat_pwd
+    my_app.pay_pwd = deviceinfo.wechat_pwd
 
     info["model"]= my_app.name;
     info["state"] = "fail";
