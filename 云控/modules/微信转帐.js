@@ -10,6 +10,8 @@ events.on("prepare", function (i,task_info, mainEngine) {
     var deviceinfo = JSON.parse(task_info.task_info);
     my_app.pay_pwd = deviceinfo.wechat_pwd
 
+    log(my_app.pay_pwd);
+
     info["model"]= my_app.name;
     info["state"] = "fail";
     if(main()) info["state"] = "ok"
