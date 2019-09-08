@@ -260,6 +260,18 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
+function callback_task(id,state){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["task_state"] = state;
+    var postdata = {};
+    postdata["s"]="App.Zllgcimeicallback.Callback_task"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
 
 
 
