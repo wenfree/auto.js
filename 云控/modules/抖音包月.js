@@ -4,13 +4,19 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i,task_info, mainEngine) {
     log("task_info",task_info);
     log("id=>",task_info.id)
-    main();
-    log(info);
+    
+    var task_data = JSON.parse(task_info.task_data);
+    task_dyid = task_data.userid
+    task_nickname = task_data.nicename
+
+
     info["model"]= my_app.name;
-    info["state"] = "ok";
+    info["state"] = "fail";
+    if(main()) info["state"] = "ok"
     app_info(my_app.name,info);
     home();
     callback_task(task_info.id,"done");
+    log(info);
 
     mainEngine.emit("control", i,task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
@@ -94,10 +100,10 @@ log(device.width,device.height)
 // var d = id("ah1").findOne(1000);
 // log(d.bounds().centerX(),d.bounds().centerY());
 
-info["state"] = "fail";
-if(main()) info["state"] ="ok";
-app_info("抖音包月",info);
-sendBroadcast(my_app.name, JSON.stringify(info));
+// info["state"] = "fail";
+// if(main()) info["state"] ="ok";
+// app_info("抖音包月",info);
+// sendBroadcast(my_app.name, JSON.stringify(info));
 
 function main(){
     var info_read_key = true
@@ -239,6 +245,7 @@ function Tips(){
     textTips["我知道了"]="text";
     textTips["保存"]="text";
     textTips["立即升级"]="text";
+    textTips["取消"]="text";
     // textTips["设置"]="text";
     textTips["好的"]="text";
     for(var k in textTips){
