@@ -323,11 +323,9 @@ function follow(){
                 case "com.ss.android.ugc.aweme.discover.activity.SearchResultActivity":
                     if(jsclick("text",task_dyid,false,0)){
                         if(jsclick("text","关注",true,2)){
-                            back();
-                            sleep(2000);
-                            back();
-                            sleep(2000);
                         }else if(jsclick("text","已关注",false,2)){
+                            back();
+                            sleep(2000);
                             return true;
                         }else{
                             back();
