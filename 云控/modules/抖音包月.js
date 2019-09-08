@@ -19,12 +19,27 @@ events.on("prepare", function (i,task_info, mainEngine) {
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
 my_app.name = "抖音";
+var info = {}
+var width = 720;
+var height = 1440;
 
 var task_dyid = "1011723321";
 var task_nickname = "希望之光网红店";
 
-var thread = "";
-var info = {}
+function get_data() {
+    try {
+        log("----canshu"+db.taskParam());
+        return JSON.parse(db.taskParam());
+    } catch (error) {
+        log("异常" + error);
+    }
+}
+
+var data = get_data();
+if(data){
+    task_dyid = data.dyid;
+    task_nickname = data.nickname;
+}
 
 function sendBroadcast(appName, data) {
     app.launchPackage("com.flow.factory");
@@ -73,15 +88,16 @@ function callback_task(id,state){
     log(jspost(url,postdata));
 }
 
-
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
 // var d = id("ah1").findOne(1000);
 // log(d.bounds().centerX(),d.bounds().centerY());
 
-// main();
+info["state"] = "fail";
+if(main()) info["state"] ="ok";
+app_info("抖音包月",info);
+sendBroadcast(my_app.name, JSON.stringify(info));
 
 function main(){
     var info_read_key = true
@@ -142,6 +158,8 @@ function main(){
                         }
                         click__(d[0]);
                         into_page_info = true
+                    }else{
+                        click_(38,1232);
                     }
                     break;
                 case "com.ss.android.ugc.aweme.following.ui.FollowRelationTabActivity":
@@ -456,16 +474,16 @@ function rd(min,max){
 //输入密码
 function input_pay_password(password){
     var key_xy = {}
-    key_xy[1]=[device.width*0.3,device.height*7/10]
-    key_xy[2]=[device.width*0.5,device.height*7/10]
-    key_xy[3]=[device.width*0.8,device.height*7/10]
-    key_xy[4]=[device.width*0.3,device.height*7.5/10]
-    key_xy[5]=[device.width*0.5,device.height*7.5/10]
-    key_xy[6]=[device.width*0.8,device.height*7.5/10]
-    key_xy[7]=[device.width*0.3,device.height*8/10]
-    key_xy[8]=[device.width*0.5,device.height*8/10]
-    key_xy[9]=[device.width*0.8,device.height*8/10]
-    key_xy[0]=[device.width*0.5,device.height*9/10]
+    key_xy[1]=[width*0.3,height*7/10]
+    key_xy[2]=[width*0.5,height*7/10]
+    key_xy[3]=[width*0.8,height*7/10]
+    key_xy[4]=[width*0.3,height*7.5/10]
+    key_xy[5]=[width*0.5,height*7.5/10]
+    key_xy[6]=[width*0.8,height*7.5/10]
+    key_xy[7]=[width*0.3,height*8/10]
+    key_xy[8]=[width*0.5,height*8/10]
+    key_xy[9]=[width*0.8,height*8/10]
+    key_xy[0]=[width*0.5,height*9/10]
     // 清除其它字符
     password = password.replace(/\D/g,"")
     for(var i=0;i<password.length;i++){
