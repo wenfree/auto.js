@@ -2,7 +2,7 @@
 // 唯一的全局变量MYAPP:
 var myAPP = {};
 myAPP.title = "超级云控";  //脚本名称
-myAPP.programVersion = "v20190824";   //版本号
+myAPP.programVersion = "v1";   //版本号
 myAPP.packageName = currentPackage();   //程序自身包名
 myAPP.color = "#333333";   //主题色
 myAPP.screen_size = device.width + '×' + device.height
@@ -230,7 +230,7 @@ var execution;
 ui.taskMonitor.on("check", function (checked) {
     if (checked) {
         toastLog("开启任务监控");
-        Imei_sevice();
+        // Imei_sevice();
         execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
 
         setInterval(

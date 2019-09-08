@@ -1,3 +1,30 @@
+// 保持脚本运行
+var ID = setInterval(() => { }, 1000)
+// 监听主脚本消息
+events.on("prepare", function (i,task_info, mainEngine) {
+    log("task_info",task_info);
+    log("id=>",task_info.id)
+    
+    var task_data = JSON.parse(task_info.task_data);
+    my_app.pay_id = task_data.userid
+    var deviceinfo = JSON.parse(task_info.task_info);
+    my_app.pay_pwd = deviceinfo.wehcat_pwd
+
+    info["model"]= my_app.name;
+    info["state"] = "fail";
+    if(main()) info["state"] = "ok"
+    app_info(my_app.name,info);
+    home();
+    callback_task(task_info.id,"done");
+    log(info);
+
+    mainEngine.emit("control", i,task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
+});
+
+
+
+
 log(currentActivity())
 log(currentPackage())
 
@@ -36,10 +63,10 @@ if(data){
 // }
 
 
-info["state"] = "fail";
-if (main()) info["state"] = "ok";
-app_info("微信转帐",info);
-sendBroadcast(my_app.name, JSON.stringify(info));
+// info["state"] = "fail";
+// if (main()) info["state"] = "ok";
+// app_info("微信转帐",info);
+// sendBroadcast(my_app.name, JSON.stringify(info));
 
 function main(){
     if (read_money()) return pay();
