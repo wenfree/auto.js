@@ -27,4 +27,4 @@ function get_sms_by_time(name,timeline){
 var datetime =new Date().getTime();
 log(datetime)
 
-log(get_sms_by_time("米",datetime -60*60*13*1000));
+log(get_sms_by_time("知乎",datetime -60*60*13*1000));

@@ -161,6 +161,10 @@ function download_lzy(urls){
         log("activity",activity)
         switch (activity) {
             case "com.android.browser.BrowserActivity":
+                var d = textMatches(/下载\( .*/).findOne(200);
+                if (d){
+                    click__(d);
+                }else
                 if(jsclick("text","立即下载",true,2)){
                 }else if(jsclick("id","submit",true,2)){
                 }else{
@@ -202,7 +206,7 @@ log(device.width,device.height)
 var width = device.width;
 var height = device.height
 
-var urls = "https://www.lanzous.com/i63uyyh"
+var urls = "https://www.lanzous.com/i64q6na"
 // if(!launchApp("流量工厂插件")){
 //     download_lzy();
 // }
@@ -264,16 +268,17 @@ function opens(){
                         kaifakey = true;
                     }
                 }else if(kaifakey){
-                    var d = id("checkbox").findOnce(2);
+                    var d = id("checkbox").find();
                     if(d){
-                        if(d.checked()){
+                        var dd= d[2];
+                        if(dd.checked()){
                             if(jsclick("text","开启开发者选项",true,2)){
                                 back();
                                 sleep(2000);
                                 back();
                                 return true;
                             }
-                        }else                
+                        }else
                         if(jsclick("text","直接进入系统",true,2)){}
                     }
                 }else{
@@ -550,3 +555,16 @@ if(download_lzy(urls)) if(opens()) if(autocj()) if(main()) info["state"]="ok";
 log(info);
 sendBroadcast("插件权限",JSON.stringify(info));
 
+
+// var d = id("checkbox").find();
+// if(d){
+//     var dd= d[2];
+//     if(dd.checked()){
+//         if(jsclick("text","开启开发者选项",true,2)){
+//             back();
+//             sleep(2000);
+//             back();
+//         }
+//     }else                
+//     if(jsclick("text","直接进入系统",true,2)){}
+// }
