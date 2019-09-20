@@ -77,9 +77,9 @@ function sendBroadcast(appName, data) {
 }
 
 function sms_get_unmber(sms){
-    var check_sms = sms.match(/\【咪咕游戏\】/)
+    var check_sms = sms.match(/\【咪咕快游\】/)
     // log(check_sms)
-    if(check_sms[0]== "【咪咕游戏】"){
+    if(check_sms[0]== "【咪咕快游】"){
         sms = sms.match(/\d{4,6}/)
         log(sms[0])
         return sms[0]
@@ -360,7 +360,7 @@ function reg(){
     var sendsms = true
 
     var time_line = 0
-    while (time_line < 5 ) {
+    while (time_line < 60 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
@@ -369,11 +369,24 @@ function reg(){
             switch(UI){
                 // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceClassiflySelectActivity":
                 // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceInterestSelectActivity":
+                case "cn.emagsoftware.gamehall.ui.activity.splash.SelectGenderActivity":
+                    if(random(1,100)> 20){
+                        jsclick("text","我是男生",true,2)
+                    }else{
+                        jsclick("text","我是女生",true,2)
+                    }
+                    break;
                 case "cn.emagsoftware.gamehall.ui.activity.home.HomeActivity":
                     log('首页？');
                     if(jsclick("text","未登录",true,2)){
                         if(jsclick("id","cn.emagsoftware.gamehall:id/tv_logout_describe",true,2)){
-
+                        }
+                    }else if(jsclick("text","我的",true,2)){
+                        var d = id("cn.emagsoftware.gamehall:id/tv_credits").findOne(500);
+                        if (d){
+                            info['data']['积分'] = d.text();
+                            info['state']="ok";
+                            return true;
                         }
                     }
                     break;
@@ -384,7 +397,7 @@ function reg(){
                     if( sendsms && jsclick("text"," 获取验证码",true,5)){
                         sendsms = false;
                     }else if(jsclick("text","短信验证码",false,2)){
-                        var sms_ = get_sms_by_time("咪咕游戏",sms_time-1*60*60*1000);
+                        var sms_ = get_sms_by_time("咪咕快游",sms_time-1*60*60*1000);
                         if(sms_){
                             log("取到短信");
                             var sms_ = sms_get_unmber(sms_);
@@ -400,10 +413,100 @@ function reg(){
                     break;
                 default:
                     log("可能没有启动设置");
-                    // back();
-                    // sleep(2000);
-                    // home();
-                    // sleep(2000);
+                    back();
+                    sleep(2000);
+                    home();
+                    sleep(2000);
+                    break;
+            }
+        }else if(currenapp == "com.tencent.mm"){
+            log("微信在前端");
+            jsclick("text","同意",true,2);
+        }else if(currenapp == "com.android.settings"){
+            jsclick("text","允许来自此来源的应用",true,2);
+            back();
+        }else if(currenapp == "com.miui.packageinstaller"){
+            log("安装app");
+            if(jsclick("text","应用商店安装",true,2)){
+            }else if(jsclick("text","设置",true,2)){
+            }else{
+                if(install && jsclick("text","安装",true,2) ){
+                    install = false;
+                }else{
+                    jsclick("text","打开",true,2)
+                }
+            }
+        }else{
+            active(my_app.packageName,5)
+        }
+        sleep(1000*2);
+        Tips();
+        time_line++
+    }
+}
+
+
+function read(){
+
+    var time_line = 0
+    while (time_line < 10 ) {
+        
+        var currenapp = currentPackage()
+        if( currenapp == my_app.packageName ){
+            var UI = currentActivity();
+            log('UI',UI,time_line)
+            switch(UI){
+                // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceClassiflySelectActivity":
+                // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceInterestSelectActivity":
+                case "cn.emagsoftware.gamehall.ui.activity.splash.SelectGenderActivity":
+                    if(random(1,100)> 20){
+                        jsclick("text","我是男生",true,2)
+                    }else{
+                        jsclick("text","我是女生",true,2)
+                    }
+                    break;
+                case "cn.emagsoftware.gamehall.ui.activity.home.HomeActivity":
+                    log('首页？');
+                    var list = {
+                        0:"推荐",
+                        1:"游戏",
+                        2:"有趣"
+                    };
+                    var key_list = random(0,2);
+                    if(jsclick("text",list[key_list],true,3)){
+                        swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
+                        sleep(random(1000,3000));
+                        swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
+                        sleep(random(1000,3000));
+                    }
+                    break;
+                case "com.cmcc.migusso.sdk.activity.LoginActivity":
+                    log("登录页");
+                    setText(0,my_app.phone);
+                    sleep(2000);
+                    if( sendsms && jsclick("text"," 获取验证码",true,5)){
+                        sendsms = false;
+                    }else if(jsclick("text","短信验证码",false,2)){
+                        var sms_ = get_sms_by_time("咪咕快游",sms_time-60*1000);
+                        if(sms_){
+                            log("取到短信");
+                            var sms_ = sms_get_unmber(sms_);
+                            if(sms_){
+                                setText(1,sms_);
+                            }
+                        }else{
+                            log("没有短信");
+                            sleep(2000);
+                        }
+                    }else if(jsclick('text',"登录",true,5)){
+                    }
+                    break;
+                default:
+                    log("可能没有启动设置");
+                    back();
+                    sleep(2000);
+                    home();
+                    sleep(2000);
                     break;
             }
         }else if(currenapp == "com.tencent.mm"){
@@ -461,18 +564,22 @@ log(device.width,device.height)
 var my_app = {};
 my_app.packageName = "cn.emagsoftware.gamehall";
 my_app.name = "咪咕快游";
-my_app.phone = "17160153581";
+my_app.phone = "18128823268";
 var info = {};
 info['data']={};
-info['model'] = 'accounts';
+// info['model'] = 'accounts';
 var width = 720;
 var height = 1440;
 
+
+
+info['state']="fail";
 if (download_market(my_app.name)){
-    reg();
+    if(reg()) read();
 }
-
-
+log(info);
+app_info(my_app.name,info);
+sendBroadcast(my_app.name,JSON.stringify(info));
 
 var d = textMatches(/.*/).find();
 if(d){

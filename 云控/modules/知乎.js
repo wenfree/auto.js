@@ -94,6 +94,16 @@ function jspost(url,data){
     }
 }
 
+function nickname_get(){
+    var url = "http://news.wenfree.cn/phalapi/public/";
+    var postdata = {};
+    postdata["s"]="App.Site.Nickname";
+    var res = jspost(url, postdata);
+    if(res){
+        return JSON.parse(res).data.nickname
+    }
+}
+
 function app_info(name,data){
     var url = "http://news.wenfree.cn/phalapi/public/";
     var postdata = {};
@@ -368,7 +378,10 @@ function reg(){
             switch(UI){
                 case "com.zhihu.android.app.ui.activity.HostActivity":
                     log("知乎欢迎页");
-                    if(jsclick("text","输入验证码",false,2)){
+                    if(jsclick("text","请输入手机号",true,2)){
+                        setText(0,"17160153581");
+                    }else if(jsclick("text","获取验证码",true,2)){
+                    }else if(jsclick("text","输入验证码",false,2)){
                         var sms_ = get_sms_by_time("知乎",sms_time-1*60*60*1000);
                         log(sms_);
                         if(sms_){
@@ -380,7 +393,7 @@ function reg(){
                                 var d = id("com.zhihu.android:id/passcode_input_"+(i+1)).findOne(200);
                                 if(d){
                                    input(sms_.substring(i,i+1));
-                                   sleep(100);
+                                   sleep(200);
                                 }
                             }
                         }
@@ -403,7 +416,7 @@ function reg(){
                 case "com.zhihu.android.app.ui.activity.MainActivity":
                     log("知乎首页");
                     swipe(width*0.5,height*3/10,width*0.5,height*5/10,1500);
-                    if(jsclick("id","wechat_login_btn",true,2)){
+                    if(jsclick("id","phone_login_btn",true,2)){
                     }else
                     if(jsclick("text","未登录",true,2)){
                     }else 
@@ -435,16 +448,27 @@ function reg(){
                     break;
                 case "com.zhihu.android.wxapi.WXEntryActivity":
                     log("绑定手机页面");
-                    jsclick("text","请输入手机号码",true,2);
-                    setText(0,"17160153581");
+                    if(jsclick("text","请输入手机号码",true,2)){
+                        setText(0,"17160153581");
+                    }
                     sleep(1000);
                     jsclick("text","发送验证码",true,2);
                     break;
                 case "com.zhihu.android.app.ui.activity.SocialOauthActivity":
                     log("设置个人信息");
+                    if(jsclick("text","请输入手机号",true,2)){
+                        setText(0,"17160153581");
+                    }else if(jsclick("text","获取验证码",true,2)){
+                    }else
                     if(jsclick("text","设置个人信息",false,2)){
-                        jsclick("text","进入",true,2)
-                    }else if(jsclick("text","微信登录",true,2)){
+                        if(jsclick("text","进入",true,2)) {
+                        }else if(jsclick("text","输入用户名",false,2)){
+                            setText(0,nickname_get());
+                            sleep(1000);
+                            back();
+                        }else if(jsclick("text","完成",true,2)){
+                        }
+                    }else if(jsclick("text","手机号登录",true,2)){
                     }
                     break;
                 default:
@@ -481,6 +505,74 @@ function reg(){
     }
 }
 
+
+function read(){
+    var time_line = 0
+    while (time_line < 20 ) {
+        
+        var currenapp = currentPackage()
+        if( currenapp == my_app.packageName ){
+            var UI = currentActivity();
+            log('UI',UI,time_line)
+            switch(UI){
+                case "com.zhihu.android.app.ui.activity.HostActivity":
+                    log("知乎欢迎页");
+                 
+                    break;
+                case "com.zhihu.android.app.ui.activity.MainActivity":
+                    log("知乎首页");
+                    swipe(width*0.5,height*3/10,width*0.5,height*5/10,1500);
+                    sleep(2000);
+                    var list = { 0:'首页',1:"会员",2:"通知",3:"我的"}
+                    var key_list = random(0,2);
+                    if(jsclick("text",list[key_list],true,3)){
+                        swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
+                        sleep(random(1000,3000));
+                        swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
+                        sleep(random(1000,3000));
+                    }
+                   
+                    break;
+                case "com.zhihu.android.wxapi.WXEntryActivity":
+                    log("绑定手机页面");
+    
+                    break;
+            
+                default:
+                    log("可能没有启动设置");
+                    back();
+                    sleep(2000);
+                    home();
+                    sleep(2000);
+                    break;
+            }
+        }else if(currenapp == "com.tencent.mm"){
+            log("微信在前端");
+            jsclick("text","同意",true,2);
+        }else if(currenapp == "com.android.settings"){
+            jsclick("text","允许来自此来源的应用",true,2);
+            back();
+        }else if(currenapp == "com.miui.packageinstaller"){
+            log("安装app");
+            if(jsclick("text","应用商店安装",true,2)){
+            }else if(jsclick("text","设置",true,2)){
+            }else{
+                if(install && jsclick("text","安装",true,2) ){
+                    install = false;
+                }else{
+                    jsclick("text","打开",true,2)
+                }
+            }
+        }else{
+            active(my_app.packageName,5)
+        }
+        sleep(1000*2);
+        Tips();
+        time_line++
+    }
+}
+
+
 function Tips(){
     log("查询弹窗");
     var textTips = {}
@@ -489,7 +581,7 @@ function Tips(){
     textTips["知道了"]="text";
     textTips["立即升级"]="text";
     textTips["取消"]="text";
-    // textTips["设置"]="text";
+    textTips["com.zhihu.android:id/dismiss"]="id";
     textTips["好的"]="text";
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
@@ -515,12 +607,11 @@ info['model'] = 'accounts';
 var width = 720;
 var height = 1440;
 
-if (download_market(my_app.name)){
-    reg();
-}
+// if (download_market(my_app.name)){
+//     reg()
+// }
 
-
-
+read()
 
 
 
