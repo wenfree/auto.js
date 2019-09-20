@@ -40,39 +40,14 @@ var info = {}
 var width = 720;
 var height = 1440;
 
-function get_data() {
-    try {
-        log("----canshu"+db.taskParam());
-        return JSON.parse(db.taskParam());
-    } catch (error) {
-        log("异常" + error);
-    }
-}
-
-var data = get_data();
-if(data){
-    my_app.pay_id = data.pay_id;
-    my_app.pay_pwd = data.pay_pwd;
-}
-
-// var d = textMatches(/.*/).find();
-// if (d){
-//     for (var i=0;i<d.length;i++){
-//         log(d[i].text(),d[i].id())
-//     }
-// }else{
-//     log("nothing")
-// }
-
 
 info["state"] = "fail";
 if (main()) info["state"] = "ok";
-app_info("微信转帐",info);
+app_info("微信余额",info);
 sendBroadcast(my_app.name, JSON.stringify(info));
 
 function main(){
-    if (read_money()) return pay();
-    return true;
+    return read_money();
 }
 
 function read_money(){
@@ -111,10 +86,6 @@ function read_money(){
                             sleep(1000);
                             back();
                             sleep(2000);
-                            if (my_app.pay_id.length < 2){
-                                info["state"] = "ok";
-                                return false;
-                            }
                             return true
                         }
                     }
@@ -276,10 +247,6 @@ function callback_task(id,state){
     log(arr,postdata)
     log(jspost(url,postdata));
 }
-
-
-
-
 
 
 //基础函数

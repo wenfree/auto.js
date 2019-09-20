@@ -168,7 +168,7 @@ function download_lzy(urls){
                 if(jsclick("text","立即下载",true,2)){
                 }else if(jsclick("id","submit",true,2)){
                 }else{
-                    back();
+                    // back();
                 }
                 break;
             case "com.android.packageinstaller.PackageInstallerActivity":
@@ -203,10 +203,12 @@ function download_lzy(urls){
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-var width = device.width;
-var height = device.height
+// var width = device.width;
+var width = 720;
+// var height = device.height;
+var height = 1440;
 
-var urls = "https://www.lanzous.com/i64q6na"
+var urls = "https://file.hiei.xin/com.flowplugin.apk"
 // if(!launchApp("流量工厂插件")){
 //     download_lzy();
 // }
@@ -261,7 +263,7 @@ function opens(){
                         back();
                     }
                 }else if(opreationKey){
-                    swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
+                    swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
                     sleep(2000);
                     if(jsclick("text","开发者选项",true,2)){
                         opreationKey = false;
@@ -390,7 +392,7 @@ function main(){
         switch(UI){
             case "com.miui.appmanager.ApplicationsDetailsActivity":
                 log("流量工厂设置主界面");
-                swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
+                swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
                 sleep(500);
                 if (autoactive_()){
                 }else if(battery_()){
@@ -414,7 +416,7 @@ function main(){
                         }
                     }
                 }
-                swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
+                swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
                 sleep(2000);
                 var d = id('action').find();
                 if(d){
@@ -429,7 +431,7 @@ function main(){
                 }
                 if(jsclick("text","后台弹出界面",false,2)){
                     if(last){
-                        swipe(device.width*0.5,device.height*8/10,device.width*0.5,device.height*3/10,1500);
+                        swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
                         sleep(2000);
                         last = false
                     }else{

@@ -87,18 +87,43 @@ function mian(){
                             jsclick("text","我",true,2);
                         }
                     }else{
-                        jsclick("id","ddl",true,2);
-                        jsclick("id","o0",true,rd(3,5));
-                        if(!jsclick("text","微信",false,2)){
+                        if(jsclick("id","com.tencent.mm:id/ddl",true,2)){
+                        }else 
+                        if(jsclick("text","朋友推荐",false,0)){
+                            if(jsclick("id","com.tencent.mm:id/by3",true,2)){
+                            }
+                        }
+                        if(jsclick("id","com.tencent.mm:id/o0",true,rd(3,5))){
+                            sleep(random(3000,5000));
                             back();
+                        }else{
+                            if(jsclick("desc","切换到按住说话",false,2)){
+                                back();
+                            }
                         }
                     }
                     break;
                 case "com.tencent.mm.plugin.account.ui.LoginVoiceUI":
                     disable_key++;
                     if(disable_key >= 5){
-                        info['state'] = "封号";
-                        return true;
+                        info['state'] = "forbidden";
+                        return false;
+                    }
+                    break;
+                case "com.tencent.mm.plugin.subapp.ui.friend.FMessageConversationUI":
+                    log("添加朋友界面");
+                    sleep(2000);
+                    if(jsclick("text","接受",true,2)){
+                    }else{
+                        back();
+                    }
+                    break;
+                case "com.tencent.mm.plugin.profile.ui.SayHiWithSnsPermissionUI":
+                    log("接受好友验证界面");
+                    sleep(2000);
+                    if(jsclick("text","完成",true,2)){
+                    }else{
+                        back();
                     }
                     break;
                 default:
@@ -142,7 +167,7 @@ function info_read(){
                 log(index,child.text());
             })
             info["nick_name"]=d[0].text();
-            info["wechat_code"]=d[1].text();
+            info['data']["code"]=d[1].text();
             log(info);
             return true
         }
@@ -246,8 +271,14 @@ var thread = "";
 var info = {}
 
 
-// info["state"] = "fail";
-// mian();
-// home();
-// app_info(my_app.name,info);
-// sendBroadcast(my_app.name,JSON.stringify(info));
+info["state"] = "fail";
+info["data"] = {};
+info["package_name"] = my_app.packageName;
+info["model"] = "accounts";
+
+mian();
+back();
+log(info);
+app_info(my_app.name,info);
+sendBroadcast(my_app.name,JSON.stringify(info));
+

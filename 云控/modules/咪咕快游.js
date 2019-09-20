@@ -77,9 +77,9 @@ function sendBroadcast(appName, data) {
 }
 
 function sms_get_unmber(sms){
-    var check_sms = sms.match(/\【知乎\】/)
+    var check_sms = sms.match(/\【咪咕游戏\】/)
     // log(check_sms)
-    if(check_sms[0]== "【知乎】"){
+    if(check_sms[0]== "【咪咕游戏】"){
         sms = sms.match(/\d{4,6}/)
         log(sms[0])
         return sms[0]
@@ -357,102 +357,53 @@ function reg(){
     var see_times = 0
     var install = true
     var sms_time = new Date().getTime();
+    var sendsms = true
 
     var time_line = 0
-    while (time_line < 60 ) {
+    while (time_line < 5 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
-                case "com.zhihu.android.app.ui.activity.HostActivity":
-                    log("知乎欢迎页");
-                    if(jsclick("text","输入验证码",false,2)){
-                        var sms_ = get_sms_by_time("知乎",sms_time-1*60*60*1000);
-                        log(sms_);
+                // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceClassiflySelectActivity":
+                // case "cn.emagsoftware.gamehall.ui.activity.splash.PreferenceInterestSelectActivity":
+                case "cn.emagsoftware.gamehall.ui.activity.home.HomeActivity":
+                    log('首页？');
+                    if(jsclick("text","未登录",true,2)){
+                        if(jsclick("id","cn.emagsoftware.gamehall:id/tv_logout_describe",true,2)){
+
+                        }
+                    }
+                    break;
+                case "com.cmcc.migusso.sdk.activity.LoginActivity":
+                    log("登录页");
+                    setText(0,my_app.phone);
+                    sleep(2000);
+                    if( sendsms && jsclick("text"," 获取验证码",true,5)){
+                        sendsms = false;
+                    }else if(jsclick("text","短信验证码",false,2)){
+                        var sms_ = get_sms_by_time("咪咕游戏",sms_time-1*60*60*1000);
                         if(sms_){
                             log("取到短信");
                             var sms_ = sms_get_unmber(sms_);
-                            for(var i=0;i<sms_.length;i++){
-                                // id("com.zhihu.android:id/passcode_input_"+(i+1)).findOne(200).setText(sms_.substring(i,i+1));
-                                // jsclick("id","com.zhihu.android:id/passcode_input_"+(i+1),false,2);
-                                var d = id("com.zhihu.android:id/passcode_input_"+(i+1)).findOne(200);
-                                if(d){
-                                   input(sms_.substring(i,i+1));
-                                   sleep(100);
-                                }
+                            if(sms_){
+                                setText(1,sms_);
                             }
+                        }else{
+                            log("没有短信");
+                            sleep(2000);
                         }
-                    }else
-                    if(jsclick("text","我同意",true,2)){
-                    }else{
-                        var d = id("cl_item_container").find();
-                        if(d){
-                            if(d.length > 10){
-                                for (var i=0;i<d.length;i++){
-                                    if(random(1,100) < 60){
-                                        click__(d[i]);
-                                    }
-                                }
-                            }
-                        }
-                        jsclick("id","txt_next_step",true,2);
-                    }
-                    break;
-                case "com.zhihu.android.app.ui.activity.MainActivity":
-                    log("知乎首页");
-                    swipe(width*0.5,height*3/10,width*0.5,height*5/10,1500);
-                    if(jsclick("id","wechat_login_btn",true,2)){
-                    }else
-                    if(jsclick("text","未登录",true,2)){
-                    }else 
-                    if( jsclick("text","我同意",true,2)){
-                    }else if(jsclick("text","我的",true,2)){
-                        if(jsclick("text","个人主页",false,2)){
-
-                            var d = id("com.zhihu.android:id/name").findOne(200)
-                            if(d){
-                                info["nick_name"] = d.text();
-                            }
-                            var d = id("data_view").findOne(500);
-                            if(d){
-                                var dd = d.children();
-                                log(dd.length)
-                                for(var i=0;i<dd.length;i++){
-                                    log(i,dd[i].text(),dd[i].id())
-                                }
-                                info['data']["我的创作"]=dd[0].text();
-                                info['data']["关注"]=dd[2].text();
-                                info['data']["收藏"]=dd[4].text();
-                                info['data']["最近浏览"]=dd[6].text();
-                            }
-                            log(info);
-                            app_info(my_app.name,info);
-                            return true
-                        }
-                    }
-                    break;
-                case "com.zhihu.android.wxapi.WXEntryActivity":
-                    log("绑定手机页面");
-                    jsclick("text","请输入手机号码",true,2);
-                    setText(0,"17160153581");
-                    sleep(1000);
-                    jsclick("text","发送验证码",true,2);
-                    break;
-                case "com.zhihu.android.app.ui.activity.SocialOauthActivity":
-                    log("设置个人信息");
-                    if(jsclick("text","设置个人信息",false,2)){
-                        jsclick("text","进入",true,2)
-                    }else if(jsclick("text","微信登录",true,2)){
+                    }else if(jsclick('text',"登录",true,5)){
                     }
                     break;
                 default:
                     log("可能没有启动设置");
-                    back();
-                    sleep(2000);
-                    home();
-                    sleep(2000);
+                    // back();
+                    // sleep(2000);
+                    // home();
+                    // sleep(2000);
                     break;
             }
         }else if(currenapp == "com.tencent.mm"){
@@ -489,8 +440,9 @@ function Tips(){
     textTips["知道了"]="text";
     textTips["立即升级"]="text";
     textTips["取消"]="text";
-    // textTips["设置"]="text";
     textTips["好的"]="text";
+    textTips["跳过"]="text";
+    textTips["cn.emagsoftware.gamehall:id/cancel"]="id";
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
             return false
@@ -507,8 +459,9 @@ log(currentActivity());
 log(device.width,device.height)
 
 var my_app = {};
-my_app.packageName = "com.zhihu.android";
-my_app.name = "知乎";
+my_app.packageName = "cn.emagsoftware.gamehall";
+my_app.name = "咪咕快游";
+my_app.phone = "17160153581";
 var info = {};
 info['data']={};
 info['model'] = 'accounts';
@@ -521,8 +474,12 @@ if (download_market(my_app.name)){
 
 
 
-
-
+var d = textMatches(/.*/).find();
+if(d){
+    for(var i=0;i<d.length;i++){
+        log(i,d[i].text(),d[i].id())
+    }
+}
 
 
 
