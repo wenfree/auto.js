@@ -35,7 +35,7 @@ function app_info(name,data){
     var postdata = {};
     postdata["s"]="App.ZllgcAppInfo.App_info";
     postdata["imei"]= device.getIMEI();
-    postdata["imei_tag"]= tag;
+    // postdata["imei_tag"]= tag;
     postdata["app_name"]= name;
     postdata["whos"]= "ouwen000";
     postdata["app_info"]= JSON.stringify(data);
@@ -59,17 +59,8 @@ log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
-var myAPP = {};
-myAPP.imei = device.getIMEI();
-myAPP.site = "http://api.wenfree.cn/public/"   //后台地址
-myAPP.taskTimeOut = 60000;  //单任务超时时长
-var public = require('public.js');
-var imei = myAPP.imei;
-var phone = public.getStorageData(imei, "phone");
-var tag = public.getStorageData(imei, "tag");
-var whos = public.getStorageData(imei, "whos");
-
-// main();
+main();
+home();
 
 function main(){
     var info_read_key = true
@@ -84,28 +75,25 @@ function main(){
             switch(UI){
                 case "com.ss.android.ugc.aweme.main.MainActivity":
                     log("抖音首页");
-                    if( info_read_key && jsclick("text","我",true,2)){
-                        if(jsclick("text","编辑资料",false,1)){
+                    if( jsclick("text","我",false,2)){
+
+                        if ( info_read_key && jsclick("text","编辑资料",false,1)){
                             if(info_read()){
                                 info_read_key = false;
                             }
+                        }else if(jsclick('id',"c4l",true,2)){
+                            jsclick('text',"个人名片",true,2)
                         }else{
                             jsclick("text","我",true,2);
                         }
-                    }else{
-                        jsclick("text","首页",true,random(4,6))
-                        var like_key = random(1,100);
-                        if (like_key > 50){
-                            var d = textMatches(/.*w/).findOne(1000);
-                            if(d){
-                                click__(d);
-                                sleep(2000);
-                            }
-                        }
-                        swipe(device.width/2, device.height*0.8, device.width/2, device.height*0.2, random(200,2000) );
-                        sleep(random(1000,3000))
                     }
                     break;
+                case "com.ss.android.ugc.aweme.qrcode.v2.QRCodeActivityV2":
+                    jsclick("desc","分享",true,3);
+                    jsclick("text","复制链接",true,2)
+                    info.links = getClip();
+                    app_info(my_app.name,info);
+                    return true
                 default:
                     log("可能没有启动设置");
                     back();
@@ -137,6 +125,7 @@ function main(){
 function Tips(){
     log("查询弹窗");
     var textTips = {}
+    textTips["暂不"]="text";
     textTips["允许"]="text";
     textTips["保存"]="text";
     textTips["立即升级"]="text";
