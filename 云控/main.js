@@ -9,7 +9,7 @@ myAPP.screen_size = device.width + '×' + device.height
 myAPP.avail_mem = (device.getAvailMem() / device.getTotalMem() * 100).toFixed(2) + '%'
 myAPP.imei = device.getIMEI()
 
-myAPP.site = "http://news.wenfree.cn/phalapi/public/"   //后台地址
+myAPP.site = "http://api.wenfree.cn/public/"   //后台地址
 myAPP.taskTimeOut = 60000;  //单任务超时时长
 
 //引用公共函数模块
@@ -212,7 +212,7 @@ function jspost(url,data){
     }
 }
 function imei_online(){
-    var url = "http://news.wenfree.cn/phalapi/public/";
+    var url = "http://api.wenfree.cn/public/";
     var postdata = {};
     postdata["s"]="App.Zllgcimeionline.Imei";
     postdata["imei"]= device.getIMEI();
@@ -231,21 +231,20 @@ ui.taskMonitor.on("check", function (checked) {
     if (checked) {
         toastLog("开启任务监控");
         // Imei_sevice();
-        execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
-
-        setInterval(
-            function(){
-                if (imei_online()){
-                    log("掉线了");
-                    execution.getEngine().forceStop();
-                    Imei_sevice();
-                    execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
-                }else{
-                    log("在线");
-                }
-            }, 
-            1000*60*10
-        );
+        // execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+        // setInterval(
+        //     function(){
+        //         if (imei_online()){
+        //             log("掉线了");
+        //             execution.getEngine().forceStop();
+        //             Imei_sevice();
+        //             execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
+        //         }else{
+        //             log("在线");
+        //         }
+        //     }, 
+        //     1000*60*10
+        // );
     } else {
         //停止任务监控
         toastLog("停止任务监控")
@@ -297,9 +296,9 @@ ui.sure.on("click", function () {
 //同步imei的接口
 function Imei_sevice(){
     try{
-        var url = "http://news.wenfree.cn/phalapi/public/";
+        var url = "http://api.wenfree.cn/public/";
         var r = http.post(url, {
-            "s": "App.Zllgcimei.Imei",
+            "s": "App.NewsImei.Imei",
             "imei": device.getIMEI(),
             "imei_phone": myAPP.phone,
             "imei_tag": myAPP.tag,
@@ -324,6 +323,17 @@ function Imei_sevice(){
         r = r.body.string()
         if(r){
             log(r);
+
+            var info_ = JSON.parse(r)
+            
+            log(info_)
+
+            app.openUrl(info_.data.imei_img_url);
+            setClip(info_.data.imei_nickname);
+
+            
+
+
             return true;
         }
     }catch(err){
