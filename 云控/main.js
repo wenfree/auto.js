@@ -230,21 +230,8 @@ var execution;
 ui.taskMonitor.on("check", function (checked) {
     if (checked) {
         toastLog("开启任务监控");
-        // Imei_sevice();
-        // execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
-        // setInterval(
-        //     function(){
-        //         if (imei_online()){
-        //             log("掉线了");
-        //             execution.getEngine().forceStop();
-        //             Imei_sevice();
-        //             execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
-        //         }else{
-        //             log("在线");
-        //         }
-        //     }, 
-        //     1000*60*10
-        // );
+        Imei_sevice();
+        execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
     } else {
         //停止任务监控
         toastLog("停止任务监控")
@@ -323,17 +310,6 @@ function Imei_sevice(){
         r = r.body.string()
         if(r){
             log(r);
-
-            var info_ = JSON.parse(r)
-            
-            log(info_)
-
-            app.openUrl(info_.data.imei_img_url);
-            setClip(info_.data.imei_nickname);
-
-            
-
-
             return true;
         }
     }catch(err){

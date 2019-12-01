@@ -1,49 +1,26 @@
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
-events.on("prepare", function (i,task_info, mainEngine) {
-    log("task_info",task_info);
-    log("id=>",task_info.id)
+events.on("prepare", function (i, mainEngine) {
+
     main();
-    log(info);
+
     info["model"]= my_app.name;
     info["state"] = "ok";
     app_info(my_app.name,info);
     home();
-    callback_task(task_info.id,"done");
-
-    mainEngine.emit("control", i,task_info);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+    
+    mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
 
-
-
-
-
-
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
-my_app.name = "抖音";
+my_app.name = "抖音取链接";
 
 var thread = "";
 var info = {}
-
-function sendBroadcast(appName, data) {
-    app.launchPackage("com.flow.factory");
-    sleep(2000)
-    var mapObject = {
-        appName: appName,
-        data: data
-    }
-    app.sendBroadcast(
-        {
-            packageName: "com.flow.factory",
-            className: "com.flow.factory.trafficfactory.broadcast.TaskBroadCast",
-            extras: mapObject
-        }
-    );
-}
 
 function jspost(url,data){
     var res = http.post(url, data);
@@ -54,10 +31,11 @@ function jspost(url,data){
 }
 
 function app_info(name,data){
-    var url = "http://news.wenfree.cn/phalapi/public/";
+    var url = "http://api.wenfree.cn/public/";
     var postdata = {};
     postdata["s"]="App.ZllgcAppInfo.App_info";
     postdata["imei"]= device.getIMEI();
+    postdata["imei_tag"]= tag;
     postdata["app_name"]= name;
     postdata["whos"]= "ouwen000";
     postdata["app_info"]= JSON.stringify(data);
@@ -65,7 +43,7 @@ function app_info(name,data){
 }
 
 function callback_task(id,state){
-    var url = "http://news.wenfree.cn/phalapi/public/";
+    var url = "http://api.wenfree.cn/public/";
     var arr = {};
     arr["id"] = id;
     arr["task_state"] = state;
@@ -81,7 +59,17 @@ log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
-main();
+var myAPP = {};
+myAPP.imei = device.getIMEI();
+myAPP.site = "http://api.wenfree.cn/public/"   //后台地址
+myAPP.taskTimeOut = 60000;  //单任务超时时长
+var public = require('public.js');
+var imei = myAPP.imei;
+var phone = public.getStorageData(imei, "phone");
+var tag = public.getStorageData(imei, "tag");
+var whos = public.getStorageData(imei, "whos");
+
+// main();
 
 function main(){
     var info_read_key = true

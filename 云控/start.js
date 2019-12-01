@@ -1,7 +1,7 @@
 // 脚本功能:主脚本依次启动两个脚本,并循环运行.主脚本不停止.
 var myAPP = {};
 myAPP.imei = device.getIMEI();
-myAPP.site = "http://news.wenfree.cn/phalapi/public/"   //后台地址
+myAPP.site = "http://api.wenfree.cn/public/"   //后台地址
 myAPP.taskTimeOut = 60000;  //单任务超时时长
 var public = require('public.js');
 var imei = myAPP.imei;
@@ -22,9 +22,15 @@ function main() {
         var json = getJsonData(myAPP.site);   //获取脚本任务配置
         
         if(json.data.type == "download"){
-            var data = JSON.parse(json.data.data);
+            var data = json.data.data;
             for (let ii=0;ii<data.length;ii++){
-                downScriptFile(data[ii]["js_code"],data[ii]["js_path"]);
+                var name = data[ii];
+                var url = get_js_code(name)
+
+                log("name",name,"url",url)
+
+
+                downScriptFile(name,url);
             }
             donwload_OK();
             sleep(500)//下载后休息5秒
@@ -33,12 +39,12 @@ function main() {
         if(json.data.type == "task"){
             var data = json.data.data
             if (i < data.length) {
-                let path = engines.myEngine().cwd() + "/modules/" + data[i] + "/" + data[i] + ".js"  //脚本路径
+                let path = engines.myEngine().cwd() + "/modules/" + data[i] + ".js"  //脚本路径
                 log(path)
                 if (files.exists(path)) {
                     log("脚本存在");
                     //把数据存入adb
-                    public.setStorageData(imei, "task_info", json.data.task);
+                    public.setStorageData(imei, "task_info");
 
                     var execution = engines.execScriptFile(path)  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
                     sleep(1000)//等待子脚本运行
@@ -48,12 +54,7 @@ function main() {
                     log("aengine---------------");
                     log(aengine);
                     sleep(1000)//等待子脚本运行
-
-                    var task_info =  json.data.task;
-                    log("task_info-------------");
-                    log(task_info);
-                    sleep(1000)//等待子脚本运行
-                    aengine.emit("prepare", i,task_info, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
+                    aengine.emit("prepare", i, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
                     // var enginess = []
                     // enginess.push(aengine); //便于后续管理 
                     // log("enginess--",enginess)
@@ -61,7 +62,9 @@ function main() {
                 } else {
                     log("脚本文件不存在,请下载后再执行")
                     log(data[i])
-                    downScriptFile(data[i],get_js_code(data[i]));
+                    var name = data[i]
+                    var url = get_js_code(name)
+                    downScriptFile(name,url);
                     sleep(1000);
                     mainEnengine.emit("control", -1);
                 }
@@ -70,7 +73,7 @@ function main() {
                 let i = 0;
                 while (i < 5) {
                     toastLog("休息倒计时" + (5 - i) + "秒")
-                    sleep(1000);
+                    sleep(2000);
                     i++;
                 }
             }
@@ -90,7 +93,7 @@ function main() {
 // 获取接口数据
 function getJsonData(url) {
     let res = http.post(url, {
-        "service": "App.Zllgcimei.Imei",
+        "s": "App.NewsImei.Imei",
         "imei": imei,
         "imei_tag": tag,
         "whos": whos,
@@ -100,22 +103,24 @@ function getJsonData(url) {
     try {
         let html = res.body.string();
         // log(html)
-        json = html ? JSON.parse(html) : json;
+        json = JSON.parse(html);
+        log(json)
         return json;
     } catch (err) {
         //在此处理错误
     }
 };
 
-function get_js_code(js_code){
-    let res = http.post("http://news.wenfree.cn/phalapi/public/", {
-        "service": "App.Zllgcjs.Get_js_code",
-        "js_code": js_code,
+function get_js_code(js_name){
+    let res = http.post("http://api.wenfree.cn/public/", {
+        "s": "App.NewsJs.Get_js_name",
+        "js_name": js_name,
     });
     if(res){
         let html = res.body.string();
         json = html ? JSON.parse(html) : json;
-        return json.data.js_path
+        log(json)
+        return json.data.js_url
     }
 }
 
