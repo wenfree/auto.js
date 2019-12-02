@@ -26,10 +26,7 @@ function main() {
             for (let ii=0;ii<data.length;ii++){
                 var name = data[ii];
                 var url = get_js_code(name)
-
                 log("name",name,"url",url)
-
-
                 downScriptFile(name,url);
             }
             donwload_OK();
@@ -39,7 +36,7 @@ function main() {
         if(json.data.type == "task"){
             var data = json.data.data
             if (i < data.length) {
-                let path = engines.myEngine().cwd() + "/modules/" + data[i] + ".js"  //脚本路径
+                let path = engines.myEngine().cwd() + "/modules/"+ data[i]+ "/"+ data[i] + ".js"  //脚本路径
                 log(path)
                 if (files.exists(path)) {
                     log("脚本存在");

@@ -1,4 +1,19 @@
 
+// 保持脚本运行
+var ID = setInterval(() => { }, 1000)
+// 监听主脚本消息
+events.on("prepare", function (i, mainEngine) {
+
+    main();
+
+    mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
+});
+
+
+
+
+
 /*
     清除app数据，无需root权限
     备注:仅适用小米手机
@@ -212,13 +227,6 @@ var urls = "https://file.hiei.xin/com.flowplugin.apk"
 // if(!launchApp("流量工厂插件")){
 //     download_lzy();
 // }
-
-function open_my_phone(){
-    app.startActivity({
-        packageName: "com.android.settings",
-        className: "com.android.settings.MiuiSettings",
-    });
-}
 
 
 function opens(){
@@ -463,7 +471,7 @@ function main(){
                     home();
                     sleep(1000*2);
                 }
-                openAppSetting("com.flow.factory.reboot");
+                openAppSetting("com.wenfree.cn");
                 sleep(5000);
                 break;
         }
@@ -537,25 +545,15 @@ function autocj(){
     }
 }
 
-function sendBroadcast(appName){
-    sleep(2000)
-    var mapObject = {
-            appName:appName,
-        }
-    app.sendBroadcast(
-        {
-            packageName: "com.flow.factory",
-            className: "com.flow.factory.trafficfactory.broadcast.TaskBroadCast",
-            extras:mapObject
-        }   
-    );
-}
+
 
 var info = {}
 info["state"]="fail";
-if(download_lzy(urls)) if(opens()) if(autocj()) if(main()) info["state"]="ok";
-log(info);
-sendBroadcast("插件权限",JSON.stringify(info));
+// if(download_lzy(urls)) 
+// if(opens()) if(autocj()) 
+// if(main()) info["state"]="ok";
+// log(info);
+// sendBroadcast("插件权限",JSON.stringify(info));
 
 
 // var d = id("checkbox").find();

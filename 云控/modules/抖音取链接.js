@@ -4,10 +4,11 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     main();
-
     info["model"]= my_app.name;
     info["state"] = "ok";
     app_info(my_app.name,info);
+    home();
+    sleep(2000)
     home();
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
@@ -17,7 +18,8 @@ events.on("prepare", function (i, mainEngine) {
 
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
-my_app.name = "抖音取链接";
+my_app.name = "链接";
+my_app.link = undefined
 
 var thread = "";
 var info = {}
@@ -30,14 +32,24 @@ function jspost(url,data){
     }
 }
 
+//读取本地数据
+function getStorageData(name, key) {
+    const storage = storages.create(name);  //创建storage对象
+    if (storage.contains(key)) {
+        return storage.get(key);
+    };
+    //默认返回undefined
+}
+
 function app_info(name,data){
     var url = "http://api.wenfree.cn/public/";
     var postdata = {};
     postdata["s"]="App.ZllgcAppInfo.App_info";
     postdata["imei"]= device.getIMEI();
-    // postdata["imei_tag"]= tag;
+    postdata["imei_tag"]= getStorageData(device.getIMEI(), "tag");;
     postdata["app_name"]= name;
     postdata["whos"]= "ouwen000";
+    postdata["link"]= my_app.link;
     postdata["app_info"]= JSON.stringify(data);
     log(jspost(url,postdata));
 }
@@ -54,13 +66,9 @@ function callback_task(id,state){
     log(jspost(url,postdata));
 }
 
-
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
-main();
-home();
 
 function main(){
     var info_read_key = true
@@ -91,8 +99,8 @@ function main(){
                 case "com.ss.android.ugc.aweme.qrcode.v2.QRCodeActivityV2":
                     jsclick("desc","分享",true,3);
                     jsclick("text","复制链接",true,2)
-                    info.links = getClip();
-                    app_info(my_app.name,info);
+                    my_app.link = getClip();
+                    my_app.link = my_app.link.replace("在抖音，记录美好生活！","")
                     return true
                 default:
                     log("可能没有启动设置");
@@ -183,7 +191,6 @@ function info_read(){
                     log(dd.text());
                 }
             }
-
             log(info);
             return true
         }
