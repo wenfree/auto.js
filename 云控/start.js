@@ -49,7 +49,18 @@ function main() {
                     log("aengine---------------");
                     log(aengine);
                     sleep(1000)//等待子脚本运行
-                    aengine.emit("prepare", i, mainEnengine)   //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
+                    
+                    try
+                    {
+                        aengine.emit("prepare", i, mainEnengine)
+                    }
+                    catch(err)
+                    {
+                        //在这里处理错误
+                        log(err)
+                        mainEnengine.emit("control", -1);
+                    }
+                       //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
                     // var enginess = []
                     // enginess.push(aengine); //便于后续管理 
                     // log("enginess--",enginess)
@@ -68,15 +79,16 @@ function main() {
                 let i = 0;
                 while (i < 5) {
                     toastLog("休息倒计时" + (5 - i) + "秒")
-                    sleep(2000);
+                    sleep(1000);
                     i++;
                 }
             }
         }else{
             let i = 0;
-            while (i < 30) {
-                toastLog("休息倒计时" + (30 - i) + "秒")
-                sleep(500)
+            toastLog("休息倒计时" + (60) + "秒")
+            while (i < 60) {
+                // toastLog("休息倒计时" + (30 - i) + "秒")
+                sleep(1000)
                 i++;
             }
             mainEnengine.emit("control", -1);
@@ -122,7 +134,7 @@ function get_js_code(js_name){
 // 返回脚本下载完成接口
 function donwload_OK() {
     let res = http.post(myAPP.site, {
-        "service": "App.Zllgcimei.Imei",
+        "service": "NewsImei.Imei",
         "imei": imei,
         "imei_tag": tag,
         "imei_js_todo": "done",

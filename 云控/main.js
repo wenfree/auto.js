@@ -1,8 +1,8 @@
 "ui";
 // 唯一的全局变量MYAPP:
 var myAPP = {};
-myAPP.title = "超级云控";  //脚本名称
-myAPP.programVersion = "v1";   //版本号
+myAPP.title = "云上精灵";  //脚本名称
+myAPP.programVersion = "v2";   //版本号
 myAPP.packageName = currentPackage();   //程序自身包名
 myAPP.color = "#333333";   //主题色
 myAPP.screen_size = device.width + '×' + device.height
