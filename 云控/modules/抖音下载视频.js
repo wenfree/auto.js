@@ -10,6 +10,7 @@ events.on("prepare", function (i, mainEngine) {
     }
     info["model"]= my_app.name;
     app_info(my_app.name,info);
+    exit();
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
@@ -196,7 +197,6 @@ function send(){
                 case "com.ss.android.ugc.aweme.shortvideo.ui.VideoPublishActivity":
                     log("发布")
                     jsclick("desc","发布",true,2)
-                    sleep(1000*60*60);
                     return true
                 case "com.ss.android.ugc.aweme.main.MainActivity":
                     jsclick("text","我",true,2)

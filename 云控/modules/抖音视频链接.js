@@ -4,6 +4,7 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     main();
+    exit();
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
@@ -12,7 +13,7 @@ events.on("prepare", function (i, mainEngine) {
 
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
-my_app.name = "链接";
+my_app.name = "视频链接";
 my_app.link = undefined
 
 var thread = "";
@@ -65,11 +66,12 @@ log(currentActivity());
 log(device.width,device.height)
 
 
-main();
+// main();
 
 
 function main(){
     var info_read_key = true
+    var open_key = false
 
     var time_line = 0
     while (time_line < 8 ) {
@@ -79,16 +81,40 @@ function main(){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
+                case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
+                    log("详细页面");
+                    if (open_key){
+                        if (jsclick("text","取消",false,2)){
+                            swipe(600,1061,180,1061,1500);
+                            setClip("")
+                           if( jsclick('text',"复制链接",true,2)){
+                            my_app.link = getClip();
+                            info["model"]= my_app.name;
+                            info["state"] = "ok";
+                            app_info(my_app.name,info);
+                            return true;
+                           }
+    
+                        }else{
+                            click((619+699)/2,(936+1016)/2);
+                        }
+                    }else{
+                        back()
+                    }
+                    break;
                 case "com.ss.android.ugc.aweme.main.MainActivity":
                     log("抖音首页");
-                    if( jsclick("text","我",false,2)){
 
+                    // 
+
+                    if( jsclick("text","我",false,2)){
                         if ( info_read_key && jsclick("text","编辑资料",false,1)){
                             if(info_read()){
                                 info_read_key = false;
                             }
-                        }else if(jsclick('desc',"更多",true,2)){
-                            jsclick('text',"个人名片",true,2)
+                        }else if(jsclick("text","编辑资料",false,1)){
+                            click(238/2,(837+1154)/2);
+                            open_key = true
                         }else{
                             jsclick("text","我",true,2);
                         }
@@ -396,3 +422,14 @@ function dm_get_message(){
 // dm_login()
 // dm_get_phone()
 // dm_get_message()
+
+
+
+if (currentPackage() == my_app.packageName ){
+    log(getClip())
+}else{
+    setClip("https://v.douyin.com/XnK9sa/");
+    active(my_app.packageName,5);
+    jsclick("text","前往",true,2)
+}
+
