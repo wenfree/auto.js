@@ -428,7 +428,7 @@ function dm_get_message(){
 if (currentPackage() == my_app.packageName ){
     log(getClip())
 }else{
-    setClip("https://v.douyin.com/XnK9sa/");
+    setClip("https://v.douyin.com/XnbKXx/");
     active(my_app.packageName,5);
     jsclick("text","前往",true,2)
 }

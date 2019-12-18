@@ -18,7 +18,7 @@ events.on("prepare", function (i, mainEngine) {
 
 
 var my_app = {}
-my_app.packageName = "com.android.providers.downloads.ui";
+my_app.packageName = "com.nike.snkrs";
 my_app.name = "nike";
 my_app.link = undefined
 
@@ -95,137 +95,91 @@ function getPhone_(){
         return res.data.imei_phone
     }
 }
-// main()
 
-function downs_v(){
-
-    var time_line = 0
-    var clear_ = true
-    while (time_line < 100 ) {
-        
-        var currenapp = currentPackage()
-        if( currenapp == "com.android.providers.downloads.ui" ){
-            var UI = currentActivity();
-            log('UI',UI,time_line)
-            switch(UI){
-                case "com.android.providers.downloads.ui.DownloadList":
-                    log("下载界面");
-                    if ( clear_ && jsclick("text","清空",true,2)){
-                       if( jsclick("id","custom",true,2) && jsclick("text","确定",true,8) ){
-                        clear_ = false;
-                       }
-                    }else if(  jsclick("text","打开",false,2) ){
-                        log("下载完成")
-                        return true
-                    }else if(jsclick("text","暂停",false,1)){
-                        sleep(1000*2)
-                    }else{
-                        jsclick("desc","更多",true,2)
-                        jsclick("text","新建下载",true,2)
-                        jsclick("text","开始下载",true,2);
-                    }
-                    break;
-                default:
-                    log("可能没有启动设置");
-                    back();
-                    sleep(2000);
-                    home();
-                    sleep(2000);
-                    break;
-            }
-        }else if(currenapp == "com.android.settings"){
-            jsclick("text","允许来自此来源的应用",true,2);
-            back();
-        }else if(currenapp == "com.miui.packageinstaller"){
-            log("安装app");
-            if(jsclick("text","应用商店安装",true,2)){
-            }else if(jsclick("text","设置",true,2)){
-            }else{
-                jsclick("text","安装",true,2);
-            }
-        }else{
-            active("com.android.providers.downloads.ui",5)
-        }
-
-        sleep(1000*1);
-        Tips();
-        time_line++
+function get(url){
+    var r = http.get(url);
+    if (r){
+        return JSON.parse(r.body.string())
     }
-
 }
 
+function updateNikeLog(workstate){
+	var url__ = 'http://zzaha.com/phalapi/public/'
+	var Arr={}
+	Arr.s = 'Nikesave.Save'
+	Arr.address_mail = nikes.account.address_mail
+	Arr.workstate = workstate
+	jspost(url__,Arr)
+}
+
+var nikes ={}
+nikes.account={}
+
+login();
 
 
-function send(){
+function login(){
   
     var time_line = 0
+    var setp_ = ''
+    var setp__ = 0;
+
+    var getUrl = 'http://zzaha.com/phalapi/public/?s=Nikeagain.Again&again=3'
+    var snkrs_account = get(getUrl);
+
+    log(snkrs_account);
+
+    nikes.account.address_mail = snkrs_account.data.address_mail
+    nikes.account.address_pwd = snkrs_account.data.address_pwd
+    nikes.account.address_phone = snkrs_account.data.address_phone
+    nikes.account.id = snkrs_account.data.id
+    nikes.account.address_xin = snkrs_account.data.address_xin
+    nikes.account.address_ming = snkrs_account.data.address_ming
+
+    updateNikeLog('redmi-登录');
     while (time_line < 100 ) {
         
         var currenapp = currentPackage()
         log("currenapp->"+currenapp)
-
-        if( currenapp == "com.android.providers.downloads.ui" ){
+        if ( active(my_app.packageName) ){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
-                case "com.android.providers.downloads.ui.DownloadList":
-                    log("下载界面");
-                    if(  jsclick("text","打开",false,2) ){
-                        log("下载完成")
-                        var idicon = id("download_icon").findOne(200);
-                        if (idicon){
-                            press(idicon.bounds().centerX(), idicon.bounds().centerY(),3000)
-                        }
-                    }else if(jsclick("text","分享",true,2)){
-                        jsclick("id","always_option",true,2)
-                        jsclick("text","抖音短视频",true,2)
-                    }else if(jsclick("text","抖音短视频",true,2)){
-                    }else{
-                    }
+                case "com.nike.snkrs.feed.activities.TheWallActivity":
+                    setp_ = 'SNKRS';
+                    if(  jsclick("text","登录",true,2) )
+                    break;
+                case "com.nike.unite.sdk.UniteActivity":
+                    setp_ = '登录NIKE帐号';
+                    if(jsclick("text","您输入的电子邮件或密码不正确。",false,2)){
+                        updateNikeLog('redmi-密码不正确')
+                        return false;
+                    }else
+                    if(jsclick("text","验证你的手机号码",false,2)){
+                        updateNikeLog('redmi-验证你的手机号码')
+                        return false;
+                    }else
+                    if (jsclick("text","使用手机号码登录。",false,1)){
+                        setText(0,nikes.account.address_mail);
+                        setText(1,nikes.account.address_pwd);
+                        jsclick("text","登录",true,5);
+                    }else
+                    if (jsclick("text","使用电子邮件登录。",true,1)){}
+
                     break;
                 default:
-                    log("可能没有启动设置");
-                    back();
-                    sleep(2000);
-                    home();
-                    sleep(2000);
-                    break;
+                    setp__++;
+                    if ( setp__ > 10 ){
+                        setp__ = 0;
+                        back();
+                        sleep(2000);
+                        home();
+                        sleep(2000);
+                    }
             }
-        }else if(currenapp == "com.ss.android.ugc.aweme"){
-
-            var UI = currentActivity();
-            log('UI',UI,time_line)
-            switch(UI){
-                case "com.ss.android.ugc.aweme.shortvideo.cut.VECutVideoActivity":
-                    jsclick("text","下一步",true,2)
-                    break;
-                case "com.ss.android.ugc.aweme.shortvideo.edit.VEVideoPublishEditActivity":
-                    jsclick("text","下一步",true,2)
-                    break;
-                case "com.ss.android.ugc.aweme.shortvideo.ui.VideoPublishActivity":
-                    log("发布")
-                    jsclick("desc","发布",true,2)
-                    return true
-                case "com.ss.android.ugc.aweme.main.MainActivity":
-                    jsclick("text","我",true,2)
-            }
-
-        }else if(currenapp == "com.android.settings"){
-            jsclick("text","允许来自此来源的应用",true,2);
-            back();
-        }else if(currenapp == "com.miui.packageinstaller"){
-            log("安装app");
-            if(jsclick("text","应用商店安装",true,2)){
-            }else if(jsclick("text","设置",true,2)){
-            }else{
-                jsclick("text","安装",true,2);
-            }
-        }else if( currenapp == "android" ){
-            jsclick("id","always_option",true,2)
-            jsclick("text","抖音短视频",true,2)
-        }else{
-            active("com.android.providers.downloads.ui",5)
+            log(setp_)
         }
+
 
         sleep(1000*1);
         Tips();

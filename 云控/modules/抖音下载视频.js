@@ -3,9 +3,16 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
+
+    var data_ = getDyUrl()
+    if (data_){
+        setClip(data_.url)
+    }
     info["state"] = "outtime";
     if(downs_v()){
-        send()
+        setClip(data_.text)
+        log(data_.text);
+        send(data_.text)
         info["state"] = "ok";
     }
     info["model"]= my_app.name;
@@ -79,17 +86,23 @@ function getDyUrl(){
     var res = jspost(url,arr);
     if (res){
         res =  JSON.parse(res)
-        return res.data.url
+        return res.data
     }
 }
-// main()
+
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
 
 function downs_v(){
-
-    var url___ = getDyUrl()
-    if (url___){
-        setClip(url___)
-    }
 
     var time_line = 0
     var clear_ = true
@@ -148,7 +161,7 @@ function downs_v(){
 
 
 
-function send(){
+function send(text_){
   
     var time_line = 0
     while (time_line < 100 ) {
@@ -196,6 +209,8 @@ function send(){
                     break;
                 case "com.ss.android.ugc.aweme.shortvideo.ui.VideoPublishActivity":
                     log("发布")
+                    setClip(text_);
+                    setText(0,text_);
                     jsclick("desc","发布",true,2)
                     return true
                 case "com.ss.android.ugc.aweme.main.MainActivity":
@@ -491,3 +506,18 @@ function dm_get_message(){
 // dm_login()
 // dm_get_phone()
 // dm_get_message()
+
+// var data_ = getDyUrl()
+// if (data_){
+//     setClip(data_.url)
+// }
+// info["state"] = "outtime";
+// if(downs_v()){
+//     setClip(data_.text)
+//     log(data_.text);
+//     send(data_.text)
+//     info["state"] = "ok";
+// }
+// info["model"]= my_app.name;
+// app_info(my_app.name,info);
+// exit();

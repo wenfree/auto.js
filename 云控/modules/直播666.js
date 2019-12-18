@@ -85,29 +85,48 @@ main()
 
 function main(){
 
+    var click_lun = 0;
 while (true ) {
     var UI = currentActivity();
     log('UI',UI);
    
-
+    click_lun++
     if (UI == 'com.ss.android.ugc.aweme.live.LivePlayActivity') {
         toastLog("在直播间");
 
-        jsclick("text","说点什么...",true,3)
-        setText(0,"666");
-        sleep(1000)
-        click((640+720)/2,(741+821)/2)
-        sleep(3000);
-        setText(0, getClip());
-        sleep(1000);
-        click((640+720)/2,(741+821)/2);
-        sleep(1000);
-
+        if (click_lun%2==0){
+            click( 720*1/2, 1440*4.5/10 );
+            sleep(1000*1);
+        }else{
+            click( (25+385)/2,(774+874)/2 );
+            sleep(1000*1);
+        }
+        
+        if (jsclick("text","+关注",true,2)){
+            click( 720*1/2, 1440*4.5/10 );
+        }else{
+            if (click_lun %15 == 0){
+                if (jsclick("text","说点什么...",true,3)){
+                    setText(0,"666");
+                    sleep(1000)
+                    click((640+720)/2,(741+821)/2)
+                    sleep(3000);
+                    setText(0, getClip());
+                    sleep(1000);
+                    click((640+720)/2,(741+821)/2);
+                    sleep(1000);
+                    click( 720*1/2, 1440*1/10 );
+                }else{
+                    click( 720*1/2, 1440*4.5/10 );
+                    sleep(1000*1);
+                }
+            }
+        }
     }else{
         toastLog('不在直播间');
     }
 
-    sleep(15*1000);
+    sleep(1*1000);
 
 }
 
