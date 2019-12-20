@@ -4,6 +4,12 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
 
+    var url = getDyUrl();
+    var phone = getPhone_();
+    setClip(phone);
+
+    app.openUrl(url);
+
     exit();
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
@@ -12,15 +18,15 @@ events.on("prepare", function (i, mainEngine) {
 
 
 var my_app = {}
-my_app.packageName = "com.nike.omega";
-my_app.name = "nike";
+my_app.packageName = "com.nike.snkrs";
+my_app.name = "snkrs";
 my_app.link = undefined
 
 var thread = "";
 var info = {}
 
 function jspost(url,data){
-    var res = http.post(url,data);
+    var res = http.post(url, data);
     var data = res.body.string();
     if(data){
         return data;
@@ -60,6 +66,10 @@ function callback_task(id,state){
     log(arr,postdata)
     log(jspost(url,postdata));
 }
+
+log(currentPackage());
+log(currentActivity());
+log(device.width,device.height)
 
 function getDyUrl(){
     var url = "http://api.wenfree.cn/public/";
@@ -102,43 +112,10 @@ function updateNikeLog(workstate){
 	jspost(url__,Arr)
 }
 
-function backId(){
-	var postUrl = 'http://zzaha.com/phalapi/public/'
-	var postArr = {}
-	postArr.s = 'Nikeback.Back'
-	postArr.id = nikes.account.id
-	log(jspost(postUrl,postArr))
-}
-
-function disable(){
-	var postUrl = 'http://zzaha.com/phalapi/public/'
-	var postArr = {}
-	postArr.s = 'Nikeback.disable'
-	postArr.id = nikes.account.id
-	log(jspost(postUrl,postArr))
-}
-
-
-log(currentPackage());
-log(currentActivity());
-log(device.width,device.height)
-
 var nikes ={}
 nikes.account={}
 
-while (true){
-
-    try{
-        clearApp()
-        login();
-    }catch(err){
-        
-    }
-
-
-}
-
-
+login();
 
 
 function login(){
@@ -149,17 +126,17 @@ function login(){
 
     var getUrl = 'http://zzaha.com/phalapi/public/?s=Nikeagain.Again&again=0'
     var snkrs_account = get(getUrl);
+
     log(snkrs_account);
+
     nikes.account.address_mail = snkrs_account.data.address_mail
     nikes.account.address_pwd = snkrs_account.data.address_pwd
     nikes.account.address_phone = snkrs_account.data.address_phone
     nikes.account.id = snkrs_account.data.id
-    nikes.account.address_country= snkrs_account.data.address_country
     nikes.account.address_xin = snkrs_account.data.address_xin
     nikes.account.address_ming = snkrs_account.data.address_ming
 
     updateNikeLog('redmi-登录');
-
     while (time_line < 100 ) {
         
         var currenapp = currentPackage()
@@ -168,20 +145,18 @@ function login(){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
-                case "com.nike.mynike.ui.LoginActivity":
-                    setp_ = '加入，登录';
+                case "com.nike.snkrs.feed.activities.TheWallActivity":
+                    setp_ = 'SNKRS';
                     if(  jsclick("text","登录",true,2) )
                     break;
-                case "com.nike.mynike.ui.MyNikeSocialUniteActivity":
+                case "com.nike.unite.sdk.UniteActivity":
                     setp_ = '登录NIKE帐号';
                     if(jsclick("text","您输入的电子邮件或密码不正确。",false,2)){
                         updateNikeLog('redmi-密码不正确')
-                        disable();
                         return false;
                     }else
                     if(jsclick("text","验证你的手机号码",false,2)){
                         updateNikeLog('redmi-验证你的手机号码')
-                        disable();
                         return false;
                     }else
                     if (jsclick("text","使用手机号码登录。",false,1)){
@@ -190,61 +165,9 @@ function login(){
                         jsclick("text","登录",true,5);
                     }else
                     if (jsclick("text","使用电子邮件登录。",true,1)){}
-                    else if(jsclick("text","请使用其他帐户",true,2))
-                    break;
-                case "com.nike.mynike.ui.onboarding.OnBoardingActivity":
-                    setp_ = '立即开始';
-                    if(jsclick("text","立即开始",true,2)){
-                    }else if(jsclick("text","首选产品",false,1)){
-                        if (rd(1,100)< 80){
-                            jsclick("text","男子",true,2)
-                        }else{
-                            jsclick("text","女子",true,2)
-                        }
-                    }else if(jsclick("text","选择感兴趣的内容",false,2)){
-                        jsclick("id","item_content_check",true,2)
-                    }else
-                    if(jsclick("text","请使用其他帐户",true,2)){}
-                    else if( jsclick("text","继续",true,2)){}
-                    else if( jsclick("text","中国",true,2)){
-                        nikes.account.address_country = 'CN'
-                    }
-                    else if( jsclick("text","同意",true,2)){}
-                    else if( jsclick("text","确定",true,2)){}
 
-                    jsclick("text","下一步",true,2)
-                    jsclick("text","跳过",true,2)
-                    break
-                case "com.nike.mynike.ui.MainActivity":
-                    setp_ = '主界面';
-                    if (jsclick("text","设置",true,2)){
-                    }else if(jsclick("desc","开放",true,2)){
-                    }
-                    break
-                case "com.nike.mynike.ui.SettingsActivity":
-                    setp_ = '设置界面';
-                    var all_info = id('widgetText').depth(14).find();
-                    if(all_info){
-                        for (var i=0;i<all_info.length;i++){
-                            var obj = all_info[i];
-                            log(i,obj.text())
-                            if (i == 0 ){
-                                nikes.account.address_mail = obj.text();
-                            }else if(i==2){
-                                nikes.account.birthday = obj.text();
-                                var strs = new Array(); //定义一数组
-                                strs = nikes.account.birthday.split("/"); //字符分割
-                                log(strs);
-                                nikes.account['moon'] = strs[1];
-                                updateNike();
-                                backId();
-                                return true;
-                            }
-                        }
-                    }
-                    break
+                    break;
                 default:
-                    setp_ = '未知界面'
                     setp__++;
                     if ( setp__ > 10 ){
                         setp__ = 0;
@@ -257,11 +180,15 @@ function login(){
             log(setp_)
         }
 
+
         sleep(1000*1);
         Tips();
         time_line++
     }  
 }
+
+
+
 
 function Tips(){
     log("查询弹窗");
@@ -281,35 +208,59 @@ function Tips(){
     return true
 }
 
-nikes.account.address_mail = '9a34ab7878zop53@vvccb.com';
-nikes.account.address_pwd = 'CNDXet5vrpw965';
-nikes.account.birthday = '1993/7/14';
-nikes.account.address_country = 'CN';
+function info_read(){
+    var d = textMatches(/抖音号.*/).findOne(1000);
+    if(d){
+        info["username"]=d.text().replace('抖音号: ','');
+        var d = d.parent().parent().parent();
+        if (d) {
+            var d = d.children()
+            d.forEach(function (child, index) {
+                log(index, child.text(),child.id());
+            });
+            info["nick_name"] = d[1].text();
+        }
+    }
+    var d = text("获赞").findOne(1000);
+    if(d){
+        var d = d.parent().parent();
+        if (d) {
+            var d = d.children()
+            d.forEach(function (child, index) {
+                log(index, child.text(),child.id());
+            });
+            for (var i=0;i<d.length;i++){
+                var dd = d[i].children()
+                log(dd[1].text())
+                var txt = dd[1].text()
+                if (txt == "获赞"){
+                    info["zan"] = dd[0].text()
+                }else if(txt == "关注"){
+                    info["follow"] = dd[0].text()
+                }else if( txt == "粉丝"){
+                    info["fen"] = dd[0].text()
+                }
+            }
 
-
-// updateNike();
-
-
-function updateNike(){
-	var url_ = 'http://zzaha.com/phalapi/public/'
-	var Arr_={}
-	Arr_.s = 'Nikesave.Save'
-	Arr_.address_mail = nikes.account.address_mail
-	Arr_.address_pwd = nikes.account.address_pwd
-	Arr_.address_phone = nikes.account.address_phone
-	Arr_.address_sheng = '广东省'
-	Arr_.address_shi = '深圳市'
-	Arr_.address_qu = '罗湖区'
-	Arr_.address_country = nikes.account.address_country
-	Arr_.birthday = nikes.account.birthday
-	Arr_.moon = nikes.account['moon']
-	Arr_.imei = device.getIMEI();
-	Arr_.iphone = 'Redmi';
-	log(Arr_)
-	jspost(url_,Arr_)
+            var d = id("text1").find()
+            if(d){
+                var dykeylist = ["作品","动态","喜欢"]
+                for( var i=0;i<d.length;i++){
+                    var dd = d[i];
+                    info[dykeylist[i]]=dd.text().replace(/\D/g,"");
+                    log(dd.text());
+                }
+            }
+            log(info);
+            return true
+        }
+    }
 }
 
 // info_read()
+
+
+
 // Tips()
 // clearApp()
 
@@ -321,18 +272,18 @@ function updateNike(){
     返回值：Boolean，是否执行成功
 */
 function clearApp() {
-    var appName = "nike"
-    var packageName = "com.nike.omega"
+    var appName = "星巴克"
+    var packageName = "com.starbucks.cn"
 
     let i = 0
     while (i < 10) {
         let activity = currentActivity()
         switch (activity) {
             case "com.miui.appmanager.ApplicationsDetailsActivity":
-                if ( jsclick("text","清除全部数据",true,2) ){}
-                else if ( jsclick("text","清除数据",true,2) ){} 
-                else if ( jsclick("text","确定",true,2) ) {
-                    jsclick("desc","返回",true,2);
+                if (click("清除数据")) {
+                } else if (click("清除全部数据")) {
+                } else if (click("确定")) {
+                    desc("返回").click();
                     sleep(2000);
                     back();
                     sleep(2000);
