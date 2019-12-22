@@ -1,23 +1,44 @@
+
+
+
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
+    var my_app = {}
+    my_app.packageName = "com.nike.omega";
+    my_app.name = "nike";
 
-
-    exit();
+    var info = {}
+    var nikes ={}
+    nikes.account={}
+    while (true){
+        try{
+            clearApp()
+            login();
+        }catch(err){
+        }
+    }
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
-
 var my_app = {}
 my_app.packageName = "com.nike.omega";
 my_app.name = "nike";
-my_app.link = undefined
 
-var thread = "";
 var info = {}
+var nikes ={}
+nikes.account={}
+while (true){
+    try{
+        clearApp()
+        login();
+    }catch(err){
+    }
+}
+
 
 function jspost(url,data){
     var res = http.post(url,data);
@@ -122,22 +143,6 @@ function disable(){
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
-
-var nikes ={}
-nikes.account={}
-
-while (true){
-
-    try{
-        clearApp()
-        login();
-    }catch(err){
-        
-    }
-
-
-}
-
 
 
 
@@ -281,11 +286,11 @@ function Tips(){
     return true
 }
 
-nikes.account.address_mail = '9a34ab7878zop53@vvccb.com';
-nikes.account.address_pwd = 'CNDXet5vrpw965';
-nikes.account.birthday = '1993/7/14';
-nikes.account.address_country = 'CN';
 
+// nikes.account.address_mail = '9a34ab7878zop53@vvccb.com';
+// nikes.account.address_pwd = 'CNDXet5vrpw965';
+// nikes.account.birthday = '1993/7/14';
+// nikes.account.address_country = 'CN';
 
 // updateNike();
 
