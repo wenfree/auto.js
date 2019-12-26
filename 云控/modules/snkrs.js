@@ -115,6 +115,7 @@ function updateNikeLog(workstate){
 var nikes ={}
 nikes.account={}
 
+// clearApp();
 login();
 
 
@@ -136,7 +137,7 @@ function login(){
     nikes.account.address_xin = snkrs_account.data.address_xin
     nikes.account.address_ming = snkrs_account.data.address_ming
 
-    updateNikeLog('redmi-登录');
+    updateNikeLog('snkrs抢鞋子');
     while (time_line < 100 ) {
         
         var currenapp = currentPackage()
@@ -165,7 +166,13 @@ function login(){
                         jsclick("text","登录",true,5);
                     }else
                     if (jsclick("text","使用电子邮件登录。",true,1)){}
-
+                    break;
+                case "com.nike.snkrs.main.activities.SnkrsActivity":
+                    setp_ = '首页，主界面';
+                    if (jsclick("text","即将推出",true,2)){
+                    }else if(jsclick("text","预告",true,2)){
+                    }
+                    
                     break;
                 default:
                     setp__++;
@@ -180,14 +187,11 @@ function login(){
             log(setp_)
         }
 
-
         sleep(1000*1);
         Tips();
         time_line++
     }  
 }
-
-
 
 
 function Tips(){
@@ -272,18 +276,18 @@ function info_read(){
     返回值：Boolean，是否执行成功
 */
 function clearApp() {
-    var appName = "星巴克"
-    var packageName = "com.starbucks.cn"
+    var appName = "nike"
+    var packageName = my_app.packageName
 
     let i = 0
     while (i < 10) {
         let activity = currentActivity()
         switch (activity) {
             case "com.miui.appmanager.ApplicationsDetailsActivity":
-                if (click("清除数据")) {
-                } else if (click("清除全部数据")) {
-                } else if (click("确定")) {
-                    desc("返回").click();
+                if ( jsclick("text","清除全部数据",true,2) ){}
+                else if ( jsclick("text","清除数据",true,2) ){} 
+                else if ( jsclick("text","确定",true,2) ) {
+                    jsclick("desc","返回",true,2);
                     sleep(2000);
                     back();
                     sleep(2000);

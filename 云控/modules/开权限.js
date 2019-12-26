@@ -4,13 +4,43 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    main();
+    try{
+        var taskData = getTask();
+        log(taskData.task.data);
+        
+        log(url)
+        main(url);
+        callback_task(taskData.task.id,"done");
+    }
+    catch(err){
+        log(err)
+    }
 
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
 
+
+// 获取接口数据
+function getTask() {
+    var url = 'http://api.wenfree.cn/public/';
+    let res = http.post(url, {
+        "s": "NewsImei.Imei",
+        "imei": device.getIMEI()
+    });
+
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = JSON.parse(html);
+        log(json)
+        return json.data;
+    } catch (err) {
+        //在此处理错误
+    }
+};
 
 
 
@@ -545,7 +575,17 @@ function autocj(){
     }
 }
 
-
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
 
 var info = {}
 info["state"]="fail";

@@ -83,24 +83,18 @@ function Tips(){
 }
 
 function zan(){
-    var title = className("android.widget.LinearLayout").find()
-    if (title){
-        if (title.length == 3){
-            click(988,784);
-            sleep(1000*2);
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            sleep(1000*2)
-            log('完成');
-            return true
-        }
-    }
+
+    sleep(1000*2);
+    click(device.width/2,device.height*0.3)
+    sleep(50)
+    click(device.width/2,device.height*0.3)
+    sleep(50)
+    click(device.width/2,device.height*0.3)
+    sleep(50)
+    click(device.width/2,device.height*0.3)
+    sleep(50)
+    sleep(1000*2)
+    log('完成');
 }
 
 function Fdy(urlss){
@@ -114,15 +108,15 @@ function Fdy(urlss){
         log("UI->",UI)
         switch(UI){
             case "com.ss.android.ugc.aweme.main.MainActivity":
-                if (device.model=='Pixel XL'){
-                    log("google")
-                    return zan();
-                }
                 opendy(urlss);
                 sleep(1000*6);
                 break;
             case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
+
+                log('准备点赞');
                 return zan();
+
+                // break;
             default:
                 log("其它界面,启动抖音")
                 launchApp(app_name);
@@ -276,5 +270,11 @@ function main(dyid){
 
 // main();
 // callback_task(taskData.task.id,"done");
+
+// urlss = '6773972750189989128'
+// Fdy(urlss)
+// sleep(1000)
+// log(currentActivity())
+
 
 

@@ -2,27 +2,20 @@
 
 
 // 保持脚本运行
-var ID = setInterval(() => { }, 1000)
-// 监听主脚本消息
-events.on("prepare", function (i, mainEngine) {
-    var my_app = {}
-    my_app.packageName = "com.nike.omega";
-    my_app.name = "nike";
+// var ID = setInterval(() => { }, 1000)
+// // 监听主脚本消息
+// events.on("prepare", function (i, mainEngine) {
+//     var my_app = {}
+//     my_app.packageName = "com.nike.omega";
+//     my_app.name = "nike";
 
-    var info = {}
-    var nikes ={}
-    nikes.account={}
-    while (true){
-        try{
-            clearApp()
-            login();
-        }catch(err){
-        }
-    }
-    
-    mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
-    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
-});
+//     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
+//     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
+// });
+
+log(currentPackage());
+log(currentActivity());
+log(device.width,device.height)
 
 var my_app = {}
 my_app.packageName = "com.nike.omega";
@@ -139,13 +132,6 @@ function disable(){
 	log(jspost(postUrl,postArr))
 }
 
-
-log(currentPackage());
-log(currentActivity());
-log(device.width,device.height)
-
-
-
 function login(){
   
     var time_line = 0
@@ -199,6 +185,10 @@ function login(){
                     break;
                 case "com.nike.mynike.ui.onboarding.OnBoardingActivity":
                     setp_ = '立即开始';
+                    if(jsclick("text","您无法更新您的国家/地区，请访问 nike.com。",false,1)){
+                        updateNikeLog('无法转区');
+                        return false;
+                    }else
                     if(jsclick("text","立即开始",true,2)){
                     }else if(jsclick("text","首选产品",false,1)){
                         if (rd(1,100)< 80){
@@ -211,12 +201,12 @@ function login(){
                     }else
                     if(jsclick("text","请使用其他帐户",true,2)){}
                     else if( jsclick("text","继续",true,2)){}
-                    else if( jsclick("text","中国",true,2)){
-                        nikes.account.address_country = 'CN'
-                    }
                     else if( jsclick("text","同意",true,2)){}
                     else if( jsclick("text","确定",true,2)){}
 
+                    if( jsclick("text","中国",true,2)){
+                        nikes.account.address_country = 'CN'
+                    }
                     jsclick("text","下一步",true,2)
                     jsclick("text","跳过",true,2)
                     break
@@ -271,10 +261,11 @@ function login(){
 function Tips(){
     log("查询弹窗");
     var textTips = {}
+    textTips["拒绝"]="text";
     textTips["暂不"]="text";
     textTips["允许"]="text";
     textTips["保存"]="text";
-    textTips["立即升级"]="text";
+    textTips["下一步"]="text";
     // textTips["设置"]="text";
     textTips["好的"]="text";
     for(var k in textTips){
