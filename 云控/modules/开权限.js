@@ -5,11 +5,12 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     try{
+        var info = {}
+        info["state"]="fail";
         var taskData = getTask();
         log(taskData.task.data);
         
-        log(url)
-        main(url);
+        main();
         callback_task(taskData.task.id,"done");
     }
     catch(err){
@@ -21,6 +22,13 @@ events.on("prepare", function (i, mainEngine) {
 });
 
 
+function jspost(url,data){
+    var res = http.post(url, data);
+    var data = res.body.string();
+    if(data){
+        return data;
+    }
+}
 
 // 获取接口数据
 function getTask() {
@@ -429,7 +437,7 @@ function main(){
         log('UI',UI)
         switch(UI){
             case "com.miui.appmanager.ApplicationsDetailsActivity":
-                log("流量工厂设置主界面");
+                log("云上精灵设置主界面");
                 swipe(width*0.5,height*8/10,width*0.5,height*3/10,1500);
                 sleep(500);
                 if (autoactive_()){
@@ -587,8 +595,7 @@ function callback_task(id,state){
     log(jspost(url,postdata));
 }
 
-var info = {}
-info["state"]="fail";
+
 // if(download_lzy(urls)) 
 // if(opens()) if(autocj()) 
 // if(main()) info["state"]="ok";

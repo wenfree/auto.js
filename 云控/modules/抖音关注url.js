@@ -5,15 +5,14 @@
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
-
-    var taskData = getTask();
-    log(taskData.task.data);
-    var dyid = JSON.parse(taskData.task.data);
-    var url = dyid.url;
-    log(url)
-
+    
     try
     {
+        var taskData = getTask();
+        log(taskData.task.data);
+        var dyid = JSON.parse(taskData.task.data);
+        var url = dyid.url;
+        log(url)
         main(url);
         callback_task(taskData.task.id,"done");
     }
@@ -115,74 +114,6 @@ function input_pay_password(password){
     }
 }
 
-var dm={}
-dm.sid = '11521';
-dm.action = 'loginIn';
-dm.name = '6g0hHGsmhqaTd';
-dm.password = 'yangmian121';
-dm.url = 'http://api.duomi01.com/api';
-dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
-dm.phone = "";
-dm.sms = "";
-
-//登录
-function dm_login(){
-    let arr = {}
-	arr.action = 'loginIn'
-	arr.name = dm.name
-    arr.password = dm.password
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.token = data_arr[1]
-            log('token',dm.token);
-            return true;
-        }
-    }
-}
-//取手机号
-function dm_get_phone(){
-    let arr = {}
-	arr.action = 'getPhone';
-	arr.sid = dm.sid;
-    arr.token = dm.token;
-    arr.vno = '0';
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.phone = data_arr[1];
-            log('phone',dm.phone);
-            return true;
-        }
-    }
-}
-
-//取手机号
-function dm_get_message(){
-    let arr = {}
-	arr.action = 'getMessage';
-    arr.sid = dm.sid;
-    arr.phone = dm.phone;
-    arr.token = dm.token;
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        log(data);
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            sms = data_arr[1];
-            let sms = sms.match(/\d{4,6}/)[0]
-            dm.sms = sms
-            log('sms',dm.sms);
-            return true;
-        }
-    }
-}
-
 function click_(x,y){
     if(x>0 && x < device.width && y > 0 && y < device.height){
         click(x,y)
@@ -230,6 +161,7 @@ function Tips(){
     textTips["同意并使用"]="text"
     textTips["确定"]="text"
     textTips["确定"]="desc"
+    textTips["好的"]="text"
     for(var k in textTips){
        if (jsclick(textTips[k],k,true,2)){
            break;
@@ -237,42 +169,36 @@ function Tips(){
     }
 }
 
-function zan(){
-    var title = className("android.widget.LinearLayout").find()
-    if (title){
-        if (title.length == 3){
-            click(988,784);
-            sleep(1000*2);
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            click(device.width/2,device.height*0.3)
-            sleep(50)
-            sleep(1000*2)
-            log('完成');
-            return true
-        }
-    }
-}
-
-
-
 function opens(urlss){
     var i=0;
+    var openKey = false
     while (i<20){
-        home();
+
+        back();
         sleep(1000);
-        home();
+        back();
+        sleep(1000);
+        back();
         sleep(1000);
         setClip(urlss);
-        active(app_bid,5);
+        log("准备启动");
+        log(Date())
+        active(app_bid,6);
+        log("启动完成");
+        log(Date())
         sleep(1000);
+
         if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
+            openKey = true
+        }
+
+        var UI = currentActivity();
+        log(UI)
+        if (openKey && UI == 'com.ss.android.ugc.aweme.profile.ui.UserProfileActivity' ){
+            log("正确的打开页面");
             return true
         }
+
         sleep(1000);
         Tips();
     }
@@ -280,84 +206,34 @@ function opens(urlss){
 
 function follow(){
     var timeLine = 0
-    while (timeLine < 50){
+    while (timeLine < 10){
         log("timeLine--->",timeLine)
         var UI = currentActivity();
         log("UI->",UI)
         switch(UI){
             case "com.ss.android.ugc.aweme.profile.ui.UserProfileActivity":
-                if(jsclick("text","关注",true,2))
-                if(jsclick("text","取消关注",false,2)){
+                if(jsclick("text","编辑资料",false,2)){
+                    log("是本帐号")
                     return true
+                }else if(jsclick("text","取消关注",false,2)){
+                    return true
+                }else if(jsclick("text","#  互相关注",false,2)){
+                    return true
+                }else if(jsclick("text","关注",true,2)){
+
                 }
                 break
             default:
-                log("其它界面,启动抖音")
-                launchApp(app_name);
-                sleep(1000*5);
-                // back();
-            break;
-        }
-        Tips()
-        sleep(1000 * 2);
-        timeLine++;
-        log('--')
-    }
-}
-
-function commnet_do(commnet_txt){
-    if (jsclick("text","评论并转发",false,2)){
-        var d = className("EditText").findOne(1000)
-        if (d){
-         d.setText(commnet_txt);
-         sleep(1000)
-         //  点击发送
-         click((device.width)*0.92,d.bounds().centerY())
-         sleep(1000*2)
-         return true
-        }
-     }else{
-        var title = className("android.widget.LinearLayout").find()
-        if (title){
-            if (title.length == 3){
-                click_(device.width*2/5,device.height*88/100)
-            }
-        }
-     }
-}
-
-
-function commnet(commnet_txt){
-    var timeLine = 0
-    while (timeLine < 50){
-        log("timeLine--->",timeLine)
-        var UI = currentActivity();
-        log("UI->",UI)
-        switch(UI){
-            case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
-                if (commnet_do(commnet_txt)){
-                    return true
-                }
-                break;
-            case "com.ss.android.ugc.aweme.main.MainActivity":
-                if (commnet_do(commnet_txt)){
-                    return true
-                }
-                break;
-            default:
-                // launch(app_bid);
-                sleep(1000*5);
+                log("其它界面,后退");
                 back();
             break;
         }
-
         Tips()
         sleep(1000 * 2);
         timeLine++;
         log('--')
     }
 }
-
 
 function callback_task(id,state){
     var url = "http://api.wenfree.cn/public/";
@@ -379,14 +255,16 @@ log(device.width,device.height);
 var my_app={}
 var app_name = "抖音短视频";
 var app_bid = "com.ss.android.ugc.aweme";
-// var dyid = "6768528115078614286";
-var commnet_txt = "666";
+
 
 
 var info = {}
-// var data = get_task()
-// var url = data.worksPath;
-// var commnet_txt = data.extend4;
+
+// var urlss = 'https://v.douyin.com/XnEJkd/'
+// if(opens(urlss)){
+//     follow()
+// }
+
 
 
 // 获取接口数据
@@ -408,6 +286,7 @@ function getTask() {
         //在此处理错误
     }
 };
+
 
 
 function main(urls){

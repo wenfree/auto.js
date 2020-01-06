@@ -10,16 +10,29 @@ var tag = public.getStorageData(imei, "tag");
 var whos = public.getStorageData(imei, "whos");
 
 //-------------------------------------------------------------------------------------------------------------------------
-main();
+// while (true){
+//     try{
+        main();
+//     }catch(err){
+//         log(err);
+//         sleep(1000*10);
+//     }
+// }
 
 function main() {
     var ID = setInterval(() => { }, 1000);  //保持主脚本不停，实际使用有ui也可以没有这个
+
     var mainEnengine = engines.myEngine();   //当前脚本的脚本引擎对象
     mainEnengine.emit("control", -1);  //向当前脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
     events.on("control", (i) => {
         i++;
         log("i",i)
-        var json = getJsonData(myAPP.site);   //获取脚本任务配置
+
+        try{
+            var json = getJsonData(myAPP.site);   //获取脚本任务配置
+        }catch(err){
+            var json = {data:{type:"rest"}}
+        }
         
         if(json.data.type == "download"){
             var data = json.data.data;
@@ -60,7 +73,7 @@ function main() {
                         log(err)
                         mainEnengine.emit("control", -1);
                     }
-                       //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
+                    //向子脚本发送一个事件，该事件可以在目标脚本的events模块监听到并在脚本主线程执行事件处理。
                     // var enginess = []
                     // enginess.push(aengine); //便于后续管理 
                     // log("enginess--",enginess)
@@ -95,6 +108,7 @@ function main() {
         }
         sleep(1000);
     });
+
 };
 
 // 获取接口数据

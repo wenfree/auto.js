@@ -13,6 +13,7 @@ events.on("prepare", function (i, mainEngine) {
     log(dyid)
 
     main(dyid);
+
     callback_task(taskData.task.id,"done");
 
     
@@ -247,6 +248,7 @@ function main(dyid){
         sleep(1000*2)
         // commnet(commnet_txt)
         sleep(1000*2);
+        sleep(60*1000);
         back();
         sleep(1000*2)
         home();

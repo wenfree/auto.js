@@ -230,7 +230,7 @@ var execution;
 ui.taskMonitor.on("check", function (checked) {
     if (checked) {
         toastLog("开启任务监控");
-        Imei_sevice();
+        // Imei_sevice();
         execution = engines.execScriptFile('start.js')  //在新的脚本环境中运行脚本文件path。返回一个ScriptExecution对象。获取子脚本对象
     } else {
         //停止任务监控
@@ -309,7 +309,7 @@ function Imei_sevice(){
         log('同步接口');
         r = r.body.string()
         if(r){
-            log(r);
+            log(JSON.parse(r));
             return true;
         }
     }catch(err){

@@ -3,21 +3,24 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-
-    var data_ = getDyUrl()
-    if (data_){
-        setClip(data_.url)
+    try{
+        var data_ = getDyUrl()
+        if (data_){
+            setClip(data_.url)
+        }
+        info["state"] = "outtime";
+        if(downs_v()){
+            setClip(data_.text)
+            log(data_.text);
+            send(data_.text)
+            info["state"] = "ok";
+        }
+        info["model"]= my_app.name;
+        app_info(my_app.name,info);
+        callback_task(taskData.task.id,"done");
+    }catch(e){
+        log(e)
     }
-    info["state"] = "outtime";
-    if(downs_v()){
-        setClip(data_.text)
-        log(data_.text);
-        send(data_.text)
-        info["state"] = "ok";
-    }
-    info["model"]= my_app.name;
-    app_info(my_app.name,info);
-    exit();
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
@@ -62,18 +65,6 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-function callback_task(id,state){
-    var url = "http://api.wenfree.cn/public/";
-    var arr = {};
-    arr["id"] = id;
-    arr["task_state"] = state;
-    var postdata = {};
-    postdata["s"]="App.Zllgcimeicallback.Callback_task"
-    postdata["arr"] = JSON.stringify(arr)
-    log(arr,postdata)
-    log(jspost(url,postdata));
-}
-
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
@@ -101,6 +92,7 @@ function callback_task(id,state){
     log(arr,postdata)
     log(jspost(url,postdata));
 }
+
 
 function downs_v(){
 
@@ -503,21 +495,3 @@ function dm_get_message(){
     }
 }
 
-// dm_login()
-// dm_get_phone()
-// dm_get_message()
-
-// var data_ = getDyUrl()
-// if (data_){
-//     setClip(data_.url)
-// }
-// info["state"] = "outtime";
-// if(downs_v()){
-//     setClip(data_.text)
-//     log(data_.text);
-//     send(data_.text)
-//     info["state"] = "ok";
-// }
-// info["model"]= my_app.name;
-// app_info(my_app.name,info);
-// exit();

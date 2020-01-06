@@ -65,7 +65,7 @@ log(currentActivity());
 log(device.width,device.height)
 
 
-main();
+// main();
 
 
 function main(){
@@ -396,3 +396,28 @@ function dm_get_message(){
 // dm_login()
 // dm_get_phone()
 // dm_get_message()
+
+
+
+log(getClip());
+// var url = 'https://v.douyin.com/XnKpSt/'
+
+// back();
+// sleep(1000);
+// back();
+// sleep(1000);
+// back();
+// sleep(1000);
+// setClip(url);
+// log("准备启动");
+// log(Date())
+// active(my_app.packageName,6);
+// log("启动完成");
+// log(Date())
+// sleep(1000);
+
+// if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
+//     openKey = true
+// }
+
+
