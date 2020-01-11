@@ -1,33 +1,52 @@
-
-
-
-
-
 // 保持脚本运行
 var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    var taskData = getTask();
-    log(taskData.task.data);
+    try
+    {
 
-    main();
-    home();
+        var taskData = getLoaclTask();
+        log(taskData);
+        callback_task(taskData.task.id,"done");
 
-    callback_task(taskData.task.id,"done");
+    }
+    catch(err)
+    {
 
-    
+        log(err);
+        log("遇到错误");
+        sleep(1000*60);
+        
+    }
+
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
 
 var my_app = {}
-my_app.packageName = "com.ss.android.ugc.aweme";
-my_app.name = "抖音";
+my_app.packageName = "com.android.providers.downloads.ui";
+my_app.name = "发视频";
+my_app.link = undefined
 
 var thread = "";
 var info = {}
+
+function getLoaclTask(){
+    const storage = storages.create(device.getIMEI());  //创建storage对象
+    if (storage.contains('task')) {
+        return storage.get(task);
+    };
+}
+
+function jspost(url,data){
+    var res = http.post(url, data);
+    var data = res.body.string();
+    if(data){
+        return data;
+    }
+}
 
 
 // 获取接口数据
@@ -50,6 +69,28 @@ function getTask() {
     }
 };
 
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
+
+//读取本地数据
+function getStorageData(name, key) {
+    const storage = storages.create(name);  //创建storage对象
+    if (storage.contains(key)) {
+        return storage.get(key);
+    };
+    //默认返回undefined
+}
+
 function app_info(name,data){
     var url = "http://api.wenfree.cn/public/";
     var postdata = {};
@@ -63,90 +104,49 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-
-function sendBroadcast(appName, data) {
-    app.launchPackage("com.flow.factory");
-    sleep(2000)
-    var mapObject = {
-        appName: appName,
-        data: data
-    }
-    app.sendBroadcast(
-        {
-            packageName: "com.flow.factory",
-            className: "com.flow.factory.trafficfactory.broadcast.TaskBroadCast",
-            extras: mapObject
-        }
-    );
-}
-
-function jspost(url,data){
-    var res = http.post(url, data);
-    var data = res.body.string();
-    if(data){
-        return data;
-    }
-}
-
-//读取本地数据
-function getStorageData(name, key) {
-    const storage = storages.create(name);  //创建storage对象
-    if (storage.contains(key)) {
-        return storage.get(key);
-    };
-    //默认返回undefined
-}
-
-function callback_task(id,state){
-    var url = "http://api.wenfree.cn/public/";
-    var arr = {};
-    arr["id"] = id;
-    arr["state"] = state;
-    var postdata = {};
-    postdata["s"]="NewsRecordBack.Back"
-    postdata["arr"] = JSON.stringify(arr)
-    log(arr,postdata)
-    log(jspost(url,postdata));
-}
-
 log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
-function main(){
-    var info_read_key = true
+function getDyUrl(){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr['s']= 'DyUrl.url'
+    arr["imei_tag"]= getStorageData(device.getIMEI(), "tag");
+    var res = jspost(url,arr);
+    if (res){
+        res =  JSON.parse(res)
+        return res.data.url
+    }
+}
+// main()
+
+function downs_v(){
 
     var time_line = 0
-    while (time_line < 15 ) {
+    var clear_ = true
+    while (time_line < 100 ) {
         
         var currenapp = currentPackage()
-        if( currenapp == my_app.packageName ){
+        if( currenapp == "com.android.providers.downloads.ui" ){
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
-                case "com.ss.android.ugc.aweme.main.MainActivity":
-                    log("抖音首页");
-                    if( info_read_key && jsclick("text","我",true,2)){
-                        if(jsclick("text","编辑资料",false,1)){
-                            if(info_read()){
-                                app_info(my_app.name,info);
-                                info_read_key = false;
-                            }
-                        }else{
-                            jsclick("text","我",true,2);
-                        }
+                case "com.android.providers.downloads.ui.DownloadList":
+                    log("下载界面");
+                    if ( clear_ && jsclick("text","清空",true,2)){
+                       if( jsclick("id","custom",true,2) && jsclick("text","确定",true,8) ){
+                        clear_ = false;
+                       }
+                    }else if(  jsclick("text","打开",false,2) ){
+                        log("下载完成")
+                        return true
+                    }else if(jsclick("text","暂停",false,1)){
+                        sleep(1000*2)
                     }else{
-                        jsclick("text","首页",true,random(4,6))
-                        var like_key = random(1,100);
-                        if (like_key > 50){
-                            var d = textMatches(/.*w/).findOne(1000);
-                            if(d){
-                                click__(d);
-                                sleep(2000);
-                            }
-                        }
-                        swipe(device.width/2, device.height*0.8, device.width/2, device.height*0.2, random(200,2000) );
-                        sleep(random(1000,3000))
+                        jsclick("desc","更多",true,2)
+                        jsclick("text","新建下载",true,2)
+                        jsclick("text","开始下载",true,2);
                     }
                     break;
                 default:
@@ -168,18 +168,102 @@ function main(){
                 jsclick("text","安装",true,2);
             }
         }else{
-            active(my_app.packageName,5)
+            active("com.android.providers.downloads.ui",5)
         }
 
-        sleep(1000*2);
+        sleep(1000*1);
         Tips();
         time_line++
     }
+
 }
+
+
+
+function send(){
+  
+    var time_line = 0
+    while (time_line < 100 ) {
+        
+        var currenapp = currentPackage()
+        log("currenapp->"+currenapp)
+
+        if( currenapp == "com.android.providers.downloads.ui" ){
+            var UI = currentActivity();
+            log('UI',UI,time_line)
+            switch(UI){
+                case "com.android.providers.downloads.ui.DownloadList":
+                    log("下载界面");
+                    if(  jsclick("text","打开",false,2) ){
+                        log("下载完成")
+                        var idicon = id("download_icon").findOne(200);
+                        if (idicon){
+                            press(idicon.bounds().centerX(), idicon.bounds().centerY(),3000)
+                        }
+                    }else if(jsclick("text","分享",true,2)){
+                        jsclick("id","always_option",true,2)
+                        jsclick("text","抖音短视频",true,2)
+                    }else if(jsclick("text","抖音短视频",true,2)){
+                    }else{
+                    }
+                    break;
+                default:
+                    log("可能没有启动设置");
+                    back();
+                    sleep(2000);
+                    home();
+                    sleep(2000);
+                    break;
+            }
+        }else if(currenapp == "com.ss.android.ugc.aweme"){
+
+            var UI = currentActivity();
+            log('UI',UI,time_line)
+            switch(UI){
+                case "com.ss.android.ugc.aweme.shortvideo.cut.VECutVideoActivity":
+                    jsclick("text","下一步",true,2)
+                    break;
+                case "com.ss.android.ugc.aweme.shortvideo.edit.VEVideoPublishEditActivity":
+                    jsclick("text","下一步",true,2)
+                    break;
+                case "com.ss.android.ugc.aweme.shortvideo.ui.VideoPublishActivity":
+                    log("发布")
+                    jsclick("desc","发布",true,2)
+                    return true
+                case "com.ss.android.ugc.aweme.main.MainActivity":
+                    jsclick("text","我",true,2)
+            }
+
+        }else if(currenapp == "com.android.settings"){
+            jsclick("text","允许来自此来源的应用",true,2);
+            back();
+        }else if(currenapp == "com.miui.packageinstaller"){
+            log("安装app");
+            if(jsclick("text","应用商店安装",true,2)){
+            }else if(jsclick("text","设置",true,2)){
+            }else{
+                jsclick("text","安装",true,2);
+            }
+        }else if( currenapp == "android" ){
+            jsclick("id","always_option",true,2)
+            jsclick("text","抖音短视频",true,2)
+        }else{
+            active("com.android.providers.downloads.ui",5)
+        }
+
+        sleep(1000*1);
+        Tips();
+        time_line++
+    }  
+}
+
+
+
 
 function Tips(){
     log("查询弹窗");
     var textTips = {}
+    textTips["暂不"]="text";
     textTips["允许"]="text";
     textTips["保存"]="text";
     textTips["立即升级"]="text";
@@ -220,11 +304,11 @@ function info_read(){
                 log(dd[1].text())
                 var txt = dd[1].text()
                 if (txt == "获赞"){
-                    info["获赞"] = dd[0].text()
+                    info["zan"] = dd[0].text()
                 }else if(txt == "关注"){
-                    info["关注"] = dd[0].text()
+                    info["follow"] = dd[0].text()
                 }else if( txt == "粉丝"){
-                    info["粉丝"] = dd[0].text()
+                    info["fen"] = dd[0].text()
                 }
             }
 
@@ -237,7 +321,6 @@ function info_read(){
                     log(dd.text());
                 }
             }
-
             log(info);
             return true
         }
@@ -368,3 +451,75 @@ function input_pay_password(password){
         sleep(300)
     }
 }
+
+var dm={}
+dm.sid = '11521';
+dm.action = 'loginIn';
+dm.name = '6g0hHGsmhqaTd';
+dm.password = 'yangmian121';
+dm.url = 'http://api.duomi01.com/api';
+dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
+dm.phone = "";
+dm.sms = "";
+
+//登录
+function dm_login(){
+    let arr = {}
+	arr.action = 'loginIn'
+	arr.name = dm.name
+    arr.password = dm.password
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            dm.token = data_arr[1]
+            log('token',dm.token);
+            return true;
+        }
+    }
+}
+//取手机号
+function dm_get_phone(){
+    let arr = {}
+	arr.action = 'getPhone';
+	arr.sid = dm.sid;
+    arr.token = dm.token;
+    arr.vno = '0';
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            dm.phone = data_arr[1];
+            log('phone',dm.phone);
+            return true;
+        }
+    }
+}
+
+//取手机号
+function dm_get_message(){
+    let arr = {}
+	arr.action = 'getMessage';
+    arr.sid = dm.sid;
+    arr.phone = dm.phone;
+    arr.token = dm.token;
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        log(data);
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            sms = data_arr[1];
+            let sms = sms.match(/\d{4,6}/)[0]
+            dm.sms = sms
+            log('sms',dm.sms);
+            return true;
+        }
+    }
+}
+
+// dm_login()
+// dm_get_phone()
+// dm_get_message()

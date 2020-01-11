@@ -9,7 +9,6 @@ events.on("prepare", function (i, mainEngine) {
         info["state"]="fail";
         var taskData = getTask();
         log(taskData.task.data);
-        
         main();
         callback_task(taskData.task.id,"done");
     }
@@ -29,6 +28,7 @@ function jspost(url,data){
         return data;
     }
 }
+
 
 // 获取接口数据
 function getTask() {

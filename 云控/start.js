@@ -9,7 +9,7 @@ var phone = public.getStorageData(imei, "phone");
 var tag = public.getStorageData(imei, "tag");
 var whos = public.getStorageData(imei, "whos");
 
-//-------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 // while (true){
 //     try{
         main();
@@ -36,6 +36,7 @@ function main() {
         
         if(json.data.type == "download"){
             var data = json.data.data;
+
             for (let ii=0;ii<data.length;ii++){
                 var name = data[ii];
                 var url = get_js_code(name)

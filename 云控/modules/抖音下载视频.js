@@ -4,6 +4,7 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     try{
+        var taskData = getTask();
         var data_ = getDyUrl()
         if (data_){
             setClip(data_.url)
@@ -42,6 +43,28 @@ function jspost(url,data){
         return data;
     }
 }
+
+
+// 获取接口数据
+function getTask() {
+    var url = 'http://api.wenfree.cn/public/';
+    let res = http.post(url, {
+        "s": "NewsImei.Imei",
+        "imei": device.getIMEI()
+    });
+
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = JSON.parse(html);
+        log(json)
+        return json.data;
+    } catch (err) {
+        //在此处理错误
+    }
+};
+
 
 //读取本地数据
 function getStorageData(name, key) {

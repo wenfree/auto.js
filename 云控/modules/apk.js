@@ -3,12 +3,25 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    app.openUrl("https://img.wenfree.cn/apk/yuns.apk");
-    sleep(1000*3)
-    jsclick("text","确定",true,2)
-    active("com.android.providers.downloads.ui",5)
-    sleep(1000*60*60);
-    
+    try
+    {
+        var taskData = getTask();
+        log(taskData.task.data);
+
+        app.openUrl("https://img.wenfree.cn/apk/yuns.apk");
+        sleep(1000*3)
+        jsclick("text","确定",true,2)
+        active("com.android.providers.downloads.ui",5)
+        callback_task(taskData.task.id,"done");
+    }
+    catch(err)
+    {
+        log(err);
+        log("遇到错误");
+        sleep(1000*60);
+    }
+
+
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -30,6 +43,40 @@ function jspost(url,data){
     }
 }
 
+
+// 获取接口数据
+function getTask() {
+    var url = 'http://api.wenfree.cn/public/';
+    let res = http.post(url, {
+        "s": "NewsImei.Imei",
+        "imei": device.getIMEI()
+    });
+
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = JSON.parse(html);
+        log(json)
+        return json.data;
+    } catch (err) {
+        //在此处理错误
+    }
+};
+
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
+
 //读取本地数据
 function getStorageData(name, key) {
     const storage = storages.create(name);  //创建storage对象
@@ -49,18 +96,6 @@ function app_info(name,data){
     postdata["whos"]= "ouwen000";
     postdata["link"]= my_app.link;
     postdata["app_info"]= JSON.stringify(data);
-    log(jspost(url,postdata));
-}
-
-function callback_task(id,state){
-    var url = "http://api.wenfree.cn/public/";
-    var arr = {};
-    arr["id"] = id;
-    arr["task_state"] = state;
-    var postdata = {};
-    postdata["s"]="App.Zllgcimeicallback.Callback_task"
-    postdata["arr"] = JSON.stringify(arr)
-    log(arr,postdata)
     log(jspost(url,postdata));
 }
 
