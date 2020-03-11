@@ -3,8 +3,23 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    main();
-    exit();
+
+    try{
+        var taskData = getTask();
+        log(taskData.task.data);
+        var dyid = JSON.parse(taskData.task.data);
+        var dyid = dyid.dyid;
+        log(dyid)
+       if(main()) {
+            callback_task(taskData.task.id,"done");
+            home();
+       }
+
+    }catch(e){
+
+    }
+
+    
     
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
@@ -49,13 +64,35 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
+
+// 获取接口数据
+function getTask() {
+    var url = 'http://api.wenfree.cn/public/';
+    let res = http.post(url, {
+        "s": "NewsImei.Imei",
+        "imei": device.getIMEI()
+    });
+
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = JSON.parse(html);
+        log(json)
+        return json.data;
+    } catch (err) {
+        //在此处理错误
+    }
+};
+
+
 function callback_task(id,state){
     var url = "http://api.wenfree.cn/public/";
     var arr = {};
     arr["id"] = id;
-    arr["task_state"] = state;
+    arr["state"] = state;
     var postdata = {};
-    postdata["s"]="App.Zllgcimeicallback.Callback_task"
+    postdata["s"]="NewsRecordBack.Back"
     postdata["arr"] = JSON.stringify(arr)
     log(arr,postdata)
     log(jspost(url,postdata));
@@ -105,8 +142,6 @@ function main(){
                 case "com.ss.android.ugc.aweme.main.MainActivity":
                     log("抖音首页");
 
-                    // 
-
                     if( jsclick("text","我",false,2)){
                         if ( info_read_key && jsclick("text","编辑资料",false,1)){
                             if(info_read()){
@@ -125,7 +160,7 @@ function main(){
                         jsclick("desc","分享",true,3);
                         jsclick("text","复制链接",true,2)
                         my_app.link = getClip();
-                        my_app.link = my_app.link.replace("在抖音，记录美好生活！ ","")
+                        // my_app.link = my_app.link.replace("在抖音，记录美好生活！ ","")
                         info["model"]= my_app.name;
                         info["state"] = "ok";
                         app_info(my_app.name,info);
@@ -165,7 +200,7 @@ function Tips(){
     textTips["暂不"]="text";
     textTips["允许"]="text";
     textTips["保存"]="text";
-    textTips["立即升级"]="text";
+    textTips["以后再说"]="text";
     // textTips["设置"]="text";
     textTips["好的"]="text";
     for(var k in textTips){
@@ -227,12 +262,8 @@ function info_read(){
 }
 
 // info_read()
-
-
-
 // Tips()
 // clearApp()
-
 /*
     清除app数据，无需root权限
     备注:仅适用小米手机
@@ -243,7 +274,6 @@ function info_read(){
 function clearApp() {
     var appName = "星巴克"
     var packageName = "com.starbucks.cn"
-
     let i = 0
     while (i < 10) {
         let activity = currentActivity()
@@ -350,86 +380,3 @@ function input_pay_password(password){
         sleep(300)
     }
 }
-
-var dm={}
-dm.sid = '11521';
-dm.action = 'loginIn';
-dm.name = '6g0hHGsmhqaTd';
-dm.password = 'yangmian121';
-dm.url = 'http://api.duomi01.com/api';
-dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
-dm.phone = "";
-dm.sms = "";
-
-//登录
-function dm_login(){
-    let arr = {}
-	arr.action = 'loginIn'
-	arr.name = dm.name
-    arr.password = dm.password
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.token = data_arr[1]
-            log('token',dm.token);
-            return true;
-        }
-    }
-}
-//取手机号
-function dm_get_phone(){
-    let arr = {}
-	arr.action = 'getPhone';
-	arr.sid = dm.sid;
-    arr.token = dm.token;
-    arr.vno = '0';
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.phone = data_arr[1];
-            log('phone',dm.phone);
-            return true;
-        }
-    }
-}
-
-//取手机号
-function dm_get_message(){
-    let arr = {}
-	arr.action = 'getMessage';
-    arr.sid = dm.sid;
-    arr.phone = dm.phone;
-    arr.token = dm.token;
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        log(data);
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            sms = data_arr[1];
-            let sms = sms.match(/\d{4,6}/)[0]
-            dm.sms = sms
-            log('sms',dm.sms);
-            return true;
-        }
-    }
-}
-
-// dm_login()
-// dm_get_phone()
-// dm_get_message()
-
-
-
-if (currentPackage() == my_app.packageName ){
-    log(getClip())
-}else{
-    setClip("https://v.douyin.com/XnbKXx/");
-    active(my_app.packageName,5);
-    jsclick("text","前往",true,2)
-}
-

@@ -226,10 +226,24 @@ function send(text_){
                     log("发布")
                     setClip(text_);
                     setText(0,text_);
-                    jsclick("desc","发布",true,2)
+
+                    setClip("₴sk1f1gT5QZp₴");
+                    if (jsclick('text','添加商品',true,2)){
+                    }
+
+                    // jsclick("desc","发布",true,2)
                     return true
                 case "com.ss.android.ugc.aweme.main.MainActivity":
-                    jsclick("text","我",true,2)
+                    jsclick("text","我",true,2);
+                    break;
+                case "com.ss.android.ugc.aweme.crossplatform.activity.CrossPlatformActivity":
+                    if(jsclick('text',"商品链接添加",true,3)){
+
+                    }else if(jsclick('text',"添加商品",false,2)){
+                        setText(0,'₴sk1f1gT5QZp₴');
+                    }
+                    break;
+
             }
 
         }else if(currenapp == "com.android.settings"){
@@ -447,74 +461,6 @@ function input_pay_password(password){
         var numbers = password.substring(i,i+1);
         click_(key_xy[numbers][0],key_xy[numbers][1])
         sleep(300)
-    }
-}
-
-var dm={}
-dm.sid = '11521';
-dm.action = 'loginIn';
-dm.name = '6g0hHGsmhqaTd';
-dm.password = 'yangmian121';
-dm.url = 'http://api.duomi01.com/api';
-dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
-dm.phone = "";
-dm.sms = "";
-
-//登录
-function dm_login(){
-    let arr = {}
-	arr.action = 'loginIn'
-	arr.name = dm.name
-    arr.password = dm.password
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.token = data_arr[1]
-            log('token',dm.token);
-            return true;
-        }
-    }
-}
-//取手机号
-function dm_get_phone(){
-    let arr = {}
-	arr.action = 'getPhone';
-	arr.sid = dm.sid;
-    arr.token = dm.token;
-    arr.vno = '0';
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.phone = data_arr[1];
-            log('phone',dm.phone);
-            return true;
-        }
-    }
-}
-
-//取手机号
-function dm_get_message(){
-    let arr = {}
-	arr.action = 'getMessage';
-    arr.sid = dm.sid;
-    arr.phone = dm.phone;
-    arr.token = dm.token;
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        log(data);
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            sms = data_arr[1];
-            let sms = sms.match(/\d{4,6}/)[0]
-            dm.sms = sms
-            log('sms',dm.sms);
-            return true;
-        }
     }
 }
 
