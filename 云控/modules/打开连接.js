@@ -3,26 +3,28 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    try{
+    try
+    {
         var taskData = getTask();
-        var data_ = getDyUrl()
-        if (data_){
-            setClip(data_.url)
+        log(taskData.task.data);
+        var urlArr = JSON.parse(taskData.task.data);
+        var url = urlArr.url;
+        app.openUrl(url);
+        sleep(1000*3);
+
+        if( jsclick("text","确定",true,2) ){
+            active("com.android.providers.downloads.ui",5)
         }
-        info["state"] = "outtime";
-        if(downs_v()){
-            setClip(data_.text)
-            log(data_.text);
-            send(data_.text)
-            info["state"] = "ok";
-        }
-        info["model"]= my_app.name;
-        app_info(my_app.name,info);
         callback_task(taskData.task.id,"done");
-    }catch(e){
-        log(e)
     }
-    
+    catch(err)
+    {
+        log(err);
+        log("遇到错误");
+        sleep(1000*60);
+    }
+
+
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -65,6 +67,18 @@ function getTask() {
     }
 };
 
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
 
 //读取本地数据
 function getStorageData(name, key) {
@@ -100,22 +114,10 @@ function getDyUrl(){
     var res = jspost(url,arr);
     if (res){
         res =  JSON.parse(res)
-        return res.data
+        return res.data.url
     }
 }
-
-function callback_task(id,state){
-    var url = "http://api.wenfree.cn/public/";
-    var arr = {};
-    arr["id"] = id;
-    arr["state"] = state;
-    var postdata = {};
-    postdata["s"]="NewsRecordBack.Back"
-    postdata["arr"] = JSON.stringify(arr)
-    log(arr,postdata)
-    log(jspost(url,postdata));
-}
-
+// main()
 
 function downs_v(){
 
@@ -176,7 +178,7 @@ function downs_v(){
 
 
 
-function send(text_){
+function send(){
   
     var time_line = 0
     while (time_line < 100 ) {
@@ -192,7 +194,7 @@ function send(text_){
                     log("下载界面");
                     if(  jsclick("text","打开",false,2) ){
                         log("下载完成")
-                        var idicon = text("打开").findOne(200).parent().parent();
+                        var idicon = id("download_icon").findOne(200);
                         if (idicon){
                             press(idicon.bounds().centerX(), idicon.bounds().centerY(),3000)
                         }
@@ -224,26 +226,10 @@ function send(text_){
                     break;
                 case "com.ss.android.ugc.aweme.shortvideo.ui.VideoPublishActivity":
                     log("发布")
-                    setClip(text_);
-                    setText(0,text_);
-
-                    setClip("₴sk1f1gT5QZp₴");
-                    if (jsclick('text','添加商品',true,2)){
-                    }
-
-                    // jsclick("desc","发布",true,2)
+                    jsclick("desc","发布",true,2)
                     return true
                 case "com.ss.android.ugc.aweme.main.MainActivity":
-                    jsclick("text","我",true,2);
-                    break;
-                case "com.ss.android.ugc.aweme.crossplatform.activity.CrossPlatformActivity":
-                    if(jsclick('text',"商品链接添加",true,3)){
-
-                    }else if(jsclick('text',"添加商品",false,2)){
-                        setText(0,'$KGep1bD9ycj$');
-                    }
-                    break;
-
+                    jsclick("text","我",true,2)
             }
 
         }else if(currenapp == "com.android.settings"){
@@ -464,3 +450,74 @@ function input_pay_password(password){
     }
 }
 
+var dm={}
+dm.sid = '11521';
+dm.action = 'loginIn';
+dm.name = '6g0hHGsmhqaTd';
+dm.password = 'yangmian121';
+dm.url = 'http://api.duomi01.com/api';
+dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
+dm.phone = "";
+dm.sms = "";
+
+//登录
+function dm_login(){
+    let arr = {}
+	arr.action = 'loginIn'
+	arr.name = dm.name
+    arr.password = dm.password
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            dm.token = data_arr[1]
+            log('token',dm.token);
+            return true;
+        }
+    }
+}
+//取手机号
+function dm_get_phone(){
+    let arr = {}
+	arr.action = 'getPhone';
+	arr.sid = dm.sid;
+    arr.token = dm.token;
+    arr.vno = '0';
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            dm.phone = data_arr[1];
+            log('phone',dm.phone);
+            return true;
+        }
+    }
+}
+
+//取手机号
+function dm_get_message(){
+    let arr = {}
+	arr.action = 'getMessage';
+    arr.sid = dm.sid;
+    arr.phone = dm.phone;
+    arr.token = dm.token;
+    var res = http.post(dm.url, arr);
+    var data = res.body.string();
+    if(data){
+        log(data);
+        var data_arr = data.split("|")
+        if(data_arr[0]=='1'){
+            sms = data_arr[1];
+            let sms = sms.match(/\d{4,6}/)[0]
+            dm.sms = sms
+            log('sms',dm.sms);
+            return true;
+        }
+    }
+}
+
+// dm_login()
+// dm_get_phone()
+// dm_get_message()

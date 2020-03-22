@@ -5,19 +5,15 @@ events.on("prepare", function (i, mainEngine) {
 
     try{
         var taskData = getTask();
-        var data_ = getDyUrl()
+        var data_ = jspost('http://api.okayapi.com/?s=App.Table.Get&model_name=phone_mun&id=1&app_key=90BB9337D7B1ACC0CA642C5726D227CB&sign=C1531B8CCD4A0F47FF1A85E0DF1698AB',{})
         if (data_){
-            setClip(data_.url)
-        }
-        info["state"] = "outtime";
-        if(downs_v()){
-            setClip(data_.text)
-            log(data_.text);
-            send(data_.text)
-            info["state"] = "ok";
-        }
-        info["model"]= my_app.name;
-        app_info(my_app.name,info);
+            var phoneArr = JSON.parse(data_);
+            log(phoneArr);
+            var phone_mun = phoneArr.data.data.phone;
+            setClip(phone_mun);
+            setText(0,phone_mun);
+            log(phone_mun);
+        }        
         callback_task(taskData.task.id,"done");
     }catch(e){
         log(e)
@@ -30,7 +26,7 @@ events.on("prepare", function (i, mainEngine) {
 
 var my_app = {}
 my_app.packageName = "com.android.providers.downloads.ui";
-my_app.name = "发视频";
+my_app.name = "手机输入";
 my_app.link = undefined
 
 var thread = "";
@@ -42,6 +38,17 @@ function jspost(url,data){
     if(data){
         return data;
     }
+}
+
+
+var data_ = jspost('http://api.okayapi.com/?s=App.Table.Get&model_name=phone_mun&id=1&app_key=90BB9337D7B1ACC0CA642C5726D227CB&sign=C1531B8CCD4A0F47FF1A85E0DF1698AB',{})
+if (data_){
+    var phoneArr = JSON.parse(data_);
+    log(phoneArr);
+    var phone_mun = phoneArr.data.data.phone;
+    setClip(phone_mun);
+    setText(0,phone_mun);
+    log(phone_mun);
 }
 
 
@@ -240,7 +247,7 @@ function send(text_){
                     if(jsclick('text',"商品链接添加",true,3)){
 
                     }else if(jsclick('text',"添加商品",false,2)){
-                        setText(0,'$KGep1bD9ycj$');
+                        setText(0,'₴sk1f1gT5QZp₴');
                     }
                     break;
 
