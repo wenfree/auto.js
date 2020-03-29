@@ -10,7 +10,7 @@ events.on("prepare", function (i, mainEngine) {
     try{
         var my_app = {}
         my_app.packageName = "com.ss.android.ugc.aweme";
-        my_app.name = "发弹幕";
+        my_app.name = "360评论";
         my_app.link = undefined
 
         var taskData = getTask();
@@ -19,15 +19,21 @@ events.on("prepare", function (i, mainEngine) {
 
         // var url = 'https://v.douyin.com/VwdkrN/';
         // var name = '老张的深夜酒吧';
+        var appurl = taskall.url
+        var appname = taskall.appname
 
-        var url = taskall.url
-        var name = taskall.name
+        // if (opens(appurl,appname)){
+        // }
 
-        if (opens(url,name)){
-            if (main(url,name)){
-                callback_task(taskData.task.id,"done");
-            }
-        }
+        // sleep(1000*3)
+        // jsclick("text","确定",true,2)
+        // active("com.android.providers.downloads.ui",5)
+
+
+        main();
+
+
+        callback_task(taskData.task.id,"done");
         
     }catch(e){
         log(e)
@@ -37,20 +43,13 @@ events.on("prepare", function (i, mainEngine) {
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
-        // var url = 'https://v.douyin.com/VwdkrN/';
-        // var name = '老张的深夜酒吧';
-        // if (opens(url,name)){
-        //     if (main(url,name)){
-        //         // callback_task(taskData.task.id,"done");
-        //     }
-        // }
-
-        var my_app = {}
-        my_app.packageName = "com.ss.android.ugc.aweme";
-        my_app.name = "发弹幕";
-        my_app.link = undefined
+var my_app = {}
+my_app.packageName = "com.qihoo.appstore";
+my_app.name = "360评论";
+my_app.link = undefined
         
 
+// main();
 // 获取接口数据
 function getTask() {
     var url = 'http://api.wenfree.cn/public/';
@@ -121,8 +120,8 @@ function getCommnet(){
     var url = "http://api.wenfree.cn/public/";
     var arr = {};
     arr['s']= 'NewsCommnet.get';
-    arr['name']= '易升证券';
-    arr['type']= 'lun'; //按顺序取评论,不是lun就是随机取评论
+    arr['name']= 'default';
+    arr['type']= 'lun';
     var res = jspost(url,arr);
     if (res){
         res =  JSON.parse(res)
@@ -143,88 +142,68 @@ function callback_task(id,state){
     log(jspost(url,postdata));
 }
 
-
-
-function opens(url,name){
-    var i=0;
-    var openKey = false
-    while (i<20){
-
-        if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
-            openKey = true
-        }
-
-        var UI = currentActivity();
-        log(UI)
-        if ( openKey && UI == 'com.ss.android.ugc.aweme.profile.ui.UserProfileActivity' ){
-            log("准备点头像")
-            jsclick("desc",name+'的头像',true,5)
-            jsclick("text","确认",true,5)
-            
-            var UI = currentActivity();
-            log(UI)
-            if (UI == 'com.ss.android.ugc.aweme.profile.ui.HeaderDetailActivity'){
-                log('未开播');
-                back();
-                return '未开播';
-            }
-        }
-
-        var UI = currentActivity();
-        log(UI)
-        if ( UI == 'com.ss.android.ugc.aweme.live.LivePlayActivity' ){
-            log("正确的打开页面");
-            if(jsclick('text',name,false,1)){
-                return true
-            }
-        }
-
-        back();
-        sleep(1000);
-        back();
-        sleep(1000);
-        back();
-        sleep(1000);
-        setClip(url);
-        log("准备启动");
-        log(Date())
-        active(my_app.packageName,6);
-        log("启动完成");
-        log(Date())
-        sleep(1000);
-
-        Tips();
-    }
+function opens(url){
+    app.openUrl(url);
 }
+
+
 
 function main(url,name){
   
     var time_line = 0
     var setp = '';
-    while (time_line < 50 ) {
+    while (time_line < 100 ) {
         
         var currenapp = currentPackage();
-        if(currenapp == "com.ss.android.ugc.aweme"){
+        if(currenapp == "com.qihoo.appstore"){
+
+            var talk = getCommnet();
+            setText(0,talk.txt);
+            return true
             var UI = currentActivity();
             log('UI',UI,time_line)
             switch(UI){
-                case "com.ss.android.ugc.aweme.live.LivePlayActivity":
-                    setp = '直播间画面';
-                    if(jsclick("text",name,false,1)){
-                        if(jsclick("text","说点什么...",true,3)){
-                            var talk = getCommnet();
-                            setText(0,talk.txt);
-                            sleep(1000)
-                            click((640+720)/2,(741+821)/2)
-                            sleep(3000);
-                            setText(0, getClip());
-                            sleep(1000);
-                            click((640+720)/2,(741+821)/2);
-                            sleep(1000);
-                            click( 720*1/2, 1440*1/10 );
-                            return true
-                        }
+                case "com.qihoo.appstore.home.MainActivity":
+                    setp = '主页';
+                    if (jsclick("id","btn_search",true,2)){
+
                     }
+                    break;
+                case "com.qihoo.appstore.search.SearchActivity":
+                    setText(0,"易昇证券");
+                    break;
+                case "com.qihoo.appstore.home.LauncherActivity":
+                    
+                    var talk = getCommnet();
+                    setText(0,talk.txt);
+                    return true
+                    jsclick("text","评论",true,2);
+                    break;
+                case "com.qihoo360.accounts.ui.v.UplineLoginActivity":
+                    jsclick("text","输入帐号登录",true,8);
+                    break;
+                case "com.qihoo360.accounts.ui.v.UCActivity":
+                    if (jsclick("text","注册",false,2)){
+
+                        function getStorageData(name, key) {
+                            const storage = storages.create(name);  //创建storage对象
+                            if (storage.contains(key)) {
+                                return storage.get(key);
+                            };
+                            //默认返回undefined
+                        }
+                        var imei = device.getIMEI();
+                        var phone = getStorageData(imei, "phone");
+
+                        setText(0,phone);
+                        sleep(500);
+                        setText(1,"AaDd112211");
+
+                        return true
+                    }else{
+                        jsclick("text","快速注册",true,2);
+                    }
+
                     break;
                 default:
                     setp = 'other';
