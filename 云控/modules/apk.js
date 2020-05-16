@@ -8,10 +8,14 @@ events.on("prepare", function (i, mainEngine) {
         var taskData = getTask();
         log(taskData.task.data);
 
-        app.openUrl("https://img.wenfree.cn/apk/yuns.apk");
+        var link = JSON.parse(taskData.task.data);
+        var link = link.link;
+        
+        app.openUrl(link);
         sleep(1000*3)
+        jsclick("text","普通安装",true,5)
         jsclick("text","确定",true,2)
-        active("com.android.providers.downloads.ui",5)
+        active("com.android.providers.downloads.ui",5);
         callback_task(taskData.task.id,"done");
     }
     catch(err)
