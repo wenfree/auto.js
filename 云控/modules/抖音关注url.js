@@ -13,8 +13,9 @@ events.on("prepare", function (i, mainEngine) {
         var dyid = JSON.parse(taskData.task.data);
         var url = dyid.url;
         log(url)
-        main(url);
-        callback_task(taskData.task.id,"done");
+        if(main(url)){
+            callback_task(taskData.task.id,"done");
+        }
     }
     catch(err)
     {
@@ -23,6 +24,7 @@ events.on("prepare", function (i, mainEngine) {
         sleep(1000*60);
     }
     
+    app.launch('com.wenfree.cn');
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -154,6 +156,7 @@ function jsclick(way,txt,clickKey,n){
 function Tips(){
     var textTips = {}
     textTips["我知道了"]="text";
+    textTips["同意授权"]="text";
     textTips["下次再说"]="text"
     textTips["打开"]="text"
     textTips["允许"]="text"
@@ -201,6 +204,7 @@ function opens(urlss){
 
         sleep(1000);
         Tips();
+        i++;
     }
 }
 
@@ -219,8 +223,14 @@ function follow(){
                     return true
                 }else if(jsclick("text","#  互相关注",false,2)){
                     return true
-                }else if(jsclick("text","关注",true,2)){
-
+                }else{
+                    var t = textMatches(/.*关注/).find();
+                    for (var i=0;i<t.length;i++){
+                        log(i,t[i].text())
+                        if (t[i].text() == '#  关注'){
+                            click__(t[i]);
+                        }
+                    }
                 }
                 break
             default:
@@ -308,3 +318,7 @@ function main(urls){
 // callback_task(taskData.task.id,"done");
 
 
+// var t = textMatches(/.*关注/).find();
+// for (var i=0;i<t.length;i++){
+//     log(i,t[i].text())
+// }

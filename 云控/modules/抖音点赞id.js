@@ -6,17 +6,18 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    var taskData = getTask();
-    log(taskData.task.data);
-    var dyid = JSON.parse(taskData.task.data);
-    var dyid = dyid.dyid;
-    log(dyid)
-
-    main(dyid);
-
-    callback_task(taskData.task.id,"done");
-
-    
+    try{
+        var taskData = getTask();
+        log(taskData.task.data);
+        var dyid = JSON.parse(taskData.task.data);
+        var dyid = dyid.dyid;
+        log(dyid)
+        main(dyid);
+        callback_task(taskData.task.id,"done");
+        app.launch('com.wenfree.cn');
+    }catch(e){
+        toast(e)
+    }
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });

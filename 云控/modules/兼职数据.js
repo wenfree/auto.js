@@ -3,7 +3,7 @@
 
 
 var my_app = {}
-my_app.packageName = "com.qihoo.appstore";
+my_app.packageName = "com.jianzhi.jinggxuan1";
 my_app.name = "兼职数据";
 my_app.link = undefined
         
@@ -31,11 +31,12 @@ log(currentActivity());
 log(device.width,device.height)
 
   var t = className("TextView").find();
+
   if(t){
-    for (var i=20;i<t.length;i++){
+    for (var i=0;i<t.length;i++){
         var tt = t[i];
-      
-        if (tt.id() == "com.jianzhi.ai:id/title" && tt.text() == '思珂特考场监考员' ){
+        log(i,tt.id(),tt.text());
+        if (tt.id() == "com.jianzhi.wuba:id/title" ){
           log(tt.id(),tt.text());
           var postarr = {}
           postarr["s"] = "App.Acount.Save";
@@ -45,12 +46,12 @@ log(device.width,device.height)
           log(postarr);
           var idarr = jspost("http://99kuaixiu.cn/api/public/",postarr);
           var listid = idarr.data.id;
-          if (jsclick("text",tt.text(),true,4)){
-              
+          if (jsclick("text",tt.text(),true,5)){
               savemore(listid);
+              sleep(1000);
           }
           back();
-          if (i>2){
+          if (i>3*7){
             sleep(2000);
             swipe(device.width/2,device.height*4/5,device.width/2,device.height*3/5,3000);
             sleep(2000);
@@ -98,7 +99,6 @@ function savemore(listid){
         log(shows);
     }
 }
-
 
 
 
@@ -216,30 +216,13 @@ function input_pay_password(password){
 }
 
 
-// log(getClip());
-// var url = 'https://v.douyin.com/XWEQTF/'
+// var t = className("TextView").find();
 
-// back();
-// sleep(1000);
-// back();
-// sleep(1000);
-// back();
-// sleep(1000);
-// setClip(url);
-// log("准备启动");
-// log(Date())
-// active(my_app.packageName,6);
-// log("启动完成");
-// log(Date())
-// sleep(1000);
 
-// if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
-//     openKey = true
+// for (var i=0;i<t.length;i++){
+//     var tt = t[i]
+//     log(i,tt.id(),tt.text())
 // }
-
-
-
-
 
 
 

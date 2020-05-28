@@ -158,6 +158,10 @@ function opens(url,name){
         log(UI)
         if ( openKey && UI == 'com.ss.android.ugc.aweme.profile.ui.UserProfileActivity' ){
             log("准备点头像")
+
+            var name = descMatches()
+
+
             jsclick("desc",name+'的头像',true,5)
             jsclick("text","确认",true,5)
             

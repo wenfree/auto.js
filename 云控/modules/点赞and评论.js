@@ -9,19 +9,18 @@ events.on("prepare", function (i, mainEngine) {
     try{
         var taskData = getTask();
         log(taskData.task.data);
-        var dyid = JSON.parse(taskData.task.data);
-        var url = dyid.dyid;
-        var commnet_txt = dyid.commnet_txt;
-        
-        log(url)
-        main(url);
-        callback_task(taskData.task.id,"done");
+        var dyid_ = JSON.parse(taskData.task.data);
+        var dyid = dyid_.dyid;
+        var category = dyid_.category;
+        if (main(dyid,category)){
+            callback_task(taskData.task.id,"done");
+        }
     }
     catch(err){
-        log(err)
+        toast(err);
     }
 
-
+    app.launch('com.wenfree.cn');
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -91,7 +90,7 @@ function Tips(){
 function zan(){
     var title = className("android.widget.LinearLayout").find()
     if (title){
-        if (title.length == 3){
+        if (title.length >= 3){
             click(988,784);
             sleep(1000*2);
             click(device.width/2,device.height*0.3)
@@ -148,11 +147,25 @@ function Fdy(urlss){
     }
 }
 
-function commnet_do(commnet_txt){
+function getCommnet(category){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr['s']= 'NewsCommnet.get';
+    arr['category']= category;
+    arr['type']= 'lun';
+    var res = jspost(url,arr);
+    if (res){
+        res =  JSON.parse(res)
+        log(res);
+        return res.data.txt
+    }
+}
+
+function commnet_do(category){
     if (jsclick("text","评论并转发",false,2)){
         var d = className("EditText").findOne(1000)
         if (d){
-         d.setText(commnet_txt);
+         d.setText(getCommnet(category));
          sleep(1000)
          //  点击发送
          click((device.width)*0.92,d.bounds().centerY())
@@ -162,7 +175,7 @@ function commnet_do(commnet_txt){
      }else{
         var title = className("android.widget.LinearLayout").find()
         if (title){
-            if (title.length == 3){
+            if (title.length >= 3){
                 click_(device.width*2/5,device.height*88/100)
             }
         }
@@ -170,7 +183,7 @@ function commnet_do(commnet_txt){
 }
 
 
-function commnet(commnet_txt){
+function commnet(category){
     var timeLine = 0
     while (timeLine < 50){
         log("timeLine--->",timeLine)
@@ -178,12 +191,12 @@ function commnet(commnet_txt){
         log("UI->",UI)
         switch(UI){
             case "com.ss.android.ugc.aweme.detail.ui.DetailActivity":
-                if (commnet_do(commnet_txt)){
+                if (commnet_do(category)){
                     return true
                 }
                 break;
             case "com.ss.android.ugc.aweme.main.MainActivity":
-                if (commnet_do(commnet_txt)){
+                if (commnet_do(category)){
                     return true
                 }
                 break;
@@ -217,8 +230,6 @@ function callback_task(id,state){
 
 var app_name = "抖音短视频";
 var app_bid = "com.ss.android.ugc.aweme";
-// var dyid = "6768528115078614286";
-var commnet_txt = "666";
 
 
 function opendy(vodieid){
@@ -230,10 +241,6 @@ function opendy(vodieid){
 }
 
 var info = {}
-// var data = get_task()
-// var url = data.worksPath;
-// var commnet_txt = data.extend4;
-
 
 // 获取接口数据
 function getTask() {
@@ -255,16 +262,17 @@ function getTask() {
     }
 };
 
-
-function main(dyid){
+function main(dyid,category){
     if (Fdy(dyid)){
         sleep(1000*2)
-        commnet(commnet_txt)
-        sleep(1000*2);
-        back();
-        sleep(1000*2)
-        home();
-        info["state"]="ok";
+        if (commnet(category)) {
+            sleep(1000*2);
+            back();
+            sleep(1000*2)
+            home();
+            info["state"]="ok";
+            return true
+        }
     }else{
         sleep(1000*10)
         home();
@@ -272,17 +280,14 @@ function main(dyid){
     }
 }
 
-// app.launch(app_bid)
-// app.launchApp("QQ")
-// main();
+var tt = className("android.widget.LinearLayout").find()
+for (var i=0;i<tt.length;i++){
+    var t = tt[i]
+    log(i,t.id(),t.text())
+}
 
 
-// var taskData = getTask();
-// log(taskData.task.data);
-// var dyid = JSON.parse(taskData.task.data);
-// var dyid = dyid.dyid;
+log(currentActivity())
+log(currentPackage())
 
-// main();
-// callback_task(taskData.task.id,"done");
-
-
+// opendy("6830410256850472192");
