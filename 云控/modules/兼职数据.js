@@ -44,7 +44,7 @@ log(device.width,device.height)
           postarr["price"] = t[i+1].text()+t[i+2].text();
           postarr["context"] = t[i+3].text();
           log(postarr);
-          var idarr = jspost("http://99kuaixiu.cn/api/public/",postarr);
+          var idarr = jspost("https://jobhk.honghongdesign.cn/api/public/",postarr);
           var listid = idarr.data.id;
           if (jsclick("text",tt.text(),true,5)){
               savemore(listid);
@@ -95,7 +95,7 @@ function savemore(listid){
         shows['worktime'] = t_[ren_+2].text();
         shows['address'] = t_[ren_+4].text();
     
-        jspost("http://99kuaixiu.cn/api/public/",shows)
+        jspost("https://jobhk.honghongdesign.cn/api/public/",shows)
         log(shows);
     }
 }

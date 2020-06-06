@@ -175,14 +175,16 @@ function Tips(){
 function opens(urlss){
     var i=0;
     var openKey = false
-    while (i<20){
+    while (i<3){
 
-        back();
+        home();
         sleep(1000);
-        back();
-        sleep(1000);
-        back();
-        sleep(1000);
+        click(device.width/4,device.height-20)
+        sleep(2000);
+        jsclick('id',"clearAnimView",true,2)
+        sleep(2000);
+        //清理掉多余的程序
+
         setClip(urlss);
         log("准备启动");
         log(Date())
@@ -191,8 +193,13 @@ function opens(urlss){
         log(Date())
         sleep(1000);
 
-        if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
-            openKey = true
+        var  waittime___ = 0
+        while(waittime___ < 20 ) {
+            if (jsclick("text","前往",true,2) || jsclick("text","打开看看",true,2)){
+                openKey = true
+            }
+            waittime___++
+            sleep(1000);
         }
 
         var UI = currentActivity();

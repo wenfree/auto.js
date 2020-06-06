@@ -7,6 +7,11 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     try{
+        click(device.width/4,device.height-20)
+        sleep(2000);
+        jsclick('id',"clearAnimView",true,2)
+        sleep(2000);
+
         var taskData = getTask();
         log(taskData.task.data);
         var dyid = JSON.parse(taskData.task.data);
@@ -279,6 +284,9 @@ function main(dyid){
 // Fdy(urlss)
 // sleep(1000)
 // log(currentActivity())
+
+
+
 
 
 

@@ -3,27 +3,61 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
+    try{
 
-    var url = getDyUrl();
-    var phone = getPhone_();
-    setClip(phone);
+        click(device.width/4,device.height-20)
+        sleep(2000);
+        jsclick('id',"clearAnimView",true,2)
+        sleep(2000);
 
-    app.openUrl(url);
-
-    exit();
+        var taskData = getTask();
+        var url = getDyUrl();
+        app.openUrl(url);
     
+        callback_task(taskData.task.id,"done");
+
+    }catch(e){
+        toast(e)
+    }
+
+
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
 
+// 获取接口数据
+function getTask() {
+    var url = 'http://api.wenfree.cn/public/';
+    let res = http.post(url, {
+        "s": "NewsImei.Imei",
+        "imei": device.getIMEI()
+    });
 
-var my_app = {}
-my_app.packageName = "com.android.providers.downloads.ui";
-my_app.name = "img";
-my_app.link = undefined
+    let json = {};
+    try {
+        let html = res.body.string();
+        // log(html)
+        json = JSON.parse(html);
+        log(json)
+        return json.data;
+    } catch (err) {
+        //在此处理错误
+    }
+};
 
-var thread = "";
-var info = {}
+
+function callback_task(id,state){
+    var url = "http://api.wenfree.cn/public/";
+    var arr = {};
+    arr["id"] = id;
+    arr["state"] = state;
+    var postdata = {};
+    postdata["s"]="NewsRecordBack.Back"
+    postdata["arr"] = JSON.stringify(arr)
+    log(arr,postdata)
+    log(jspost(url,postdata));
+}
+
 
 function jspost(url,data){
     var res = http.post(url, data);
@@ -55,22 +89,6 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-function callback_task(id,state){
-    var url = "http://api.wenfree.cn/public/";
-    var arr = {};
-    arr["id"] = id;
-    arr["task_state"] = state;
-    var postdata = {};
-    postdata["s"]="App.Zllgcimeicallback.Callback_task"
-    postdata["arr"] = JSON.stringify(arr)
-    log(arr,postdata)
-    log(jspost(url,postdata));
-}
-
-log(currentPackage());
-log(currentActivity());
-log(device.width,device.height)
-
 function getDyUrl(){
     var url = "http://api.wenfree.cn/public/";
     var arr = {};
@@ -96,7 +114,6 @@ function getPhone_(){
     }
 }
 // main()
-
 function downs_v(){
 
     var time_line = 0
@@ -406,96 +423,10 @@ function rd(min,max){
         return random(max,min)
     }
 }
-//输入密码
-function input_pay_password(password){
-    var key_xy = {}
-    key_xy[1]=[device.width*0.3,device.height*7/10]
-    key_xy[2]=[device.width*0.5,device.height*7/10]
-    key_xy[3]=[device.width*0.8,device.height*7/10]
-    key_xy[4]=[device.width*0.3,device.height*7.5/10]
-    key_xy[5]=[device.width*0.5,device.height*7.5/10]
-    key_xy[6]=[device.width*0.8,device.height*7.5/10]
-    key_xy[7]=[device.width*0.3,device.height*8/10]
-    key_xy[8]=[device.width*0.5,device.height*8/10]
-    key_xy[9]=[device.width*0.8,device.height*8/10]
-    key_xy[0]=[device.width*0.5,device.height*9/10]
-    // 清除其它字符
-    password = password.replace(/\D/g,"")
-    for(var i=0;i<password.length;i++){
-        var numbers = password.substring(i,i+1);
-        click_(key_xy[numbers][0],key_xy[numbers][1])
-        sleep(300)
-    }
-}
-
-var dm={}
-dm.sid = '11521';
-dm.action = 'loginIn';
-dm.name = '6g0hHGsmhqaTd';
-dm.password = 'yangmian121';
-dm.url = 'http://api.duomi01.com/api';
-dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
-dm.phone = "";
-dm.sms = "";
-
-//登录
-function dm_login(){
-    let arr = {}
-	arr.action = 'loginIn'
-	arr.name = dm.name
-    arr.password = dm.password
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.token = data_arr[1]
-            log('token',dm.token);
-            return true;
-        }
-    }
-}
-//取手机号
-function dm_get_phone(){
-    let arr = {}
-	arr.action = 'getPhone';
-	arr.sid = dm.sid;
-    arr.token = dm.token;
-    arr.vno = '0';
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.phone = data_arr[1];
-            log('phone',dm.phone);
-            return true;
-        }
-    }
-}
-
-//取手机号
-function dm_get_message(){
-    let arr = {}
-	arr.action = 'getMessage';
-    arr.sid = dm.sid;
-    arr.phone = dm.phone;
-    arr.token = dm.token;
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        log(data);
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            sms = data_arr[1];
-            let sms = sms.match(/\d{4,6}/)[0]
-            dm.sms = sms
-            log('sms',dm.sms);
-            return true;
-        }
-    }
-}
-
 // dm_login()
 // dm_get_phone()
 // dm_get_message()
+
+log(currentPackage());
+log(currentActivity());
+log(device.width,device.height)

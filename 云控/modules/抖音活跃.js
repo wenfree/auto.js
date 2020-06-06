@@ -8,15 +8,29 @@ var ID = setInterval(() => { }, 1000)
 // 监听主脚本消息
 events.on("prepare", function (i, mainEngine) {
 
-    var taskData = getTask();
-    log(taskData.task.data);
+    try
+    {
+        var taskData = getTask();
+        log(taskData.task.data);
+        home();
+        sleep(1000);
+        click(device.width/4,device.height-20)
+        sleep(2000);
+        jsclick('id',"clearAnimView",true,2)
+        sleep(2000);
+        //清理掉多余的程序
 
-    main();
-    home();
+        main();
+        home();
 
-    callback_task(taskData.task.id,"done");
+        callback_task(taskData.task.id,"done");
 
+    }catch(e){
+
+
+    }
     
+    app.launch('com.wenfree.cn');
     mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
     clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
 });
@@ -117,7 +131,7 @@ function main(){
     var info_read_key = true
 
     var time_line = 0
-    while (time_line < 15 ) {
+    while (time_line < 5 ) {
         
         var currenapp = currentPackage()
         if( currenapp == my_app.packageName ){
@@ -135,17 +149,29 @@ function main(){
                         }else{
                             jsclick("text","我",true,2);
                         }
+                    }else if( jsclick("text","编辑资料",false,1) && jsclick("text","首页",true,random(4,6)) ){
+                        log("点回首页")
                     }else{
                         jsclick("text","首页",true,random(4,6))
                         var like_key = random(1,100);
-                        if (like_key > 50){
+                        if (like_key > 10){
                             var d = textMatches(/.*w/).findOne(1000);
                             if(d){
                                 click__(d);
                                 sleep(2000);
                             }
+                            log("点击关注")
+
+                            if (jsclick('desc',"关注",true,2)){
+                            }else{
+                                click(659,560);
+                            }
+                        
+
                         }
+                        sleep(random(1000,3000))
                         swipe(device.width/2, device.height*0.8, device.width/2, device.height*0.2, random(200,2000) );
+                        sleep(random(1000,3000))
                         sleep(random(1000,3000))
                     }
                     break;
@@ -368,3 +394,9 @@ function input_pay_password(password){
         sleep(300)
     }
 }
+
+
+
+
+
+// jsclick('id',"b6q",true,2)

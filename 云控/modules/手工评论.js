@@ -7,6 +7,7 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     try{
+
         click(device.width/4,device.height-20)
         sleep(2000);
         jsclick('id',"clearAnimView",true,2)
@@ -22,6 +23,7 @@ events.on("prepare", function (i, mainEngine) {
         if (main(dyid,category,commnet_key)){
             callback_task(taskData.task.id,"done");
         }
+        
     }
     catch(err){
         toast(err);
@@ -121,7 +123,7 @@ function Fdy(urlss){
     jsclick("text","允许",true,2)
     var timeLine = 0;
     var step_ = '';
-    while (timeLine < 30){
+    while (timeLine < 50){
         log("timeLine--->",timeLine)
         var UI = currentActivity();
         log("UI->",UI)
@@ -172,7 +174,9 @@ function commnet_do(category,commnet_key){
     if (jsclick("text","评论并转发",false,2)){
         var d = className("EditText").findOne(1000)
         if (d){
-         d.setText(getCommnet(category));
+        var commnetTxt = getCommnet(category);
+         d.setText(commnetTxt);
+         setClip(commnetTxt);
          sleep(1000);
 
         if ( commnet_key == 'true' ){
@@ -180,7 +184,7 @@ function commnet_do(category,commnet_key){
         }
 
         //  点击发送
-        click((device.width)*0.92,d.bounds().centerY());
+        // click((device.width)*0.92,d.bounds().centerY());
         sleep(1000*2);
         return true
 
@@ -280,9 +284,6 @@ function main(dyid,category,commnet_key){
         sleep(1000*2)
         if (commnet(category,commnet_key)) {
             sleep(1000*2);
-            back();
-            sleep(1000*2)
-            home();
             info["state"]="ok";
             return true
         }
@@ -293,14 +294,14 @@ function main(dyid,category,commnet_key){
     }
 }
 
-var tt = className("android.widget.LinearLayout").find()
-for (var i=0;i<tt.length;i++){
-    var t = tt[i]
-    log(i,t.id(),t.text())
-}
 
 
-log(currentActivity())
-log(currentPackage())
+// var tt = className("android.widget.LinearLayout").find()
+// for (var i=0;i<tt.length;i++){
+//     var t = tt[i]
+//     log(i,t.id(),t.text())
+// }
 
+// log(currentActivity())
+// log(currentPackage())
 // opendy("6831849799571016964");
