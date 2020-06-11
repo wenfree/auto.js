@@ -42,13 +42,15 @@ function jspost(url,data){
 function click_(x,y){
     if(x>0 && x < device.width && y > 0 && y < device.height){
         click(x,y)
+        return true
     }else{
         log('坐标错误')
+        return false
     }
 }
 
 function click__(obj){
-    click_(obj.bounds().centerX(),obj.bounds().centerY())
+    return click_(obj.bounds().centerX(),obj.bounds().centerY())
 }
 
 function jsclick(way,txt,clickKey,n){
@@ -65,8 +67,11 @@ function jsclick(way,txt,clickKey,n){
     if(res){
         if ( clickKey ){
             log('准备点击->',txt,"x:",res.bounds().centerX(),"y:",res.bounds().centerY());
-            click__(res);
-            sleep(1000*n);
+            if (click__(res) ){
+                sleep(1000*n);
+            }else{
+                return false
+            }
         }else{
             log("找到->",txt);
         }
@@ -151,47 +156,107 @@ function main(dyid,category,commnet_key){
 
 log(currentActivity())
 log(currentPackage())
+log(device.width,device.height)
 
 var info = {}
 info.name = "浏览器";
 info.bid = "com.android.browser";
 // app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
+var dodp = Array()
 
 
+function main(){
 
 while (true){
     if (jsclick("id","w-GoToApp",false,2)){
         log('正常打开');
-        if (jsclick("text","进店逛逛",true,2) || jsclick("text","进店领券",true,2)){
-    
+        if (findname()){
             _sendtext();
+        }else{
             swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
             sleep(1000);
-    
         }
     }else if(jsclick("text","客服",false,1)){
         back();
         sleep(1000);
-        swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
-        sleep(1000);
+        // swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
+        // sleep(1000);
+    }else{
+        app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
+        sleep(5000);
     }
     sleep(1000);
 }
-
+}
 
 function _sendtext(){
-    jsclick("text","客服",true,5)
-    jsclick("id","input-content",true,2)
-    setText(1,"你好，你们参加了选品会，我是大宝直播间，粉丝数30万，想跟你们合作直播")
+    jsclick("text","客服",true,5);
+    jsclick("id","input-content",true,5);
+    setText(1,comnnet);
     sleep(1000);
-    jsclick("text","发送",true,5)
-    back();
-    sleep(1000);
+    jsclick("text","发送",true,5);
     back();
     sleep(1000);
     back();
     sleep(1000);
 }
+
+function findname(){
+    var Arr = text("进店逛逛").find();
+    for (var _dp = 0;_dp< Arr.length;_dp++ ){
+        var __dp = Arr[_dp];
+        log(_dp,__dp.id(),__dp.text())
+
+        var All = __dp.parent().parent().children();
+        var 店铺名 = All[2].text();
+        log(店铺名);
+
+        var 是否点击 = true
+        for (var _i=0;_i<dodp.length;_i++ ){
+            log('---',dodp[_i]);
+            if ( dodp[_i] == 店铺名  ){
+                是否点击 = false
+            }
+        }
+        if ( 是否点击 ){
+            var dpname = text(店铺名).findOne();
+            var depthCenterY = dpname.bounds().centerY()
+            if ( depthCenterY > 1200){
+                swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
+                sleep(1000);
+            }else if(depthCenterY < 0){
+                swipe(device.width/2,device.height*2/4,device.width/2,device.height*3/4,3000);
+                sleep(1000);
+            }else{
+                jsclick('text',店铺名,true,5);
+                dodp.push(店铺名);
+                return true
+            }
+        }
+    }
+}
+
+log("Redmi 7a");
+log("拼多多喊话脚本");
+log("第一次运行，请运行到页面时停止，手工登录一个拼多多的帐号");
+var comnnet = rawInput("请在下面输入要喊的话");
+main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

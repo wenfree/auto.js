@@ -228,28 +228,48 @@ appinfo.name = "今日头条极速版";
 appinfo.bid = "com.ss.android.article.lite";
 
 
+function Tips(){
+   if( jsclick("text","允许",true,2) ){
 
+   }else if( jsclick("text","好",true,2) ){
+
+   }
+}
 
 function main(){
     var i = 0;
-    while (i < 200) {
-        
+    while (i < 40) {
+        i++;
+        if ( active( appinfo.bid , 8)  ){
+
+            var UI = currentActivity();
+            log('UI',UI,i)
+            switch(UI){
+                case 'com.ss.android.article.lite.activity.SplashActivity':
+                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",false,1) ){
+                        
 
 
 
+                    }
+                    break;
+                default:
 
-
-
-
-
+            }
+        }
+        Tips();
     }
 }
 
 
+// var all_Info = textMatches(/.*/).find();
+// for (var i = 0;i<all_Info.length;i++){
+//     var d = all_Info[i];
+//     log(i,d.id(),d.text(),d.depth())
+// }
 
 
-
-
+main()
 
 
 
