@@ -1,35 +1,68 @@
+"ui";
+
+var commnet = getStorageData(device.getIMEI(),'text');
+if (!commnet){
+    setStorageData(device.getIMEI(),'text','你好，我是大宝直播间，现在拥有31万粉丝，你们店铺在官方直播选品池，想跟你们合作直播，如需代播请联系18964979491');
+    commnet = getStorageData(device.getIMEI(),'text');
+}
+log(commnet);
+
+
+ui.layout(
+    <drawer id="drawer">
+        <vertical>
+            <appbar background="#333333">
+                <toolbar id="toolbar" title="拼多多喊话脚本" />
+                <tabs id="tabs" />
+            </appbar>
+            <input id="ad" type='textLongMessage' text="{{ commnet }}" hint="请输入姓名"/>
+
+            <linear>
+                <Switch layout_weight="5" id="taskMonitor" text="启动脚本（按音量向上可以停止）" w="auto" textStyle="bold" />
+            </linear>
+
+            
+            
+
+
+        </vertical>
+
+    </drawer>
+);
 
 
 
-// 保持脚本运行
-var ID = setInterval(() => { }, 1000)
-// 监听主脚本消息
-events.on("prepare", function (i, mainEngine) {
+function setStorageData(name, key, value) {
+    const storage = storages.create(name);  //创建storage对象
+    storage.put(key, value);
+}
+//读取本地数据
+function getStorageData(name, key) {
+    const storage = storages.create(name);  //创建storage对象
+    if (storage.contains(key)) {
+        return storage.get(key);
+    };
+    //默认返回undefined
+}
+//删除本地数据
+function delStorageData(name, key) {
+    const storage = storages.create(name);  //创建storage对象
+    if (storage.contains(key)) {
+        storage.remove(key);
+    };
+}
 
-    try{
-
-        click(device.width/4,device.height-20)
-        sleep(2000);
-        jsclick('id',"clearAnimView",true,2)
-        sleep(2000);
-
-        var taskData = getTask();
-        log(taskData.task.data);
-    
-        if  (main()){
-            callback_task(taskData.task.id,"done");
-        }
-
-        
+//基础函数
+function active(pkg,n){
+    if(!n){n=5}
+    if(  currentPackage() == pkg ){
+       log("应用在前端");
+       return true;
+    }else{
+        app.launch(pkg);
+        sleep(1000*n)
     }
-    catch(err){
-        toast(err);
-    }
-
-    app.launch('com.wenfree.cn');
-    mainEngine.emit("control", i);  //向主脚本发送一个事件，该事件可以在它的events模块监听到并在脚本主线程执行事件处理。
-    clearInterval(ID);   //取消一个由 setInterval() 创建的循环定时任务。
-});
+}
 
 function jspost(url,data){
     var res = http.post(url, data);
@@ -131,68 +164,38 @@ function getTask() {
     }
 };
 
-function main(dyid,category,commnet_key){
-    if (Fdy(dyid)){
-        sleep(1000*2)
-        if (commnet(category,commnet_key)) {
-            sleep(1000*2);
-            info["state"]="ok";
-            return true
-        }
-    }else{
-        sleep(1000*10)
-        home();
-        info["state"]="no";
-    }
-}
 
-
-
-// var tt = className("android.widget.LinearLayout").find()
-// for (var i=0;i<tt.length;i++){
-//     var t = tt[i]
-//     log(i,t.id(),t.text())
-// }
-
-log(currentActivity())
-log(currentPackage())
-log(device.width,device.height)
-
-var info = {}
-info.name = "浏览器";
-info.bid = "com.android.browser";
-// app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
-var dodp = Array()
 
 
 function main(){
 
-while (true){
-    if (jsclick("id","w-GoToApp",false,2)){
-        log('正常打开');
-        if (findname()){
-            _sendtext();
-        }else{
-            swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
-            sleep(1000);
-        }
-    }else if(jsclick("text","客服",false,1)){
-        back();
-        sleep(1000);
-        // swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
-        // sleep(1000);
-    }else{
-        app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
-        sleep(5000);
+    while (true){
+        if (active(info.bid,5)){
+            if (jsclick("id","w-GoToApp",false,2)){
+                log('正常打开');
+                if (findname()){
+                    _sendtext();
+                }else{
+                    swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
+                    sleep(1000);
+                }
+            }else if(jsclick("text","客服",false,1) || jsclick("text","此消息由机器人发送",false,1)){
+                back();
+                sleep(1000);
+            }else{
+                app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
+                sleep(5000);
+            }
+                sleep(1000);
+            }
     }
-    sleep(1000);
-}
+
 }
 
 function _sendtext(){
     jsclick("text","客服",true,5);
     jsclick("id","input-content",true,5);
-    setText(1,comnnet);
+    setText(1,commnet);
     sleep(1000);
     jsclick("text","发送",true,5);
     back();
@@ -221,6 +224,7 @@ function findname(){
         if ( 是否点击 ){
             var dpname = text(店铺名).findOne();
             var depthCenterY = dpname.bounds().centerY()
+            log(["depthCenterY",depthCenterY])
             if ( depthCenterY > 1200){
                 swipe(device.width/2,device.height*3/4,device.width/2,device.height*2/4,3000);
                 sleep(1000);
@@ -230,19 +234,54 @@ function findname(){
             }else{
                 jsclick('text',店铺名,true,5);
                 dodp.push(店铺名);
+                setStorageData(device.getIMEI(),'dp',dodp);
                 return true
             }
         }
     }
 }
 
+
+log(currentActivity())
+log(currentPackage())
+log(device.width,device.height)
+
+var info = {}
+info.name = "浏览器";
+info.bid = "com.android.browser";
+// app.openUrl('https://mobile.yangkeduo.com/promotion_op.html?type=48&id=138092&page_id=57918_1591339544790_tifrd8ch1o&list_id=promotion_op_tobhe7&hash=')
+
+var dodp = getStorageData(device.getIMEI(),'dp');
+if (!dodp){
+    var dodp = Array()
+}
+log('dodp',dodp)
+
 log("Redmi 7a");
 log("拼多多喊话脚本");
 log("第一次运行，请运行到页面时停止，手工登录一个拼多多的帐号");
-var comnnet = rawInput("请在下面输入要喊的话");
-main()
+// var comnnet = rawInput("请在下面输入要喊的话");
+// var comnnet = "你好，我是大宝直播间，现在拥有31万粉丝，你们店铺在官方直播选品池，想跟你们合作直播，如需代播请联系18964979491";
+// main()
 
-
+// 启动任务监控
+var execution;
+ui.taskMonitor.on("check", function (checked) {
+    if (checked) {
+        toastLog("开始喊话");
+        commnet = ui.ad.getText();
+        log("commnet",commnet)
+        // setStorageData(device.getIMEI(),"text",commnet)
+        var thread = threads.start(function(){
+            main()
+        });
+    } else {
+        //停止任务监控
+        toastLog("停止喊话")
+        thread.shutDownAll();
+        // threads.shutDownAll();
+    };
+});
 
 
 
