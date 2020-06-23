@@ -15,10 +15,12 @@ events.on("prepare", function (i, mainEngine) {
         var taskData = getTask();
         log(taskData.task.data);
  
-
-
+        main();
+        home();
 
         callback_task(taskData.task.id,"done");
+
+        app.launch('com.wenfree.cn');
     }catch(e){
         toast(e)
     }
@@ -143,6 +145,7 @@ function main(){
                     jsclick("id","com.smile.gifmaker:id/close_btn",true,2)
                     jsclick("desc","菜单",true,2)
                     jsclick("text","热榜",true,2)
+                    jsclick("text","快手热搜",true,2)
                     break;
                 case "com.yxcorp.plugin.search.billboard.view.KwaiHotBillboardActivity":
                     if ( jsclick('text',reban,true,random(3,8))){
@@ -163,7 +166,6 @@ function main(){
                             back();
                         }
 
-
                         sleep(random(500,3000));
                         _looktimes++;
                     }
@@ -179,7 +181,7 @@ function main(){
         sleep(random(100,1000));
         
         _timeLine++;
-        
+        log('快手',_timeLine)
     }
 
 }
@@ -197,7 +199,6 @@ log([currentPackage(),currentActivity(),device.width,device.height]);
 // jsclick('id',"clearAnimView",true,2)
 // sleep(2000);
 
-main();
 
 
 

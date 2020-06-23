@@ -13,7 +13,6 @@ events.on("prepare", function (i, mainEngine) {
 var my_app = {}
 my_app.packageName = "com.ss.android.ugc.aweme";
 my_app.name = "链接";
-my_app.link = undefined
 
 var thread = "";
 var info = {}
@@ -43,7 +42,6 @@ function app_info(name,data){
     postdata["imei_tag"]= getStorageData(device.getIMEI(), "tag");;
     postdata["app_name"]= name;
     postdata["whos"]= "ouwen000";
-    postdata["link"]= my_app.link;
     postdata["app_info"]= JSON.stringify(data);
     log(jspost(url,postdata));
 }

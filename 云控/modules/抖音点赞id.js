@@ -280,10 +280,8 @@ function main(dyid){
 // main();
 // callback_task(taskData.task.id,"done");
 
-// urlss = '6773972750189989128'
-// Fdy(urlss)
-// sleep(1000)
-// log(currentActivity())
+// urlss = '6830718572306746627'
+// opendy(urlss)
 
 
 

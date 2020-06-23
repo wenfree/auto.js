@@ -271,20 +271,30 @@ function main(){
     var i__ = 0;
     while (i__ < 200) {
         i__++;
-        if ( active( appinfo.bid , 8)  ){
+        if ( active( appinfo.bid , 20)  ){
 
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
+                case 'com.jifen.qkbase.main.MainActivity':
+                    log('首页');
                     if ( fristbox ){
                        if( jsclick('text',"任务",true,5) ){
-                            click((500+692)/2,(1044+1238)/2);
+                            var bgv = textMatches(/领\d+金币/).findOne(2000);
+                            if(bgv){
+                                click__(bgv);
+                                sleep(5000);
+                            }
+                            var bgv = textMatches(/看视频\+\d+/).findOne(2000);
+                            if(bgv){
+                                click__(bgv);
+                                sleep( 1000* 60 );
+                            }
+                            fristbox = false;
                         }
-                        fristbox = false;
                     }else
-                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",false,1) ){
-                        var home_selected = text('首页').selected(true).findOne(1000);
+                    if ( jsclick("text","我的",false,1) && jsclick("text","刷新",false,1) ){
+                        var home_selected = text('推荐').selected(true).findOne(1000);
                         if (home_selected){
 
                             moveTo(width/2,height*0.8,width/2,height*0.3,random(500,4000));
@@ -306,27 +316,27 @@ function main(){
                                 }
                             }
                         }else{
-                            jsclick("text","首页",true,2)
+                            jsclick("text","头条",true,2)
                             moveTo(width/2,height*0.2,width/2,height*0.8,random(500,4000));
                         }
                     }else{
                         back();
                     }
                     break;
-                case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
+                case "com.jifen.qukan.content.newsdetail.news.NewsDetailNewActivity":
                     log([readtimes,'文章页面']);
                     moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
                     moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    if (jsclick("text","已显示全部评论",false,2)){
+                    if (jsclick("text","没有更多咯~",false,2)){
                     }else{
-                        if (jsclick("text","暂无评论，点击抢沙发",true,2)){
+                        if (jsclick("text","首条评论很容易获赞哦~",true,2)){
                             setText(0,'非常支持');
                             sleep(1000);
                             jsclick("text","发布",true,2);
                             back();
                         }
                     }
-                    if (jsclick("text","回复",false,2)){
+                    if (jsclick("text","回复TA",false,2)){
                         detail2++
                     }
                     if (detail2 > 10 ){
@@ -357,23 +367,27 @@ function readInfo(){
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
+                case 'com.jifen.qkbase.main.MainActivity':
                     log('首页');
                     if(jsclick('text',"我的",true,2)){
-                        if(jsclick("text","常用",false,2)){
-                            var titleTextArr = className("TextView").find();
-                            for (var i=0;i<titleTextArr.length;i++){
-                                var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( d.text() == '元'){
-                                    info['钱'] = titleTextArr[i-2].text();
-                                    info['昵称'] = titleTextArr[i-3].text();
-                                    info['金币'] = titleTextArr[i+1].text();
-                                    log(info);
-                                    app_info(appinfo.name,info);
-                                    return true
-                                }
+                        if(jsclick("text","查看个人主页",false,2)){
+                            var bgv = textMatches(/约.+元/).findOne(2000);
+                            if (bgv){
+                                info['钱']=bgv.text().replace(/[\u4e00-\u9fa5]/g,"");
                             }
+                            var bgv = textMatches(/.*\n.*/).findOne(2000);
+                            if (bgv){
+                                info['金币']=bgv.text().replace(/[\u4e00-\u9fa5]/g,"");
+                                info['金币']=info['金币'].replace(/\n/,"")
+                            }
+                            var nameArr = text('查看个人主页').findOne(2000);
+                            if(nameArr){
+                                var 昵称 = nameArr.parent().parent().parent().children()
+                                info['昵称']=昵称[1].text()
+                            }
+                            log(info);
+                            app_info(appinfo.name,info);
+                            return true
                         }
                     }
                     break;
@@ -386,27 +400,19 @@ function readInfo(){
     }
 }
 
-var all_Info = textMatches(/.*/).find();
-for (var i = 0;i<all_Info.length;i++){
-    var d = all_Info[i];
-    log(i,d.id(),d.text(),d.depth())
-}
+// var all_Info = textMatches(/.*/).find();
+// for (var i = 0;i<all_Info.length;i++){
+//     var d = all_Info[i];
+//     log(i,d.id(),d.text(),d.depth())
+// }
 
 // 正式开始编代码
-
 log([currentPackage(),currentActivity(),device.width,device.height]);
 var width = 720;
 var height = 1440;
 var appinfo = {}
-appinfo.name = "今日头条极速版";
-appinfo.bid = "com.ss.android.article.lite";
-
-
-
-
-
-
-
+appinfo.name = "趣头条";
+appinfo.bid = "com.jifen.qukan";
 
 
 
