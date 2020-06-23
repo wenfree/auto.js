@@ -329,6 +329,12 @@ function main(){
                     if (jsclick("text","回复",false,2)){
                         detail2++
                     }
+
+                    if (jsclick("text","首页",true,2)){
+                        home();
+                        break
+                    }
+                    
                     if (detail2 > 10 ){
                         back();
                         sleep(500);
