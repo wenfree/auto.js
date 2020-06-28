@@ -189,27 +189,6 @@ function rd(min,max){
         return random(max,min)
     }
 }
-//输入密码
-function input_pay_password(password){
-    var key_xy = {}
-    key_xy[1]=[width*0.3,height*7/10]
-    key_xy[2]=[width*0.5,height*7/10]
-    key_xy[3]=[width*0.8,height*7/10]
-    key_xy[4]=[width*0.3,height*7.5/10]
-    key_xy[5]=[width*0.5,height*7.5/10]
-    key_xy[6]=[width*0.8,height*7.5/10]
-    key_xy[7]=[width*0.3,height*8/10]
-    key_xy[8]=[width*0.5,height*8/10]
-    key_xy[9]=[width*0.8,height*8/10]
-    key_xy[0]=[width*0.5,height*9/10]
-    // 清除其它字符
-    password = password.replace(/\D/g,"")
-    for(var i=0;i<password.length;i++){
-        var numbers = password.substring(i,i+1);
-        click_(key_xy[numbers][0],key_xy[numbers][1])
-        sleep(300)
-    }
-}
 
 function moveTo(x,y,x1,y1,times){
     swipe(x,y,x1,y1,times);
@@ -246,103 +225,64 @@ function main(){
 
     var fristbox = true
     var readtimes = 0
-    var readtimes_end = random(2,3)
+    var readtimes_end = random(20,30)
     var detail2 = 0;
     var movetoTimes = 0
+    var readkey = true
 
     var i__ = 0;
-    while (i__ < 200) {
+    while (i__ < 50) {
         i__++;
         if ( active( appinfo.bid , 8)  ){
 
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
-                    if ( fristbox ){
-                        if( jsclick('text',"任务",true,5) ){
-                            var tasktimes = 0
-                            while (tasktimes < 60 ){
-                                if (jsclick("text","现金收益",false,2)){
-                                    click((500+692)/2,(1044+1238)/2);
-                                    sleep(2000);
-                                    click(width*1/2,(862+926)/2);
-                                    sleep(60*1000);
-                                    break
-                                }
-                                tasktimes++
+                case 'com.lechuan.mdwz.ui.activity.NovelMainActivity':
+                    log('主界面');
+                    if(fristbox){
+                        if (jsclick('text','福利',true,2)){
+                            if (jsclick('text','立即签到',true,2)){
+                                jsclick('text','白给钱也不要',true,2)
+                            }else{
+                                fristbox = false;
                             }
-                        }
-                        fristbox = false;
-                    }else
-                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",false,1) ){
-                        var home_selected = text('首页').selected(true).findOne(1000);
-                        if (home_selected){
-
-                            moveTo(width/2,height*0.8,width/2,height*0.3,random(500,4000));
-
-                            var titleTextArr = className("TextView").find();
-                            for (var i=0;i<titleTextArr.length;i++){
-                                var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( i>6 && d.text().length > 12 && d.bounds().centerY() > 300) {
-                                    log("文章标题")
-                                    if (readtimes > readtimes_end ){
-                                        return true
-                                    }
-                                    click__(d);
-                                    readtimes++;
-                                    movetoTimes = 0
-                                    sleep(random(2000,6000));
-                                    detail2 = 0
-                                    break;
-                                }
-                            }
-                        }else{
-                            jsclick("text","首页",true,2)
-                            moveTo(width/2,height*0.2,width/2,height*0.8,random(500,4000));
                         }
                     }else{
-                        back();
+                        if ( jsclick('text','书架',true,2) ){
+                            if (jsclick('text','精品',true,2) || jsclick('text','上次阅读',true,2)){
+
+                                readkey = true
+
+                            }
+                        }
+
                     }
                     break;
-                case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
-                    log([readtimes,'文章页面']);
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    if (jsclick("text","已显示全部评论",false,2)){
-                        back();
+                case "com.lechuan.midunovel.reader.ui.activity.ReaderActivity":
+                    log([readtimes,'阅读页面']);
+                    if (jsclick('text','看小视频翻倍领取红包',false,2)){
+                        click((251+469)/2,(736+954)/2)
+                        sleep(1000*65+rd(1000,5000));
+                    }
+
+                    if ( readkey ){
+                        moveTo( width*0.8,height*0.8,width*0.2,height*0.8,rd(500,2000) );
+                        sleep(rd(5000,15*1000));
+                        readtimes++;
                     }else{
-                        if (jsclick("text","暂无评论，点击抢沙发",true,2)){
-                            setText(0,'非常支持');
-                            sleep(1000);
-                            jsclick("text","发布",true,2);
-                            back();
-                        }
-                    }
-                    if (jsclick("text","回复",false,2)){
-                        detail2++
-                    }
-
-                    if (jsclick("text","首页",true,2)){
-                        home();
-                        break
-                    }
-                    
-                    if (detail2 > 5 ){
-                        back();
-                        sleep(500);
-                        back();
-                    }else
-                    if (detail2>3){
                         back();
                     }
 
-                    movetoTimes++;
-                    if (movetoTimes > 20){
-                        back();
+                    if ( readtimes > readtimes_end ) {
+                        return true
                     }
 
+                    break
+                case 'com.iclicash.advlib.ui.front.InciteADActivity':
+                    log('正在看广告');
+                    sleep(1000*65+rd(1000,5000));
+                    back();
                     break
                 case "com.android.systemui.recents.RecentsActivity":
                     home();
@@ -366,18 +306,19 @@ function readInfo(){
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
+                case 'com.lechuan.mdwz.ui.activity.NovelMainActivity':
                     log('首页');
                     if(jsclick('text',"我的",true,2)){
-                        if(jsclick("text","常用",false,2)){
+                        if(jsclick("text","总余额",false,2)){
                             var titleTextArr = className("TextView").find();
                             for (var i=0;i<titleTextArr.length;i++){
                                 var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( d.text() == '元'){
+                                // log(i,d.id(),d.text(),d.text().length)
+                                if ( d.text() == '总余额'){
                                     info['钱'] = titleTextArr[i-2].text();
-                                    info['昵称'] = titleTextArr[i-3].text();
-                                    info['金币'] = titleTextArr[i+1].text();
+                                    info['昵称'] = titleTextArr[i-6].text();
+                                    info['金币'] = titleTextArr[i-1].text();
+                                    info['邀请码'] = titleTextArr[i-4].text();
                                     log(info);
                                     app_info(appinfo.name,info);
                                     return true
@@ -407,10 +348,9 @@ log([currentPackage(),currentActivity(),device.width,device.height]);
 var width = 720;
 var height = 1440;
 var appinfo = {}
-appinfo.name = "今日头条极速版";
-appinfo.bid = "com.ss.android.article.lite";
-
-
+appinfo.name = "米读极速版";
+appinfo.bid = "com.lechuan.mdwz";
+info ={}
 
 
 

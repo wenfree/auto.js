@@ -216,21 +216,12 @@ function moveTo(x,y,x1,y1,times){
     sleep(1000);
 }
 
-
 function Tips(){
-    log("查询弹窗");
-    var textTips = {}
-    textTips["允许"]="text";
-    textTips["保存"]="text";
-    textTips["我知道了"]="text";
-    textTips["好的"]="text";
-    for(var k in textTips){
-        if (jsclick(textTips[k],k,true,2)){
-            return false
-        }
-    }
-    log('查询弹窗-end')
-    return true
+   if( jsclick("text","允许",true,2) ){
+
+   }else if( jsclick("text","好",true,2) ){
+
+   }
 }
 
 // [500,1044,692,1238]
@@ -246,107 +237,53 @@ function main(){
 
     var fristbox = true
     var readtimes = 0
-    var readtimes_end = random(2,3)
+    var readtimes_end = random(5,10)
     var detail2 = 0;
-    var movetoTimes = 0
 
     var i__ = 0;
-    while (i__ < 200) {
+    while (i__ < 50) {
         i__++;
         if ( active( appinfo.bid , 8)  ){
 
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
-                    if ( fristbox ){
-                        if( jsclick('text',"任务",true,5) ){
-                            var tasktimes = 0
-                            while (tasktimes < 60 ){
-                                if (jsclick("text","现金收益",false,2)){
-                                    click((500+692)/2,(1044+1238)/2);
-                                    sleep(2000);
-                                    click(width*1/2,(862+926)/2);
-                                    sleep(60*1000);
-                                    break
-                                }
-                                tasktimes++
+                case 'com.ss.android.ugc.aweme.main.MainActivity':
+                    if (fristbox){
+                        click(width/2,1285)      //点击赚金币
+                        var tasktimes = 0
+                        while (tasktimes < 60 ){
+                            if (jsclick("text","现金收益",false,2)){
+                                click((500+692)/2,(1044+1238)/2);
+                                sleep(2000);
+                                back()
+                                break
                             }
+                            tasktimes++
                         }
-                        fristbox = false;
+                        fristbox = false
                     }else
-                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",false,1) ){
-                        var home_selected = text('首页').selected(true).findOne(1000);
-                        if (home_selected){
-
+                    if ( jsclick("text","我",false,1) && jsclick("text","首页",false,1) ){
+                        var home_selected = text('首页').findOne(1000);
+                        if (home_selected.parent().parent().parent().selected()){
+                     
                             moveTo(width/2,height*0.8,width/2,height*0.3,random(500,4000));
-
-                            var titleTextArr = className("TextView").find();
-                            for (var i=0;i<titleTextArr.length;i++){
-                                var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( i>6 && d.text().length > 12 && d.bounds().centerY() > 300) {
-                                    log("文章标题")
-                                    if (readtimes > readtimes_end ){
-                                        return true
-                                    }
-                                    click__(d);
-                                    readtimes++;
-                                    movetoTimes = 0
-                                    sleep(random(2000,6000));
-                                    detail2 = 0
-                                    break;
-                                }
+                            sleep(1000*rd(1,10))
+                            readtimes++;
+                            if (readtimes >  readtimes_end ){
+                                return true
                             }
+
                         }else{
                             jsclick("text","首页",true,2)
                             moveTo(width/2,height*0.2,width/2,height*0.8,random(500,4000));
-                        }
+                            sleep(2000)
+                        }   
                     }else{
                         back();
                     }
                     break;
-                case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
-                    log([readtimes,'文章页面']);
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    if (jsclick("text","已显示全部评论",false,2)){
-                        back();
-                    }else{
-                        if (jsclick("text","暂无评论，点击抢沙发",true,2)){
-                            setText(0,'非常支持');
-                            sleep(1000);
-                            jsclick("text","发布",true,2);
-                            back();
-                        }
-                    }
-                    if (jsclick("text","回复",false,2)){
-                        detail2++
-                    }
-
-                    if (jsclick("text","首页",true,2)){
-                        home();
-                        break
-                    }
-                    
-                    if (detail2 > 5 ){
-                        back();
-                        sleep(500);
-                        back();
-                    }else
-                    if (detail2>3){
-                        back();
-                    }
-
-                    movetoTimes++;
-                    if (movetoTimes > 20){
-                        back();
-                    }
-
-                    break
-                case "com.android.systemui.recents.RecentsActivity":
-                    home();
-                    break;
+     
                 default:
                     back();
             }
@@ -366,24 +303,25 @@ function readInfo(){
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
+                case 'com.ss.android.ugc.aweme.main.MainActivity':
                     log('首页');
-                    if(jsclick('text',"我的",true,2)){
-                        if(jsclick("text","常用",false,2)){
-                            var titleTextArr = className("TextView").find();
+                    click(width/2,1285)      //点击赚金币
+                    var tasktimes = 0
+                    while (tasktimes < 60 ){
+                        if (jsclick("text","现金收益",false,2)){
+                            var titleTextArr = textMatches(/.*/).find();
                             for (var i=0;i<titleTextArr.length;i++){
                                 var d = titleTextArr[i]
                                 log(i,d.id(),d.text(),d.text().length)
                                 if ( d.text() == '元'){
-                                    info['钱'] = titleTextArr[i-2].text();
-                                    info['昵称'] = titleTextArr[i-3].text();
-                                    info['金币'] = titleTextArr[i+1].text();
-                                    log(info);
+                                    info['钱'] = titleTextArr[i-1].text();
+                                    info['金币'] = titleTextArr[i-6].text();
                                     app_info(appinfo.name,info);
                                     return true
                                 }
                             }
                         }
+                        tasktimes++
                     }
                     break;
                 default:
@@ -398,7 +336,7 @@ function readInfo(){
 // var all_Info = textMatches(/.*/).find();
 // for (var i = 0;i<all_Info.length;i++){
 //     var d = all_Info[i];
-//     log(i,d.id(),d.text(),d.depth())
+//     log(i,d.id(),d.text(),d.bounds().centerX(),d.bounds().centerY())
 // }
 
 // 正式开始编代码
@@ -407,8 +345,10 @@ log([currentPackage(),currentActivity(),device.width,device.height]);
 var width = 720;
 var height = 1440;
 var appinfo = {}
-appinfo.name = "今日头条极速版";
-appinfo.bid = "com.ss.android.article.lite";
+appinfo.name = "抖音极速版";
+appinfo.bid = "com.ss.android.ugc.aweme.lite";
+var info ={}
+
 
 
 

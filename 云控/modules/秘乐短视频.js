@@ -216,21 +216,12 @@ function moveTo(x,y,x1,y1,times){
     sleep(1000);
 }
 
-
 function Tips(){
-    log("查询弹窗");
-    var textTips = {}
-    textTips["允许"]="text";
-    textTips["保存"]="text";
-    textTips["我知道了"]="text";
-    textTips["好的"]="text";
-    for(var k in textTips){
-        if (jsclick(textTips[k],k,true,2)){
-            return false
-        }
-    }
-    log('查询弹窗-end')
-    return true
+   if( jsclick("text","允许",true,2) ){
+
+   }else if( jsclick("text","好",true,2) ){
+
+   }
 }
 
 // [500,1044,692,1238]
@@ -246,106 +237,75 @@ function main(){
 
     var fristbox = true
     var readtimes = 0
-    var readtimes_end = random(2,3)
+    var readtimes_end = random(10,15);
     var detail2 = 0;
-    var movetoTimes = 0
 
     var i__ = 0;
-    while (i__ < 200) {
+    while (i__ < 50) {
         i__++;
         if ( active( appinfo.bid , 8)  ){
 
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
-                    if ( fristbox ){
-                        if( jsclick('text',"任务",true,5) ){
-                            var tasktimes = 0
-                            while (tasktimes < 60 ){
-                                if (jsclick("text","现金收益",false,2)){
-                                    click((500+692)/2,(1044+1238)/2);
-                                    sleep(2000);
-                                    click(width*1/2,(862+926)/2);
-                                    sleep(60*1000);
-                                    break
-                                }
-                                tasktimes++
+                case 'com.bytedance.sdk.openadsdk.activity.TTDelegateActivity':
+                    log('首页2');
+                case 'com.milecn.modulemain.MainActivity':
+                    if (fristbox){
+                        if (jsclick('text','我的',true,2)){
+                            if(jsclick('id','com.milecn.milevideo:id/me_Toolbar_iv_menu',true,2)){
+                
                             }
                         }
-                        fristbox = false;
                     }else
-                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",false,1) ){
-                        var home_selected = text('首页').selected(true).findOne(1000);
-                        if (home_selected){
-
-                            moveTo(width/2,height*0.8,width/2,height*0.3,random(500,4000));
-
-                            var titleTextArr = className("TextView").find();
-                            for (var i=0;i<titleTextArr.length;i++){
-                                var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( i>6 && d.text().length > 12 && d.bounds().centerY() > 300) {
-                                    log("文章标题")
-                                    if (readtimes > readtimes_end ){
-                                        return true
-                                    }
-                                    click__(d);
-                                    readtimes++;
-                                    movetoTimes = 0
-                                    sleep(random(2000,6000));
-                                    detail2 = 0
-                                    break;
-                                }
-                            }
-                        }else{
-                            jsclick("text","首页",true,2)
-                            moveTo(width/2,height*0.2,width/2,height*0.8,random(500,4000));
+                    if ( jsclick("text","我的",false,1) && jsclick("text","首页",true,rd(3,8)) ){
+        
+                        moveTo(width/2,height*0.8,width/2,height*0.3,random(500,4000));
+                        sleep(1000*rd(1,10))
+                        readtimes++;
+                        if (readtimes >  readtimes_end ){
+                            return true
                         }
+                        
                     }else{
                         back();
                     }
                     break;
-                case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
-                    log([readtimes,'文章页面']);
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
-                    if (jsclick("text","已显示全部评论",false,2)){
-                        back();
+                case "com.milecn.moduleme.PersonalCenterActivity":
+                    log('个人中心');
+                    if ( fristbox && jsclick('text','秘乐庄园',true,2)){
                     }else{
-                        if (jsclick("text","暂无评论，点击抢沙发",true,2)){
-                            setText(0,'非常支持');
-                            sleep(1000);
-                            jsclick("text","发布",true,2);
-                            back();
-                        }
+                        back()
                     }
-                    if (jsclick("text","回复",false,2)){
-                        detail2++
-                    }
-
-                    if (jsclick("text","首页",true,2)){
-                        home();
-                        break
-                    }
-                    
-                    if (detail2 > 5 ){
-                        back();
-                        sleep(500);
-                        back();
-                    }else
-                    if (detail2>3){
-                        back();
-                    }
-
-                    movetoTimes++;
-                    if (movetoTimes > 20){
-                        back();
-                    }
-
                     break
-                case "com.android.systemui.recents.RecentsActivity":
-                    home();
+                case "com.milecn.moduleme.ManorActivity":
+                    log("秘乐庄园页面")
+                    if (fristbox && jsclick('id',"com.milecn.milevideo:id/iv_task",true,2)){
+                    }else{
+                        back();
+                    }
+                    break;
+                case 'com.milecn.moduletask.DegreeActivity':
+                    log('任务中心');
+                    var degree100 = id('tv_degree').findOne(1000);
+                    if (fristbox && degree100.text() == '100%' ){
+                        log('今日任务已经完成');
+                        fristbox = false;
+                        return true
+                    }else
+                    if(jsclick('text','今日进度',true,2)){
+                        fristbox = false;
+                        back();
+                        sleep(1000);
+                        back();
+                        sleep(1000);
+                        back();
+                        sleep(1000);
+                        jsclick("text","首页",true,rd(3,8))
+                    }
+                    break
+                case 'com.milecn.milevideo.ui.SplashActivity':
+                    log('正在启动')
                     break;
                 default:
                     back();
@@ -366,25 +326,32 @@ function readInfo(){
             var UI = currentActivity();
             log('UI',UI,i__)
             switch(UI){
-                case 'com.ss.android.article.lite.activity.SplashActivity':
+                case 'com.bytedance.sdk.openadsdk.activity.TTDelegateActivity':
+                    log('首页2');
+                case 'com.milecn.modulemain.MainActivity':
                     log('首页');
-                    if(jsclick('text',"我的",true,2)){
-                        if(jsclick("text","常用",false,2)){
-                            var titleTextArr = className("TextView").find();
-                            for (var i=0;i<titleTextArr.length;i++){
-                                var d = titleTextArr[i]
-                                log(i,d.id(),d.text(),d.text().length)
-                                if ( d.text() == '元'){
-                                    info['钱'] = titleTextArr[i-2].text();
-                                    info['昵称'] = titleTextArr[i-3].text();
-                                    info['金币'] = titleTextArr[i+1].text();
-                                    log(info);
-                                    app_info(appinfo.name,info);
-                                    return true
-                                }
-                            }
-                        }
+                    if(jsclick('text','我的',true,2)){
+                        jsclick('id','com.milecn.milevideo:id/me_Toolbar_iv_menu',true,2)
                     }
+
+                    break;
+                case 'com.milecn.moduleme.PersonalCenterActivity':
+                    log('个人中心');
+                    jsclick('text','活跃度+秘豆',true,2);
+                    break;
+                case 'com.milecn.moduleme.MeLevelActivity':
+                    log('活跃度');
+                    if (jsclick('text','我的秘豆',false,2)){
+                        info['秘豆'] = id('com.milecn.milevideo:id/tv_sumSecretBean').findOne(1000).text();
+                        info['今日秘豆'] = id('com.milecn.milevideo:id/tv_todayIncome').findOne(1000).text();
+                        info['冻结'] = id('com.milecn.milevideo:id/tv_freeze').findOne(1000).text();
+                        log(info);
+                        app_info(appinfo.name,info);
+                        return true
+                    }
+                    break;
+                case 'com.android.systemui.recents.RecentsActivity':
+                    home();
                     break;
                 default:
                     back();
@@ -395,11 +362,7 @@ function readInfo(){
     }
 }
 
-// var all_Info = textMatches(/.*/).find();
-// for (var i = 0;i<all_Info.length;i++){
-//     var d = all_Info[i];
-//     log(i,d.id(),d.text(),d.depth())
-// }
+
 
 // 正式开始编代码
 
@@ -407,22 +370,22 @@ log([currentPackage(),currentActivity(),device.width,device.height]);
 var width = 720;
 var height = 1440;
 var appinfo = {}
-appinfo.name = "今日头条极速版";
-appinfo.bid = "com.ss.android.article.lite";
+appinfo.name = "秘乐短视频";
+appinfo.bid = "com.milecn.milevideo";
+var info ={}
 
 
 
 
+// var all_Info = textMatches(/.*/).find();
+// for (var i = 0;i<all_Info.length;i++){
+//     var d = all_Info[i];
+//     if ( d.bounds().centerY() < height/4 ){
+//         log(i,d.id(),d.text(),d.selected(),d.depth(),d.bounds().centerX(),d.bounds().centerY());
+//     }
+// }
 
 
-
-
-
-
-
-
-
-
-
-
+// main();
+// readInfo()
 
