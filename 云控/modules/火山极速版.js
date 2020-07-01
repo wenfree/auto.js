@@ -179,6 +179,7 @@ function Tips(){
     textTips["允许"]="text";
     textTips["保存"]="text";
     textTips["我知道了"]="text";
+    textTips["暂不升级"]="text";
     textTips["好的"]="text";
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
@@ -193,12 +194,12 @@ function Tips(){
 
 function main(){
 
-    // home();
-    // sleep(2000);
-    // click(device.width/4,device.height-20)
-    // sleep(2000);
-    // jsclick('id',"clearAnimView",true,2)
-    // sleep(2000);
+    home();
+    sleep(2000);
+    click(device.width/4,device.height-20)
+    sleep(2000);
+    jsclick('id',"clearAnimView",true,2)
+    sleep(2000);
 
     var fristbox = true
     var readtimes = 0
@@ -219,6 +220,17 @@ function main(){
                             var tasktimes = 0
                             var boxbx = 0
                             while (tasktimes < 30 ){
+
+                                var img = text('图片').findOne(100);
+                                if (img){
+                                    var img_p = img.parent();
+                                    if (img_p){
+                                        var img_p_c = img_p.children()
+                                        if (img_p_c){
+                                            click__(img_p_c[1]);
+                                        }
+                                    }
+                                }else
                                 if (jsclick("text","开宝箱得金币",true,4)){
                                     boxbx++;
 
@@ -233,8 +245,8 @@ function main(){
                                     if (jsclick('text',"看视频 金币翻4倍",true,60)){
                                         sleep(2000);
                                         back()
-                                        break
                                     }
+                                    break
                                 }
                                 tasktimes++;
                                 sleep(1000);
@@ -300,7 +312,6 @@ function readInfo(){
                             tasktimes++
                         }
                     }
-
                     break;
                 case 'com.android.systemui.recents.RecentsActivity':
                     home();
@@ -329,7 +340,6 @@ var info ={}
 // main();
 // readInfo()
 
-
 // var all_Info = textMatches(/.*/).find();
 // for (var i = 0;i<all_Info.length;i++){
 //     var d = all_Info[i];
@@ -337,6 +347,25 @@ var info ={}
 //         log(i,d.id(),d.text(),d.selected(),d.depth(),d.bounds().centerX(),d.bounds().centerY());
 //     }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

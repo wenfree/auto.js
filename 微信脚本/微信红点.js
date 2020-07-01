@@ -74,6 +74,8 @@ log(currentPackage());
 log(currentActivity());
 log(device.width,device.height)
 
+
+
 function mian(){
     var info_read_key = true
 
@@ -273,78 +275,6 @@ function input_pay_password(password){
         sleep(300)
     }
 }
-
-var dm={}
-dm.sid = '11521';
-dm.action = 'loginIn';
-dm.name = '6g0hHGsmhqaTd';
-dm.password = 'yangmian121';
-dm.url = 'http://api.duomi01.com/api';
-dm.token = '7b75c50b1bd00e9d07758fe38e92f562';
-dm.phone = "";
-dm.sms = "";
-
-//登录
-function dm_login(){
-    let arr = {}
-	arr.action = 'loginIn'
-	arr.name = dm.name
-    arr.password = dm.password
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.token = data_arr[1]
-            log('token',dm.token);
-            return true;
-        }
-    }
-}
-//取手机号
-function dm_get_phone(){
-    let arr = {}
-	arr.action = 'getPhone';
-	arr.sid = dm.sid;
-    arr.token = dm.token;
-    arr.vno = '0';
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            dm.phone = data_arr[1];
-            log('phone',dm.phone);
-            return true;
-        }
-    }
-}
-
-//取手机号
-function dm_get_message(){
-    let arr = {}
-	arr.action = 'getMessage';
-    arr.sid = dm.sid;
-    arr.phone = dm.phone;
-    arr.token = dm.token;
-    var res = http.post(dm.url, arr);
-    var data = res.body.string();
-    if(data){
-        log(data);
-        var data_arr = data.split("|")
-        if(data_arr[0]=='1'){
-            sms = data_arr[1];
-            let sms = sms.match(/\d{4,6}/)[0]
-            dm.sms = sms
-            log('sms',dm.sms);
-            return true;
-        }
-    }
-}
-
-// dm_login()
-// dm_get_phone()
-// dm_get_message()
 
 
 

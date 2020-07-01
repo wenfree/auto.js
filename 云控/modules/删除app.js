@@ -7,17 +7,17 @@ var ID = setInterval(() => { }, 1000)
 events.on("prepare", function (i, mainEngine) {
 
     try{
-        click(device.width/4,device.height-20)
-        sleep(2000);
-        jsclick('id',"clearAnimView",true,2)
-        sleep(2000);
 
         var taskData = getTask();
         log(taskData.task.data);
-
         var bid_ = JSON.parse(taskData.task.data);
         var bid = bid_.bid;
-        uninstall_app(bid);
+        
+        try{
+            uninstall_app(bid);
+        }catch(e){
+            app_info('错误日志',{'error':e})
+        }
 
         callback_task(taskData.task.id,"done");
         app.launch('com.wenfree.cn');
@@ -43,6 +43,18 @@ function click_(x,y){
     }else{
         log('坐标错误')
     }
+}
+
+function app_info(name,data){
+    var url = "http://api.wenfree.cn/public/";
+    var postdata = {};
+    postdata["s"]="App.NewsAppInfo.App_info";
+    postdata["imei"]= device.getIMEI();
+    postdata["imei_tag"]= getStorageData(device.getIMEI(), "tag");;
+    postdata["app_name"]= name;
+    postdata["whos"]= "ouwen000";
+    postdata["app_info"]= JSON.stringify(data);
+    log(jspost(url,postdata));
 }
 
 function click__(obj){
@@ -108,7 +120,6 @@ function callback_task(id,state){
 }
 
 
-
 // 获取接口数据
 function getTask() {
     var url = 'http://api.wenfree.cn/public/';
@@ -131,23 +142,34 @@ function getTask() {
 
 
 function uninstall_app(packageName) {
+
+    home();
+    sleep(2000);
+    click(device.width/4,device.height-20)
+    sleep(2000);
+    jsclick('id',"clearAnimView",true,2)
+    sleep(2000);
+
     let i = 0
     while (i < 20) {
         let activity = currentActivity()
         log(activity)
         switch (activity) {
             case "com.android.packageinstaller.UninstallerActivity":
-                if(jsclick("text","未找到应用",false,0)){
-                    click("确定");
+                if(jsclick("text","未找到应用",false,3)){
+                    jsclick("text","确定",true,2)
                     return true;
                 }
-                click("确定");
+                jsclick("text","确定",true,2)
                 break;
             case "com.android.packageinstaller.UninstallAppProgress":
-                click("立即清理");
+                jsclick("text","立即清理",true,rd(10,15))
                 break;
             case "com.miui.optimizecenter.MainActivity":
-                if(jsclick("id","button_clean",false,3))return true;
+                if(jsclick("id","button_clean",false,10)){
+                    jsclick("text","确定",true,2)
+                    return true;
+                }
                 break;
             default:
                 log("页面:other")
@@ -158,11 +180,19 @@ function uninstall_app(packageName) {
         };
         i++;
         sleep(2000);
-        jsclick("text","我知道了",true,2);
+        Tips()
     }
 }
 
-var app_name = "删APP";
+
+log([currentPackage(),currentActivity(),device.width,device.height]);
+var width = 720;
+var height = 1440;
+var appinfo = {}
+appinfo.name = "删APP";
+appinfo.bid = "com.xiaomi.market";
+var info ={}
 
 
 
+// uninstall_app('com.iflytek.inputmethod.miui')

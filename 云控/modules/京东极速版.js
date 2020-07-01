@@ -265,7 +265,7 @@ function main(){
                                     return true
                                 }
                             }else{
-                                moveTo(width/2,height*0.8,width/2,height*0.6,random(500,1000));
+                                moveTo(width/2,height*0.8,width/2,height*0.65,random(500,1000));
                             }
                         }else{
                             jsclick("desc","赚钱",true,2)

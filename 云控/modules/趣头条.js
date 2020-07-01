@@ -84,78 +84,6 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-/*
-    清除app数据，无需root权限
-    备注:仅适用小米手机
-    @author：飞云
-    @packageName：包名
-    返回值：Boolean，是否执行成功
-*/
-
-function clearApp(packageName) {
-    // var appName = "星巴克"
-    // var packageName = "com.starbucks.cn"
-    let i = 0
-    while (i < 10) {
-        let activity = currentActivity()
-        switch (activity) {
-            case "com.miui.appmanager.ApplicationsDetailsActivity":
-                if (click("清除数据")) {
-                } else if (click("清除全部数据")) {
-                } else if (click("确定")) {
-                    desc("返回").click();
-                    sleep(2000);
-                    back();
-                    sleep(2000);
-                    return true
-                }
-                break;
-            default:
-                log("页面:other")
-                back()  //返回
-                sleep(1000);
-                if (!openAppSetting(packageName)) {
-                    log("找不到应用，请检查packageName");
-                    return false;
-                }
-                sleep(3000);
-                break;
-        };
-        i++;
-        sleep(1000)
-    }
-    back();
-}
-
-function uninstall_app(packageName) {
-    let i = 0
-    while (i < 50) {
-        let activity = currentActivity()
-        log(activity)
-        switch (activity) {
-            case "com.android.packageinstaller.UninstallerActivity":
-                if(jsclick("text","未找到应用",false,0)){
-                    click("确定");
-                    return true;
-                }
-                click("确定");
-                break;
-            case "com.android.packageinstaller.UninstallAppProgress":
-                click("立即清理");
-                break;
-            case "com.miui.optimizecenter.MainActivity":
-                if(jsclick("id","button_clean",false,3))return true;
-                break;
-            default:
-                log("页面:other")
-                app.uninstall(packageName);
-                sleep(3000);
-        };
-        i++;
-        sleep(2000);
-        jsclick("text","我知道了",true,2);
-    }
-}
 //基础函数
 function active(pkg,n){
     if(!n){n=5}
@@ -217,27 +145,6 @@ function rd(min,max){
         return random(max,min)
     }
 }
-//输入密码
-function input_pay_password(password){
-    var key_xy = {}
-    key_xy[1]=[width*0.3,height*7/10]
-    key_xy[2]=[width*0.5,height*7/10]
-    key_xy[3]=[width*0.8,height*7/10]
-    key_xy[4]=[width*0.3,height*7.5/10]
-    key_xy[5]=[width*0.5,height*7.5/10]
-    key_xy[6]=[width*0.8,height*7.5/10]
-    key_xy[7]=[width*0.3,height*8/10]
-    key_xy[8]=[width*0.5,height*8/10]
-    key_xy[9]=[width*0.8,height*8/10]
-    key_xy[0]=[width*0.5,height*9/10]
-    // 清除其它字符
-    password = password.replace(/\D/g,"")
-    for(var i=0;i<password.length;i++){
-        var numbers = password.substring(i,i+1);
-        click_(key_xy[numbers][0],key_xy[numbers][1])
-        sleep(300)
-    }
-}
 
 function moveTo(x,y,x1,y1,times){
     swipe(x,y,x1,y1,times);
@@ -279,7 +186,7 @@ function main(){
                 case 'com.jifen.qkbase.main.MainActivity':
                     log('首页');
                     if ( fristbox ){
-                       if( jsclick('text',"任务",true,5) ){
+                       if( jsclick('text',"任务",true,5) || jsclick('text',"去签到",true,5)){
                             var bgv = textMatches(/领\d+金币/).findOne(2000);
                             if(bgv){
                                 click__(bgv);

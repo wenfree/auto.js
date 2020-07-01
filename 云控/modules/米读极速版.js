@@ -84,50 +84,6 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-/*
-    清除app数据，无需root权限
-    备注:仅适用小米手机
-    @author：飞云
-    @packageName：包名
-    返回值：Boolean，是否执行成功
-*/
-
-function clearApp(packageName) {
-    // var appName = "星巴克"
-    // var packageName = "com.starbucks.cn"
-    let i = 0
-    while (i < 10) {
-        let activity = currentActivity()
-        switch (activity) {
-            case "com.miui.appmanager.ApplicationsDetailsActivity":
-                if (click("清除数据")) {
-                } else if (click("清除全部数据")) {
-                } else if (click("确定")) {
-                    desc("返回").click();
-                    sleep(2000);
-                    back();
-                    sleep(2000);
-                    return true
-                }
-                break;
-            default:
-                log("页面:other")
-                back()  //返回
-                sleep(1000);
-                if (!openAppSetting(packageName)) {
-                    log("找不到应用，请检查packageName");
-                    return false;
-                }
-                sleep(3000);
-                break;
-        };
-        i++;
-        sleep(1000)
-    }
-    back();
-}
-
-
 //基础函数
 function active(pkg,n){
     if(!n){n=5}
@@ -195,14 +151,13 @@ function moveTo(x,y,x1,y1,times){
     sleep(1000);
 }
 
-
 function Tips(){
     log("查询弹窗");
     var textTips = {}
     textTips["允许"]="text";
     textTips["保存"]="text";
     textTips["我知道了"]="text";
-    textTips["好的"]="text";
+    textTips["免费阅读"]="text";
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
             return false
@@ -228,7 +183,7 @@ function main(){
     var readtimes_end = random(20,30)
     var detail2 = 0;
     var movetoTimes = 0
-    var readkey = true
+    var readkey = false
 
     var i__ = 0;
     while (i__ < 50) {
@@ -249,26 +204,31 @@ function main(){
                             }
                         }
                     }else{
-                        if ( jsclick('text','书架',true,2) ){
-                            if (jsclick('text','精品',true,2) || jsclick('text','上次阅读',true,2)){
-
+                        var gold100 = textMatches(/再领.*金币/).findOne(500);
+                        if (gold100){
+                            click__(gold100);
+                        }else
+                        if ( jsclick('text','福利',true,2) ){
+                            if (jsclick('text','立即阅读',true,2) ){
                                 readkey = true
-
+                            }
+                        }else{
+                            var reads = textMatches(/去阅读解锁.*/).findOne(500);
+                            if ( reads ){
+                                click__(reads);
                             }
                         }
-
                     }
                     break;
                 case "com.lechuan.midunovel.reader.ui.activity.ReaderActivity":
-                    log([readtimes,'阅读页面']);
+                    log([readtimes,'阅读页面',"readkey",readkey]);
                     if (jsclick('text','看小视频翻倍领取红包',false,2)){
                         click((251+469)/2,(736+954)/2)
                         sleep(1000*65+rd(1000,5000));
                     }
-
                     if ( readkey ){
                         moveTo( width*0.8,height*0.8,width*0.2,height*0.8,rd(500,2000) );
-                        sleep(rd(5000,15*1000));
+                        sleep(1000*rd(3,10));
                         readtimes++;
                     }else{
                         back();
@@ -284,11 +244,18 @@ function main(){
                     sleep(1000*65+rd(1000,5000));
                     back();
                     break
+                case 'com.bytedance.sdk.openadsdk.activity.TTRewardVideoActivity':
+                    log('关闭广告');
+                    back();
+                    jsclick('id',"tt_video_ad_close",true,2);
+                    break
                 case "com.android.systemui.recents.RecentsActivity":
                     home();
                     break;
                 default:
+                    log('other');
                     back();
+                    sleep(1000);
             }
         }
         Tips();
@@ -304,7 +271,7 @@ function readInfo(){
         if ( active( appinfo.bid , 8)  ){
 
             var UI = currentActivity();
-            log('UI',UI,i__)
+            log('readInfo->UI',UI,i__)
             switch(UI){
                 case 'com.lechuan.mdwz.ui.activity.NovelMainActivity':
                     log('首页');
@@ -327,8 +294,16 @@ function readInfo(){
                         }
                     }
                     break;
+                case 'com.lechuan.mdwz.ui.activity.NovelSplashActivity':
+                    log('正在启动');
+                    break;
                 default:
-                    back();
+                    home();
+                    sleep(2000);
+                    click(device.width/4,device.height-20)
+                    sleep(2000);
+                    jsclick('id',"clearAnimView",true,2)
+                    sleep(2000);
             }
         }
         Tips();
@@ -351,10 +326,6 @@ var appinfo = {}
 appinfo.name = "米读极速版";
 appinfo.bid = "com.lechuan.mdwz";
 info ={}
-
-
-
-
 
 
 

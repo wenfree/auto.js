@@ -84,50 +84,6 @@ function app_info(name,data){
     log(jspost(url,postdata));
 }
 
-/*
-    清除app数据，无需root权限
-    备注:仅适用小米手机
-    @author：飞云
-    @packageName：包名
-    返回值：Boolean，是否执行成功
-*/
-
-function clearApp(packageName) {
-    // var appName = "星巴克"
-    // var packageName = "com.starbucks.cn"
-    let i = 0
-    while (i < 10) {
-        let activity = currentActivity()
-        switch (activity) {
-            case "com.miui.appmanager.ApplicationsDetailsActivity":
-                if (click("清除数据")) {
-                } else if (click("清除全部数据")) {
-                } else if (click("确定")) {
-                    desc("返回").click();
-                    sleep(2000);
-                    back();
-                    sleep(2000);
-                    return true
-                }
-                break;
-            default:
-                log("页面:other")
-                back()  //返回
-                sleep(1000);
-                if (!openAppSetting(packageName)) {
-                    log("找不到应用，请检查packageName");
-                    return false;
-                }
-                sleep(3000);
-                break;
-        };
-        i++;
-        sleep(1000)
-    }
-    back();
-}
-
-
 //基础函数
 function active(pkg,n){
     if(!n){n=5}
@@ -189,33 +145,11 @@ function rd(min,max){
         return random(max,min)
     }
 }
-//输入密码
-function input_pay_password(password){
-    var key_xy = {}
-    key_xy[1]=[width*0.3,height*7/10]
-    key_xy[2]=[width*0.5,height*7/10]
-    key_xy[3]=[width*0.8,height*7/10]
-    key_xy[4]=[width*0.3,height*7.5/10]
-    key_xy[5]=[width*0.5,height*7.5/10]
-    key_xy[6]=[width*0.8,height*7.5/10]
-    key_xy[7]=[width*0.3,height*8/10]
-    key_xy[8]=[width*0.5,height*8/10]
-    key_xy[9]=[width*0.8,height*8/10]
-    key_xy[0]=[width*0.5,height*9/10]
-    // 清除其它字符
-    password = password.replace(/\D/g,"")
-    for(var i=0;i<password.length;i++){
-        var numbers = password.substring(i,i+1);
-        click_(key_xy[numbers][0],key_xy[numbers][1])
-        sleep(300)
-    }
-}
 
 function moveTo(x,y,x1,y1,times){
     swipe(x,y,x1,y1,times);
     sleep(1000);
 }
-
 
 function Tips(){
     log("查询弹窗");
@@ -224,6 +158,7 @@ function Tips(){
     textTips["保存"]="text";
     textTips["我知道了"]="text";
     textTips["好的"]="text";
+    
     for(var k in textTips){
         if (jsclick(textTips[k],k,true,2)){
             return false
@@ -236,6 +171,7 @@ function Tips(){
 // [500,1044,692,1238]
 
 function main(){
+
 
     home();
     sleep(2000);
@@ -251,7 +187,7 @@ function main(){
     var movetoTimes = 0
 
     var i__ = 0;
-    while (i__ < 200) {
+    while (i__ < 100) {
         i__++;
         if ( active( appinfo.bid , 8)  ){
 
@@ -307,19 +243,23 @@ function main(){
                     }
                     break;
                 case "com.ss.android.article.base.feature.detail2.view.NewDetailActivity":
-                    log([readtimes,'文章页面']);
+                    log(['readtimes',readtimes,'文章页面','movetoTimes',movetoTimes]);
                     moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
                     moveTo(width/2,height*0.8,width/2,height*0.3,random(300,2000));
                     if (jsclick("text","已显示全部评论",false,2)){
                         back();
                     }else{
-                        if (jsclick("text","暂无评论，点击抢沙发",true,2)){
+                        var commentKey = text("暂无评论，点击抢沙发").findOne(500);
+                        if (commentKey && commentKey.bounds().centerY() < 1200){
+                            click__(commentKey);
+                            sleep(2000);
                             setText(0,'非常支持');
                             sleep(1000);
                             jsclick("text","发布",true,2);
                             back();
                         }
                     }
+
                     if (jsclick("text","回复",false,2)){
                         detail2++
                     }
@@ -412,7 +352,11 @@ appinfo.bid = "com.ss.android.article.lite";
 
 
 
+main();
 
+// if (main()) {
+//     readInfo()
+// }
 
 
 

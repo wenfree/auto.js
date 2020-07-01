@@ -190,27 +190,6 @@ function rd(min,max){
     }
 }
 //输入密码
-function input_pay_password(password){
-    var key_xy = {}
-    key_xy[1]=[width*0.3,height*7/10]
-    key_xy[2]=[width*0.5,height*7/10]
-    key_xy[3]=[width*0.8,height*7/10]
-    key_xy[4]=[width*0.3,height*7.5/10]
-    key_xy[5]=[width*0.5,height*7.5/10]
-    key_xy[6]=[width*0.8,height*7.5/10]
-    key_xy[7]=[width*0.3,height*8/10]
-    key_xy[8]=[width*0.5,height*8/10]
-    key_xy[9]=[width*0.8,height*8/10]
-    key_xy[0]=[width*0.5,height*9/10]
-    // 清除其它字符
-    password = password.replace(/\D/g,"")
-    for(var i=0;i<password.length;i++){
-        var numbers = password.substring(i,i+1);
-        click_(key_xy[numbers][0],key_xy[numbers][1])
-        sleep(300)
-    }
-}
-
 function moveTo(x,y,x1,y1,times){
     swipe(x,y,x1,y1,times);
     sleep(1000);
@@ -380,9 +359,7 @@ appinfo.bid = "com.immomo.young";
 var info ={}
 
 
-// if (main()) {
-//     readInfo()
-// }
+
 
 
 
