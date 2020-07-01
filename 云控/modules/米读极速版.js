@@ -294,6 +294,10 @@ function readInfo(){
                         }
                     }
                     break;
+                case 'com.lechuan.midunovel.reader.ui.activity.ReaderActivity':
+                    log('阅读页面');
+                    back();
+                    break;
                 case 'com.lechuan.mdwz.ui.activity.NovelSplashActivity':
                     log('正在启动');
                     break;
