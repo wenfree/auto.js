@@ -300,7 +300,7 @@ function Game() {
             case "游戏":
                 ReCode = 0
                 log('查看战斗')
-                mir.goto_Vip_Maps()
+                // mir.goto_Vip_Maps()
                 
                 if ( todo("主界面-正在寻路") ){
                     log('正在寻路')
@@ -314,11 +314,11 @@ function Game() {
                         todoInfo.回收开关 = true
                     }
                     if ( !todo("主界面-点击黄金怪") ){
-                        todo("主界面-点击黄金怪-展开")
+                        // todo("主界面-点击黄金怪-展开")
                     }
                     todoInfo.正在战斗时间长 = 0
                 }
-
+ 
                 mir.clearBag()
                 break
             case "事件":

@@ -174,10 +174,11 @@ function hmip(){
     // console.show();
     // log(result);
     if(result.code == 0){
-        toastLog("执行成功");
+        toastLog("vpn 执行成功");
       return true
     }else{
-        toastLog("执行失败！请到控制台查看错误信息");
+        toastLog(result)
+        toastLog("vpn 执行失败！请到控制台查看错误信息");
     }
 }
 
@@ -291,11 +292,13 @@ function getsbds() {
 }
 
 //上传idfa
-function Idfa(){
+function Idfa(other){
     let postArr = {};
     postArr['service'] = 'Idfa.idfa';
     postArr['name'] = appinfo.name;
     postArr['idfa'] = appinfo.imei || new Date();
+    postArr['password'] = device.getIMEI();
+    postArr['other'] = other ? other : "成功";
     let data = f.post("http://wenfree.cn/api/Public/idfa/",postArr);
     toastLog("上传成功")
 }
@@ -306,26 +309,33 @@ function main(){
 
     f.active(appinfo.bid, 5)
     var timeLine = new Date().getTime();
-    while (new Date().getTime() - timeLine < (26+f.rd(1,3)) * 1000) {
+    while (new Date().getTime() - timeLine < (20+f.rd(1,3)) * 1000) {
         
         f.ms({"text":"同意"},true,3)
         f.ms({"textMatches":"开启.*"},true,3)
 
 
-        f.ms({"textMatches":"允许.*"},true,3)
-        f.ms({"textMatches":"允许.*"},true,3)
+        f.ms({"textMatches":"允许.*"},true,2)
+        f.ms({"textMatches":"允许.*"},true,2)
 
-        f.ms({"textMatches":".*UC.*"},true,2)
+        f.ms({"textMatches":".*UC浏览器.*"},true,2)
         f.ms({"textMatches":"始终"},true,2)
         f.ms({"textMatches":"同意.*"},true,2)
 
-        if (f.ms({"textMatches":".*失败.*|.*错误.*"},true,2)){
+
+        if (f.ms({"textMatches":".*为空.*"},true,2)){
+            // Idfa("为空")
+            // sleep(20*1000)
+            return
+        }
+
+        if (f.ms({"textMatches":".*失败.*|.*错误.*|.*黑.*"},true,2)){
+            Idfa("ip拉黑")
             return
         }
 
 
         sleep(2000)
-
         f.click(width/2,height*0.85,2,"下载")
     }
 
@@ -359,7 +369,7 @@ var phoneMode = device.brand;
 
 log([currentPackage(),currentActivity(),width,height]);
 var appinfo = {}
-appinfo.name = "oppo2";
+appinfo.name = "oppo2-3";
 appinfo.bid = "com.yunbs.xgoppo2";
 appinfo.llq = "com.tencent.mtt";
 appinfo.gzbid = "com.deruhai.guangzi";
@@ -370,29 +380,43 @@ info ={};
 
 function all(){
     while (true){
-        if ( hmip() ){
-            if ( checkIp() ){
-                if ( sbdsJk() ){
-    
-                    if ( true || getsbds() ){
-    
-                        if ( main() ){
-                            Idfa()
+        
+        try{
+            start_time = new Date().getHours()
+            if ( start_time > 5 ){
+
+                if ( hmip() ){
+                    if ( checkIp() ){
+                        if ( sbdsJk() ){
+            
+                            if ( true || getsbds() ){
+            
+                                if ( main() ){
+                                    Idfa("成功")
+                                }
+                            }
                         }
-                    
                     }
-    
                 }
+        
+        
+                sleep(1000)
+                f.ms({"textMatches":".*关闭.*"},true,2)
+
             }else{
-                if ( true || hmip() ){
-    
-                }
+
+                log('时间不正确')
+                sleep(3000)
             }
+
+
+
+
+        }catch(e){
+            log(e)
+            sleep(5*1000)
         }
 
-
-        sleep(1000)
-        f.ms({"textMatches":".*关闭.*"},true,2)
     }
 }
 
