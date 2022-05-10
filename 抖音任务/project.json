@@ -5,11 +5,11 @@
     "launchConfig": {
       "displaySplash": true,
       "hideLogs": false,
-      "splashText": "Powered by Auto.js Pro",
+      "splashText": "Powered by Wenfree",
       "stableMode": false
     },
     "main": "main.js",
-    "name": "My Project",
+    "name": "抖音发言",
     "optimization": {
       "removeOpenCv": false,
       "unusedResources": false

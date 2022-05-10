@@ -409,7 +409,7 @@ function hmip(){
       toast("执行成功");
       return true
     }else{
-      toastLog("执行失败！请到控制台查看错误信息");
+      toastLog("vpn执行失败！请到控制台查看错误信息");
     }
 }
 
@@ -716,17 +716,17 @@ function getAd_(){
     data['id'] = new Date().getTime()
     // var token = "e85976ff091fd9b8c30f0adb3772f809"
     // var token = "78883c97a35a6594cbf69fdda77dae3e"
-    var token = "3a9add67a13da93270db140469b7789d"
+    var token = "9325dfa40f43fea53e76f8f9f0871dd5"
 
     data['sign'] = $crypto.digest(data['id']+token, "MD5")
     // data['adp'] = "byadp100102"
     // data['adp'] = "byadp100094"
-    data['adp'] = "byadp100338"
+    data['adp'] = "byadp100090"
     data['adset'] = "S2S"
     data['version'] = { "apiVer": "1.3.1", "sdkVer": "3.2", "appVer": "2.3"}
     device_object = {
         "ip" : ip_,
-        "lip" : "192.168.0.2",
+        "lip" : "192.168.0."+f.rd(2,233),
         "bua" : "Mozilla/5.0 (Linux; Android 9; LYA-AL00 Build/HUAWEILYA-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36",
         "os" : "android",
         // "os" : "IOS",
@@ -788,7 +788,16 @@ function dp_Link(url){
     }
 }
 
-oaid = {"ua":"Mozilla/5.0 (Linux; Android 10; MI 8 Explorer Edition Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36","devicetype":4,"os":"Android","osv":"10","connectiontype":2,"make":"Xiaomi","model":"MI 8 Explorer Edition","language":"zh-CN","js":0,"oaid":"98f45ed4b62356e4","imei":"","androidid":"856edf603be508ed","mac":"48:2C:A0:70:18:01","lat":"23.859659","lon":"108.267273","orientation":0,"sw":2159,"sh":1036,"ishttps":0}
+
+
+function get_imei_wenfree(){
+    url = "http://api.wenfree.cn/?s=App.AdImei.GetImei"
+    r = f.get(url)
+    if (r){
+        r = JSON.parse(r)
+        return JSON.parse(r.data.info)
+    }
+}
 
 
 function all(){
@@ -799,7 +808,8 @@ function all(){
                     if ( false || checkIp_() ){
                         // getsbds()
                         
-                        oaid['oaid'] = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+                        oaid = get_imei_wenfree()
+                        log( oaid )
             
                         sbdsJk(oaid)
                         ad = getAd_()
@@ -832,9 +842,26 @@ function all(){
 
         }catch(e){
             log(e)
+            sleep(5000)
         }
 
     }
 }
 
+
+
 all()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -22,6 +22,7 @@ function main() {
             if ( taskinfo ){
                 log( taskinfo )
                 sendComment(taskinfo)
+                // send()
             }
         }catch(e){
             log(e)
@@ -54,6 +55,32 @@ function getJsonData() {
         return false;
     }
 };
+
+
+function send(){
+    let postdata = {
+        "s":"App.Comment.Get",
+        "name": taskinfo.name,
+        "type": taskinfo.type,
+        "username": taskinfo.username
+    }
+    log(  "postdata", postdata)
+    let r = http.post("http://mir4.honghongdesign.cn", postdata );
+    var res = JSON.parse(r.body.string())
+    log(res)
+    let txt = res.data.content
+    if ( f.ms({"textMatches":"说点什么..."},true,3) ){
+        setText(0,txt)
+        sleep(1000)
+        if ( f.ms({"desc":"发送"},true,3) ){
+            return true
+        }
+    }else{
+        back()
+        sleep(1000)
+    }
+    
+}
 
 
 //新版基础函数
@@ -193,29 +220,6 @@ f.init()
 
 
 
-function send(){
-    let postdata = {
-        "s":"App.Comment.Get",
-        name: taskinfo.name,
-        type: taskinfo.type,
-        username: taskinfo.username
-    }
-    log(  "postdata", postdata)
-    let r = http.post("http://mir4.honghongdesign.cn/", postdata );
-    if(r){
-        let r = JSON.parse(r.body.string())
-        let txt = r.data.content
-        if ( f.ms({"textMatches":"说点什么..."},true,3) ){
-            setText(0,txt)
-            if ( f.ms({"desc":"发送"},true,3) ){
-                return true
-            }
-        }else{
-            back()
-            sleep(1000)
-        }
-    }
-}
 
 function sendComment(info){
     var all_time = info.all_time
@@ -312,6 +316,8 @@ function sendComment(info){
                 if ( f.ms({"textMatches":"直播中.*"},true,5) ){
                     live_key = true
                 }
+
+                f.ms({"textMatches":".*知道.*"},true,3)
             }
         }
         log( (new Date().getTime() - Time_line)/1000 )
